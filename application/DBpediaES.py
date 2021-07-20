@@ -1,0 +1,163 @@
+# Author: Rafael Ines Guillen
+# Project: Explainable QA over KG
+# File: DBèdia.py
+# Purpose: solve questions to DBpedia in spanish
+
+
+# Loading libraries and dependenciesimport spacy_dbpedia_spotlight
+
+import spacy
+from spacy.lang.en.examples import sentences 
+
+from SPARQLWrapper import SPARQLWrapper, JSON
+
+from transformers import AutoTokenizer, TFAutoModelForQuestionAnswering
+import tensorflow as tf
+
+
+# Loading libraries and dependencies
+
+sparql = SPARQLWrapper("https://es.dbpedia.org/sparql/")
+
+
+print("Loading SpaCy model: en_core_web_lg")
+#print("Loading SpaCy model: blank")
+#nlp = spacy.load("en_core_web_lg")
+nlp = spacy.blank('es')
+nlp.add_pipe('dbpedia_spotlight')
+print("Loaded")
+
+
+model_name = "mrm8488/bert-base-spanish-wwm-cased-finetuned-spa-squad2-es" 
+print("Loding BERT model: " + model_name)
+tokenizer = AutoTokenizer.from_pretrained("bert-large-uncased-whole-word-masking-finetuned-squad")
+model = TFAutoModelForQuestionAnswering.from_pretrained("bert-large-uncased-whole-word-masking-finetuned-squad")
+print("Loaded")
+print("Ready to answer question from DBpedia in spanish:")
+
+
+# Question treatment
+
+def DBpedia(question):
+	print(question)
+
+	doc = nlp(question)
+
+	text = documentRetrieval(doc)
+	
+	return bertAnswer(question, text)
+
+
+# Document retrieval
+
+def documentRetrieval(doc):
+
+	text = ""
+
+	for ent in doc.ents:
+		results = relationFromEntity(ent.kb_id_)
+		text = text + query2Text(ent.text, results)
+		
+		# Second direction
+		text = text + '\n'+ '\n'
+
+		results = relationToEntity(ent.kb_id_)
+		text = text + query2Text(ent.text,results)
+
+		return text
+
+
+# BERT QA
+
+def bertAnswer(question, text):
+
+	inputs = tokenizer(question, text, add_special_tokens=True, return_tensors="tf",truncation=True)
+
+	input_ids = inputs["input_ids"].numpy()[0]
+	   
+	outputs = model(inputs)
+	answer_start_scores = outputs.start_logits
+	answer_end_scores = outputs.end_logits
+	 
+	answer_start = tf.argmax(
+	    answer_start_scores, axis=1
+	).numpy()[0]  # Get the most likely beginning of answer with the argmax of the score
+	answer_end = (
+	    tf.argmax(answer_end_scores, axis=1) + 1
+	).numpy()[0]  # Get the most likely end of answer with the argmax of the score
+	answer = tokenizer.convert_tokens_to_string(tokenizer.convert_ids_to_tokens(input_ids[answer_start:answer_end]))
+	   
+	print(f"Question: {question}")
+	print(f"Answer: {answer}")
+
+	return [answer,text]
+
+
+# Query part
+
+## Relation from the entity
+
+def relationFromEntity(entity):
+	sparql.setQuery("PREFIX dbr: <http://dbpedia.org/resource/> \n" + 
+	"SELECT ?propertyLabel (GROUP_CONCAT(DISTINCT ?valueLabel ; SEPARATOR=\", \") AS ?valueLabel ) {\n"+
+		
+		"<" + entity + """> ?property ?value .
+		OPTIONAL {?property rdfs:comment ?auxProperty .}
+		FILTER (!bound(?auxProperty ) || !strstarts(str(?auxProperty),
+						str("Reserved for DBpedia")))
+
+		FILTER (!strstarts( str(?property),
+						str("http://dbpedia.org/ontology/abstract")))
+
+		?property rdfs:label ?propertyLabel .
+		FILTER (LANGMATCHES(LANG(?propertyLabel ), "es"))
+
+		OPTIONAL {?value rdfs:label ?auxValue .}
+		BIND (IF(isLiteral(?value), ?value, ?auxValue) AS ?valueLabel)
+		FILTER (isNumeric(?valueLabel) || 
+						LANGMATCHES(LANG(?valueLabel ), "es"))
+	}
+	""")
+
+	sparql.setReturnFormat(JSON)
+	return sparql.query().convert()
+
+
+## Relation to the entity
+
+def relationToEntity(entity):
+
+	sparql.setQuery("PREFIX dbr: <http://dbpedia.org/resource/> \n" + 
+	"SELECT ?propertyLabel (GROUP_CONCAT(DISTINCT ?valueLabel ; SEPARATOR=\", \") AS ?valueLabel ) {\n"+
+
+		"?value ?property  <" + entity + """>.
+
+		OPTIONAL {?property rdfs:comment ?auxProperty .}
+		FILTER (!bound(?auxProperty ) || !strstarts(str(?auxProperty),
+						str("Reserved for DBpedia")))
+
+		FILTER (!strstarts( str(?property),
+						str("http://dbpedia.org/ontology/abstract")))
+
+		?property rdfs:label ?propertyLabel .
+		FILTER (LANGMATCHES(LANG(?propertyLabel ), "es"))
+
+		OPTIONAL {?value rdfs:label ?auxValue .}
+		BIND (IF(isLiteral(?value), ?value, ?auxValue) AS ?valueLabel)
+		FILTER (isNumeric(?valueLabel) || 
+						LANGMATCHES(LANG(?valueLabel ), "es"))
+	}
+	""")
+
+	sparql.setReturnFormat(JSON)
+	return sparql.query().convert()
+
+
+# Write the information
+
+def query2Text(entity, results = None):
+	text = ""
+	if results != None:
+		for result in results["results"]["bindings"]:
+			text = text + entity +" tiene " + result["propertyLabel"]["value"].replace('\n', ' ').replace('\r', '') + ", que es " + result["valueLabel"]["value"].replace('\n', ' ').replace('\r', '') + ". "
+	return text
