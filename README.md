@@ -1,9 +1,9 @@
-# explainable-qa
+# ExtractiveQA over Knowledge Graphs
 Knowledge Graph Question-Answering
 
 
 ## Abstract
-Creation of an Extractive Question/Answering (EQA) system that continuously updates its knowledge from a KG. The student will use language models (e.g. BERT) to build a RESTful service that responds to natural language queries.
+Creation of an Extractive Question/Answering (EQA) system that continuously updates its knowledge from a KG. It is based on language models (e.g. BERT) to provide a RESTful service that responds to natural language queries.
 
 ## Files
 
