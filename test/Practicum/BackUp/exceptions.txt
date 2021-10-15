@@ -1,0 +1,22 @@
+127.0.0.1 - - [15/Oct/2021 12:14:59] "GET /dbpedia/en HTTP/1.1" 200 -
+Who is the pole driver of 1992 Canadian Grand Prix?
+[2021-10-15 12:15:01,711] ERROR in app: Exception on /dbpedia/en [GET]
+Traceback (most recent call last):
+  File "C:\Users\josev\AppData\Roaming\Python\Python39\site-packages\spacy_dbpedia_spotlight\entity_linker.py", line 162, in __call__
+    doc.ents = list(doc.ents) + ents_data
+  File "spacy\tokens\doc.pyx", line 731, in spacy.tokens.doc.Doc.ents.__set__
+  File "spacy\tokens\doc.pyx", line 768, in spacy.tokens.doc.Doc.set_ents
+ValueError: [E1010] Unable to set entity information for token 7 which is included in more than one span in entities, blocked, missing or outside.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\josev\AppData\Roaming\Python\Python39\site-packages\flask\app.py", line 2447, in wsgi_app
+    response = self.full_dispatch_request()
+
+{
+    "uid": "1320",
+    "question": "Who is the pole driver of 1992 Canadian Grand Prix?",
+    "verbalized_answer": "[Ayrton Senna] is the pole driver of the 1992 Canadian Grand Prix.",
+    "query": "SELECT DISTINCT ?uri WHERE { <http://dbpedia.org/resource/1992_Canadian_Grand_Prix> <http://dbpedia.org/property/poleDriver> ?uri }"
+},

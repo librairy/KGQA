@@ -67,7 +67,11 @@ def get_debpediaEN():
     
     aux = DBpediaEN.DBpedia(question)
     if text != 'true':
-        return jsonify({'question': question, 'answer': aux[0]}), 200
+        if aux[1] is not None:
+            return jsonify({'question': question, 'answer': aux[0], 'textLen': len(aux[1])}), 200
+        else:
+            return jsonify({'question': question, 'answer': aux[0], 'textLen': 'None'}), 200
+
     
     return jsonify({'question': question, 'answer': aux[0], 'text': aux[1]}), 200
 

@@ -6,20 +6,16 @@
 
 # Loading libraries and dependencies
 
-import spacy_dbpedia_spotlight
-
 import spacy
-from spacy.lang.en.examples import sentences 
-
-from SPARQLWrapper import SPARQLWrapper, JSON
 
 from transformers import AutoTokenizer, TFAutoModelForQuestionAnswering
 import tensorflow as tf
-
+import requests
+from pprint import pprint
 
 # Loading libraries and dependencies
 
-sparql = SPARQLWrapper("http://dbpedia.org/sparql")
+dbpedia_url = "http://dbpedia.org/sparql"
 
 print("Loading SpaCy model: en_core_web_lg")
 #print("Loading SpaCy model: blank")
@@ -37,13 +33,13 @@ print("Ready to answer question from DBpedia in english:")
 
 # Question treatment
 
-def DBpedia(question):
+def DBpedia(question):	
 	print(question)
 
 	doc = nlp(question)
-
-	text = documentRetrieval(doc)
 	
+	text = documentRetrieval(doc)
+
 	return bertAnswer(question, text)
 
 
@@ -85,7 +81,7 @@ def bertAnswer(question, text):
 	    tf.argmax(answer_end_scores, axis=1) + 1
 	).numpy()[0]  # Get the most likely end of answer with the argmax of the score
 	answer = tokenizer.convert_tokens_to_string(tokenizer.convert_ids_to_tokens(input_ids[answer_start:answer_end]))
-	   
+
 	print(f"Question: {question}")
 	print(f"Answer: {answer}")
 
@@ -97,10 +93,7 @@ def bertAnswer(question, text):
 ## Relation from the entity
 
 def relationFromEntity(entity):
-	sparql.setQuery("PREFIX dbr: <http://dbpedia.org/resource/> \n" + 
-	"SELECT ?propertyLabel (GROUP_CONCAT(DISTINCT ?valueLabel ; SEPARATOR=\", \") AS ?valueLabel ) {\n"+
-		
-		"<" + entity + """> ?property ?value .
+	query = "PREFIX dbr: <http://dbpedia.org/resource/> \n" + "SELECT ?propertyLabel (GROUP_CONCAT(DISTINCT ?valueLabel ; SEPARATOR=\", \") AS ?valueLabel ) {\n"+ "<" + entity + """> ?property ?value .
 		OPTIONAL {?property rdfs:comment ?auxProperty .}
 		FILTER (!bound(?auxProperty ) || !strstarts(str(?auxProperty),
 						str("Reserved for DBpedia")))
@@ -116,40 +109,55 @@ def relationFromEntity(entity):
 		FILTER (isNumeric(?valueLabel) || 
 						LANGMATCHES(LANG(?valueLabel ), "en"))
 	}
-	""")
+	"""
 
-	sparql.setReturnFormat(JSON)
-	return sparql.query().convert()
+	payload = {
+    	'default-graph-uri': 'http://dbpedia.org', 
+    	'query': query, 
+    	'format': 'application/json', 
+    	'timeout': 120000, 
+    	'signal_void':'on', 
+    	'signal_unconnected':'on' }
+
+	response = requests.get(dbpedia_url, params=payload)
+	
+	return response.json()
 
 
 ## Relation to the entity
 
 def relationToEntity(entity):
 
-	sparql.setQuery("PREFIX dbr: <http://dbpedia.org/resource/> \n" + 
-	"SELECT ?propertyLabel (GROUP_CONCAT(DISTINCT ?valueLabel ; SEPARATOR=\", \") AS ?valueLabel ) {\n"+
-
-		"?value ?property  <" + entity + """>.
-
+	query = "PREFIX dbr: <http://dbpedia.org/resource/> \n" + "SELECT ?propertyLabel (GROUP_CONCAT(DISTINCT ?valueLabel ; SEPARATOR=\", \") AS ?valueLabel ) { \n" + "?value ?property  <" + entity + """>.
+    
 		OPTIONAL {?property rdfs:comment ?auxProperty .}
-		FILTER (!bound(?auxProperty ) || !strstarts(str(?auxProperty),
-						str("Reserved for DBpedia")))
+    	FILTER (!bound(?auxProperty ) || !strstarts(str(?auxProperty),
+                    	str("Reserved for DBpedia")))
 
-		FILTER (!strstarts( str(?property),
-						str("http://dbpedia.org/ontology/abstract")))
+    	FILTER (!strstarts( str(?property),
+                    	str("http://dbpedia.org/ontology/abstract")))
 
-		?property rdfs:label ?propertyLabel .
-		FILTER (LANGMATCHES(LANG(?propertyLabel ), "en"))
+    	?property rdfs:label ?propertyLabel .
+    	FILTER (LANGMATCHES(LANG(?propertyLabel ), "en"))
 
-		OPTIONAL {?value rdfs:label ?auxValue .}
-		BIND (IF(isLiteral(?value), ?value, ?auxValue) AS ?valueLabel)
-		FILTER (isNumeric(?valueLabel) || 
-						LANGMATCHES(LANG(?valueLabel ), "en"))
-	}
-	""")
+    	OPTIONAL {?value rdfs:label ?auxValue .}
+    	BIND (IF(isLiteral(?value), ?value, ?auxValue) AS ?valueLabel)
+    	FILTER (isNumeric(?valueLabel) ||
+                    	LANGMATCHES(LANG(?valueLabel ), "en"))
+    }
+    """
 
-	sparql.setReturnFormat(JSON)
-	return sparql.query().convert()
+	payload = {
+    	'default-graph-uri': 'http://dbpedia.org', 
+    	'query': query, 
+    	'format': 'application/json', 
+    	'timeout': 120000, 
+    	'signal_void':'on', 
+    	'signal_unconnected':'on' }
+
+	response = requests.get(dbpedia_url, params=payload)
+
+	return response.json()
 
 
 # Write the information
@@ -160,4 +168,3 @@ def query2Text(entity, results = None):
 		for result in results["results"]["bindings"]:
 			text = text + entity +" has " + result["propertyLabel"]["value"].replace('\n', ' ').replace('\r', '') + ", that it is " + result["valueLabel"]["value"].replace('\n', ' ').replace('\r', '') + ". "
 	return text
-
