@@ -40,7 +40,7 @@ import application.WikidataEN as WikidataEN
 
 ## Check question
 
-@app.route('/question', methods=['GET'])
+@app.route('/eqakg/question', methods=['GET'])
 def get_question():
     question = request.form['question']
     text = request.args.get('text')
@@ -56,8 +56,8 @@ def get_question():
 
 ## DBpedia in english
 
-@app.route('/dbpedia/en', methods=['GET'])
-@app.route('/dbpedia', methods=['GET'])
+@app.route('/eqakg/dbpedia/en', methods=['GET'])
+@app.route('/eqakg/dbpedia', methods=['GET'])
 def get_debpediaEN():
     question = request.form['question']
     text = request.args.get('text')
@@ -78,7 +78,7 @@ def get_debpediaEN():
 
 ## DBpedia in spanish
 
-@app.route('/dbpedia/es', methods=['GET'])
+@app.route('/eqakg/dbpedia/es', methods=['GET'])
 def get_debpediaES():
     question = request.form['question']
     text = request.args.get('text')
@@ -95,8 +95,8 @@ def get_debpediaES():
 
 ## Wokodata in english
 
-@app.route('/wikidata/en', methods=['GET'])
-@app.route('/wikidata', methods=['GET'])
+@app.route('/eqakg/wikidata/en', methods=['GET'])
+@app.route('/eqakg/wikidata', methods=['GET'])
 def get_wikidataEN():
     question = request.form['question']
     text = request.args.get('text')
