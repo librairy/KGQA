@@ -11,7 +11,6 @@ import spacy
 from transformers import AutoTokenizer, TFAutoModelForQuestionAnswering
 import tensorflow as tf
 import requests
-from pprint import pprint
 
 # Loading libraries and dependencies
 
