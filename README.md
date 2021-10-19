@@ -84,7 +84,7 @@ If you prefer to start the service via a Python environment instead of using Doc
     ```
 1.  It may take some minutes to load some external resources. The following logs will appear when everything is ready:
 
-    ````
+    ```
     Answering for predictions without further training.
     Loaded
     Ready to answer question from Wikidata in english:
@@ -94,7 +94,7 @@ If you prefer to start the service via a Python environment instead of using Doc
         Use a production WSGI server instead.
      * Debug mode: off
      * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-    ````
+    ```
 
 ## Server routes
 
@@ -113,6 +113,7 @@ To answer the question *Where was Fernando Alonso born?* using DBpedia:
     ```
     curl --location --request GET 'localhost:5000/dbpedia/en?text=false' --form 'question="Where was Fernando Alonso born?"'`
     ```
+
 And the response:
 
     ```
@@ -120,6 +121,6 @@ And the response:
       "answer": "oviedo, asturias, spain",
       "question": "Where was Fernando Alonso born?"
     }
-    ```
+    ``
 
 
