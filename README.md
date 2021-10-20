@@ -110,18 +110,18 @@ The availabe URIs are:
 
 To answer the question *Where was Fernando Alonso born?* using DBpedia:
 
-    ```
+   ```
     curl --location --request GET 'localhost:5000/eqakg/dbpedia/en?text=false' --form 'question="Where was Fernando Alonso born?"'
-    ```
+   ```
 
 And the response:
 
-    ```
+   ```
    {
      "answer":"oviedo, asturias, spain",
      "question":"Where was Fernando Alonso born?",
      "textLen":10143
    }
-    ``
+   ```
 
 
