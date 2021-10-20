@@ -66,7 +66,7 @@ spacy-legacy==3.0.5
 SPARQLWrapper==1.8.5
 srsly==2.4.1
 stanza==1.2.1
-tensorboard==2.5.0
+tensorboard==2.7.0
 tensorboard-data-server==0.6.1
 tensorboard-plugin-wit==1.8.0
 tensorflow==2.6.0
