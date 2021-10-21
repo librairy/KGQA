@@ -20,3 +20,56 @@ Traceback (most recent call last):
     "verbalized_answer": "[Ayrton Senna] is the pole driver of the 1992 Canadian Grand Prix.",
     "query": "SELECT DISTINCT ?uri WHERE { <http://dbpedia.org/resource/1992_Canadian_Grand_Prix> <http://dbpedia.org/property/poleDriver> ?uri }"
 },
+
+
+
+
+127.0.0.1 - - [20/Oct/2021 14:13:22] "GET /dbpedia/en HTTP/1.1" 200 -
+What is Bob Adams (American football) known for?
+[2021-10-20 14:13:25,147] ERROR in app: Exception on /dbpedia/en [GET]
+Traceback (most recent call last):
+  File "C:\Users\josev\AppData\Roaming\Python\Python39\site-packages\spacy_dbpedia_spotlight\entity_linker.py", line 162, in __call__
+    doc.ents = list(doc.ents) + ents_data
+  File "spacy\tokens\doc.pyx", line 731, in spacy.tokens.doc.Doc.ents.__set__
+  File "spacy\tokens\doc.pyx", line 768, in spacy.tokens.doc.Doc.set_ents
+ValueError: [E1010] Unable to set entity information for token 6 which is included in more than one span in entities, blocked, missing or outside.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\josev\AppData\Roaming\Python\Python39\site-packages\flask\app.py", line 2447, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\josev\AppData\Roaming\Python\Python39\site-packages\flask\app.py", line 1952, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\josev\AppData\Roaming\Python\Python39\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\josev\AppData\Roaming\Python\Python39\site-packages\flask\app.py", line 1821, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "C:\Users\josev\AppData\Roaming\Python\Python39\site-packages\flask\_compat.py", line 39, in reraise
+    raise value
+  File "C:\Users\josev\AppData\Roaming\Python\Python39\site-packages\flask\app.py", line 1950, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\josev\AppData\Roaming\Python\Python39\site-packages\flask\app.py", line 1936, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "C:\Users\josev\Downloads\Practicum\extractiveQA\Librería Git\EQAKG\application\app.py", line 68, in get_debpediaEN
+    aux = DBpediaEN.DBpedia(question)
+  File "C:\Users\josev\Downloads\Practicum\extractiveQA\Librería Git\EQAKG\application\DBpedia.py", line 39, in DBpedia
+    doc = nlp(question)
+  File "C:\Users\josev\AppData\Roaming\Python\Python39\site-packages\spacy\language.py", line 1000, in __call__
+    error_handler(name, proc, [doc], e)
+  File "C:\Users\josev\AppData\Roaming\Python\Python39\site-packages\spacy\util.py", line 1503, in raise_error
+    raise e
+  File "C:\Users\josev\AppData\Roaming\Python\Python39\site-packages\spacy\language.py", line 995, in __call__
+    doc = proc(doc, **component_cfg.get(name, {}))
+  File "C:\Users\josev\AppData\Roaming\Python\Python39\site-packages\spacy_dbpedia_spotlight\entity_linker.py", line 171, in __call__
+    doc.ents = ents_data
+  File "spacy\tokens\doc.pyx", line 731, in spacy.tokens.doc.Doc.ents.__set__
+  File "spacy\tokens\doc.pyx", line 768, in spacy.tokens.doc.Doc.set_ents
+ValueError: [E1010] Unable to set entity information for token 6 which is included in more than one span in entities, blocked, missing or outside.
+
+    {
+        "uid": "676",
+        "question": "What is Bob Adams (American football) known for?",
+        "verbalized_answer": "Bob Adams (American football) is known for [National Football League, Tight end, Scientology official].",
+        "query": "SELECT DISTINCT ?uri WHERE { <http://dbpedia.org/resource/Bob_Adams_(American_football)> <http://dbpedia.org/property/knownFor> ?uri }"
+    },
