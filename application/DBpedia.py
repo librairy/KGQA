@@ -20,7 +20,7 @@ print("Loading SpaCy model: en_core_web_lg")
 #print("Loading SpaCy model: blank")
 #nlp = spacy.load("en_core_web_lg")
 nlp = spacy.blank('en')
-nlp.add_pipe('dbpedia_spotlight')
+nlp.add_pipe('dbpedia_spotlight', config={'confidence': 0.4, 'overwrite_ents':False})
 print("Loaded")
 
 print("Loding BERT model: bert-large-uncased-whole-word-masking-finetuned-squad")
@@ -48,7 +48,7 @@ def documentRetrieval(doc):
 
 	text = ""
 
-	for ent in doc.ents:
+	for ent in doc.spans['dbpedia_spotlight']:
 		results = relationFromEntity(ent.kb_id_)
 		text = text + query2Text(ent.text, results)
 		

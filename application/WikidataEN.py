@@ -6,7 +6,7 @@
 
 # Loading libraries and dependencies
 
-import stanza
+import spacy
 
 from SPARQLWrapper import SPARQLWrapper, JSON
 
@@ -18,9 +18,12 @@ import tensorflow as tf
 
 sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
 
-print("Loading stanza model: tokenize, ner")
-stanza.download('en')
-nlp = stanza.Pipeline(lang='en', processors='tokenize,ner')
+print("Loading spacy model: tokenize, ner")
+nlp = spacy.load("en_core_web_lg")
+nlp.add_pipe('sentencizer')
+# add pipeline (declared through entry_points in setup.py)
+nlp.add_pipe("entityLinker", last=True)
+
 print("Loaded")
 
 
@@ -37,13 +40,9 @@ def WikidataEN(question):
 	print(question)
 
 	doc = nlp(question)
-	doc.sentences[0].print_dependencies()
-	for sent in doc.sentences:
-		for ent in sent.ents:
-			print(ent.text)
-
-	text = documentRetrieval(doc)
 	
+	text = documentRetrieval(doc)
+
 	return bertAnswer(question, text)
 
 
@@ -52,18 +51,19 @@ def WikidataEN(question):
 def documentRetrieval(doc):
 
 	text = ""
-	for sent in doc.sentences:
-		for ent in sent.ents:
-			results = relationFromEntity(ent.text)
-			text = text + query2Text(ent.text, results)
-			
-			# Second direction
-			#text = text + '\n'+ '\n'
 
-			#results = relationToEntity(ent.text)
-			#text = text + query2Text(ent.text)
+	for ent in doc._.linkedEntities:
+                print("entity-label:", ent.get_label())
+                print("entity-id:",ent.get_id())
+                results = relationFromEntity(ent.get_id())
+                text = text + query2Text(ent.get_label(), results)
+                # Second direction
+                text = text + '\n'+ '\n'
+                results = relationToEntity(ent.get_id())
+                text = text + query2Text(ent.get_label(),results)
 
-			return text
+                print("summary: '",text)
+                return text
 
 
 # BERT QA
