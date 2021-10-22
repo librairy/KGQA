@@ -165,5 +165,6 @@ def query2Text(entity, results = None):
 	text = ""
 	if results != None:
 		for result in results["results"]["bindings"]:
-			text = text + entity +" has " + result["propertyLabel"]["value"].replace('\n', ' ').replace('\r', '') + ", that it is " + result["valueLabel"]["value"].replace('\n', ' ').replace('\r', '') + ". "
+			#text = text + entity +" has " + result["propertyLabel"]["value"].replace('\n', ' ').replace('\r', '') + ", that it is " + result["valueLabel"]["value"].replace('\n', ' ').replace('\r', '') + ". "
+                    text = text + " The " + result["propertyLabel"]["value"].replace('\n', ' ').replace('\r', '') + " of " + entity + " is " + result["valueLabel"]["value"].replace('\n', ' ').replace('\r', '') + ". "
 	return text
