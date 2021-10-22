@@ -1,9 +1,9 @@
 import requests
 from pprint import pprint
 
-queryURL = "http://localhost:5000/dbpedia/en"
+queryURL = "https://librairy.linkeddata.es/eqakg/dbpedia/en?text=false"
 
-questions = ["Who is the pole driver of 1992 Canadian Grand Prix?"]
+questions = ["Where was Fernando Alonso born?"]
 
 for i in questions:
     
