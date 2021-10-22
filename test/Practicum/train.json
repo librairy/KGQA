@@ -294,6 +294,12 @@
         "query": "SELECT DISTINCT ?uri WHERE { <http://dbpedia.org/resource/Drop.io> <http://dbpedia.org/property/owner> ?uri. <http://dbpedia.org/resource/Sean_Parker> <http://dbpedia.org/ontology/knownFor> ?uri . }"
     },
     {
+        "uid": "1320",
+        "question": "Who is the pole driver of 1992 Canadian Grand Prix?",
+        "verbalized_answer": "[Ayrton Senna] is the pole driver of the 1992 Canadian Grand Prix.",
+        "query": "SELECT DISTINCT ?uri WHERE { <http://dbpedia.org/resource/1992_Canadian_Grand_Prix> <http://dbpedia.org/property/poleDriver> ?uri }"
+    },
+    {
         "uid": "779",
         "question": "Count the awards given to the recepients of the Becket fund for religious liberty.",
         "verbalized_answer": "There are [12] awards of the people whose one award is Becket Fund for Religious Liberty.",
@@ -23221,7 +23227,7 @@
     },
     {
         "uid": "4774",
-        "question": "Is Serbian Titieca a doctoral student of Werner Heisenberg?",
+        "question": "Is Serbian Titieca a doctoral student of Werner Heisenberghttp://dbpedia.org/resource/Werner_Heisenberg",
         "verbalized_answer": "[Yes], Serban ieica is the doctoral student of Werner Heisenberg.",
         "query": "ASK WHERE { <http://dbpedia.org/resource/Werner_Heisenberg> <http://dbpedia.org/ontology/doctoralStudent> <http://dbpedia.org/resource/Șerban_Țițeica> }"
     },
