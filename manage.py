@@ -1,11 +1,3 @@
-# Author: Rafael Ines Guillen
-# Project: Explainable QA over KG
-# File: manage.py
-# Purpose: starts and manage the API REST 
-
-
-# Loading libraries and dependencies
-
 from flask_script import Manager
 
 from application.app import app

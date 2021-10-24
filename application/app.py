@@ -1,117 +1,79 @@
-# Author: Rafael Ines Guillen
-# Project: Explainable QA over KG
-# File: app.py
-# Purpose: questions treatment
-
-
-# Loading libraries
-
 from flask import Flask, request, abort, jsonify, send_from_directory#, session,
 from logging.handlers import RotatingFileHandler
 from application import config
 from flask_cors import CORS
 
-import datetime
-import logging
-import json
-import os
+import application.kg.DBpediaEN as dbpedia_en
+import application.kg.DBpediaES as dbpedia_es
+import application.kg.WikidataEN as wikidata_en
+import application.kg.WikidataES as wikidata_es
+import application.eqa.BertEN as bert_en
 
-
-# Initialize variables
 
 app = Flask(__name__)
 app.config.from_object(config)
 
 cors = CORS(app)
 
+dbpediaEN = dbpedia_en.DBpediaEN()
+dbpediaES = dbpedia_es.DBpediaES()
+wikidataEN = wikidata_en.WikidataEN()
+wikidataES = wikidata_es.WikidataES()
+bertEN = bert_en.BertEN()
+
+
+def decapitalize(str):
+    return str[:1].lower() + str[1:]
+
+
 @app.before_request
 def before_request():
     app.logger.info('Request with question: %s for the uri %s .', request.method, request.path)
 
 
-# Loading dependencies
-
-import application.DBpedia as DBpediaEN
-import application.DBpediaES as DBpediaES
-import application.WikidataEN as WikidataEN
-
-
-# Question part
-
-## Check question
-
-@app.route('/eqakg/question', methods=['GET'])
-def get_question():
+def handle_question(request,kg_summarizer):
     question = request.form['question']
     text = request.args.get('text')
 
     if question is None:
-        return jsonify({'error': 'question not recived.'}), 200
+        return jsonify({'error': 'question not received.'}), 200
     
-    if text != 'true':
-        return jsonify({'answer': question}), 200
+    question = decapitalize(question)
+    summary = kg_summarizer.get_summary(question)
+    answer = bertEN.get_answer(question,summary)
+    response = {}
+    response['question'] = question
+    response['answer'] = answer['value']
+    response['score'] = answer['score']
+    if text.lower() == 'true':
+        response['text'] = summary
+
     
-    return jsonify({'answer': question, 'text': 'true'}), 200
+    return jsonify(response), 200
 
 
-## DBpedia in english
-
+## English DBpedia 
 @app.route('/eqakg/dbpedia/en', methods=['GET'])
 @app.route('/eqakg/dbpedia', methods=['GET'])
-def get_debpediaEN():
-    question = request.form['question']
-    text = request.args.get('text')
+def get_dbpedia_en():
+    return handle_question(request, dbpediaEN)
 
-    if question is None:
-        return jsonify({'error': 'question not recived.'}), 200
-    
-    aux = DBpediaEN.DBpedia(question)
-    if text != 'true':
-        if aux[1] is not None:
-            return jsonify({'question': question, 'answer': aux[0], 'textLen': len(aux[1])}), 200
-        else:
-            return jsonify({'question': question, 'answer': aux[0], 'textLen': 'None'}), 200
-
-    
-    return jsonify({'question': question, 'answer': aux[0], 'text': aux[1]}), 200
-
-
-## DBpedia in spanish
-
+## Spanish DBpedia 
 @app.route('/eqakg/dbpedia/es', methods=['GET'])
-def get_debpediaES():
-    question = request.form['question']
-    text = request.args.get('text')
+def get_dbpedia_es():
+    return handle_question(request, dbpediaES)
 
-    if question is None:
-        return jsonify({'error': 'question not recived.'}), 200
-    
-    aux = DBpediaES.DBpedia(question)
-    if text != 'true':
-        return jsonify({'question': question, 'answer': aux[0]}), 200
-    
-    return jsonify({'question': question, 'answer': aux[0], 'text': aux[1]}), 200
-
-
-## Wokodata in english
-
+## English Wikidata 
 @app.route('/eqakg/wikidata/en', methods=['GET'])
 @app.route('/eqakg/wikidata', methods=['GET'])
-def get_wikidataEN():
-    question = request.form['question']
-    text = request.args.get('text')
+def get_wikidata_en():
+    return handle_question(request, wikidataEN)
 
-    if question is None:
-        return jsonify({'error': 'question not recived.'}), 200
-    
-    aux = WikidataEN.WikidataEN(question)
-    if text != 'true':
-        return jsonify({'question': question, 'answer': aux[0]}), 200
-    
-    return jsonify({'question': question, 'answer': aux[0], 'text': aux[1]}), 200
+## Spanish Wikidata 
+@app.route('/eqakg/wikidata/es', methods=['GET'])
+def get_wikidata_es():
+    return handle_question(request, wikidataES)
 
-
-# Error handler
 
 @app.errorhandler(404)
 def page_not_found(error):
