@@ -3,11 +3,11 @@ from logging.handlers import RotatingFileHandler
 from application import config
 from flask_cors import CORS
 
-import application.kg.DBpediaEN as dbpedia_en
-import application.kg.DBpediaES as dbpedia_es
-import application.kg.WikidataEN as wikidata_en
-import application.kg.WikidataES as wikidata_es
-import application.eqa.BertEN as bert_en
+import application.summary.DBpediaEN as dbpedia_en
+import application.summary.DBpediaES as dbpedia_es
+import application.summary.WikidataEN as wikidata_en
+import application.summary.WikidataES as wikidata_es
+import application.extraction.BertEN as bert_en
 
 
 app = Flask(__name__)

@@ -1,4 +1,4 @@
-import application.kg.DBpedia as dbpedia
+import application.summary.DBpedia as dbpedia
 
 
 class DBpediaES(dbpedia.DBpedia):

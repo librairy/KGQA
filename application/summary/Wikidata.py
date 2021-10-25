@@ -1,7 +1,7 @@
 import spacy
 import requests
 
-import application.kg.Summarizer as kg_summarizer
+import application.summary.Summarizer as kg_summarizer
 
 
 class Wikidata(kg_summarizer.Summarizer):

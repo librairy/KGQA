@@ -7,7 +7,7 @@ from flask import Flask
 # API boot
 
 manager = Manager(app)
-app.config['DEBUG'] = False
+app.config['DEBUG'] = True
 
 @manager.command
 @manager.option('-h', '--host', dest='host', default='0.0.0.0')

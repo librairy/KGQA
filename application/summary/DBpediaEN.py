@@ -1,8 +1,4 @@
-import spacy
-import requests
-
-import application.kg.Summarizer as kg_summarizer
-import application.kg.DBpedia as dbpedia
+import application.summary.DBpedia as dbpedia
 
 
 class DBpediaEN(dbpedia.DBpedia):

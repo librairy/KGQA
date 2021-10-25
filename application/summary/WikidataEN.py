@@ -1,4 +1,4 @@
-import application.kg.Wikidata as wikidata
+import application.summary.Wikidata as wikidata
 
 
 class WikidataEN(wikidata.Wikidata):
