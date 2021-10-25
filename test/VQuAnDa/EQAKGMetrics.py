@@ -103,5 +103,6 @@ def EQAKGMetrics(JSONroute, queryURL, csvRoute):
         f.close()
         print(counter)
 
+#queryUrl = "localhost:5000/eqakg/dbpedia/en?text=false"
 queryUrl = "https://librairy.linkeddata.es/eqakg/dbpedia/en?text=false" 
-EQAKGMetrics("train.JSON",queryUrl,"levenshtein.csv")
+EQAKGMetrics("test.json",queryUrl,"VQuanda.csv")
