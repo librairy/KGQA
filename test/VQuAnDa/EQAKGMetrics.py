@@ -6,6 +6,7 @@ import re
 import time
 import itertools
 from sacrebleu import sentence_bleu
+import multiprocessing as mp
 
 def jsonToDict(route) -> dict:
     '''
@@ -69,9 +70,21 @@ def writeResults(csvwriter, question, modelAnswerLong, obtainedAnswer, queryTime
 
         csvwriter.writerow( [question, modelAnswer, obtainedAnswer, distance, sentence_bleu(obtainedAnswer,[modelAnswer]).score, exactMatchScore(reference,candidate), queryTime, textLen, isAnswered] )
 
-def EQAKGMetrics(JSONroute, queryURL, csvRoute):
+def evaluateQuestion(i,queryURL,csvwriter):
     '''
-    Función que dado un JSON con preguntas y respuestas (asumimos que las preguntas están en la clave 'question' del JSON, y las respuestas en 'verbalized_answers'), 
+    Funcion auxiliar para paralelizar la ejecucion de consultas y escritura en csv de resultados. Realiza la consulta (midiendo el tiempo que tarda) y llama a writeResults
+    '''
+    #Para medir el tiempo que se tarda en ejecutar la consulta
+    queryStartTime = time.time()
+    jsonResponse = queryJSON(queryURL,i)
+    queryTime = round((time.time() - queryStartTime),2)
+
+    #Pasamos las respuestas a minuscula y llamamos a extractAndCompare.
+    writeResults(csvwriter, i['question'], i['verbalized_answer'].lower(),jsonResponse['answer'].lower(),queryTime,jsonResponse['textLen'])
+
+def EQAKGMetrics(pool, JSONroute, queryURL, csvRoute):
+    '''
+    Funcion que dado un JSON con preguntas y respuestas (asumimos que las preguntas están en la clave 'question' del JSON, y las respuestas en 'verbalized_answers'), 
     una url a través de la cual realizar consultas y un csv donde guardar los resultados, hace una serie de metricas:
     - Realiza las preguntas del JSON dado
     - Lo compara con la respuesta esperada y obtiene varias metricas de rendimiento (Distancia de Levenshtein, BLEU, EM,...)
@@ -85,24 +98,15 @@ def EQAKGMetrics(JSONroute, queryURL, csvRoute):
 
         #Escribimos el Header
         csvwriter.writerow( ["Question", "Answer", "Response", "Levenshtein Distance","BLEU Score","EM Score","Query Time","Text Length","Is Answered"])
-        counter = 0
 
         for i in VQuandaData:
-
-            #Para medir el tiempo que se tarda en ejecutar la consulta
-            queryStartTime = time.time()
-            jsonResponse = queryJSON(queryURL,i)
-            queryTime = round((time.time() - queryStartTime),2)
-
-            #Pasamos las respuestas a minuscula y llamamos a extractAndCompare.
-            writeResults(csvwriter, i['question'], i['verbalized_answer'].lower(),jsonResponse['answer'].lower(),queryTime,jsonResponse['textLen'])
-            counter += 1
-            if(counter % 50 == 0):
-                print("Reached question " + str(counter))
-
+            pool.apply_async(evaluateQuestion(i,queryURL,csvwriter))
+        pool.close()
+        pool.join()
         f.close()
-        print(counter)
 
-#queryUrl = "localhost:5000/eqakg/dbpedia/en?text=false"
-queryUrl = "https://librairy.linkeddata.es/eqakg/dbpedia/en?text=false" 
-EQAKGMetrics("test.json",queryUrl,"VQuanda.csv")
+if __name__ == '__main__':
+    pool = mp.Pool(mp.cpu_count())
+    queryUrl = "http://localhost:5000/eqakg/dbpedia/en?text=false"
+    #queryUrl = "https://librairy.linkeddata.es/eqakg/dbpedia/en?text=false" 
+    EQAKGMetrics(pool,"test.json",queryUrl,"results/VQuanda.csv")
