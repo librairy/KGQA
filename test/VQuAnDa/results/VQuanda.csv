@@ -1,0 +1,2 @@
+"Question";"Answer";"Response";"Levenshtein Distance";"BLEU Score";"EM Score";"Query Time";"Text Length";"Is Answered"
+"Count the number of people became famous for when Andrew Jackson was a commander ?";"8";"the notable commanders of andrew jackson is 155th infantry regiment (united states), 4th infantry regiment (united states)";"122";"0.0";"0.0";"31.08";"14626";"YES"
