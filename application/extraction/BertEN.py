@@ -10,9 +10,14 @@ class BertEN:
         print("model ready")
         
     def get_answer(self,question,context):
-        result = self.question_answerer(question=question, context=context, min_answer_len=1, max_answer_len=100)
-        print(f"Answer: '{result['answer']}', score: {round(result['score'], 4)}, start: {result['start']}, end: {result['end']}")
-        response = {}
-        response['value']=result['answer']
-        response['score']=round(result['score'], 4)
+        size = len(context.split(" "))
+        print("size:",size)
+        response = { "value":"", "score":0}
+        if (size < 5000):
+            result = self.question_answerer(question=question, context=context, min_answer_len=1, max_answer_len=100)
+            print(f"Answer: '{result['answer']}', score: {round(result['score'], 4)}, start: {result['start']}, end: {result['end']}")
+            response['value']=result['answer']
+            response['score']=round(result['score'], 4)
+        else:
+            print("Max length exceeded:",question,"[",size,"]")
         return response
