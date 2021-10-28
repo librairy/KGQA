@@ -46,9 +46,9 @@ def handle_question(request,kg_summarizer):
     response['answer'] = answer['value']
     response['score'] = answer['score']
     if text.lower() == 'true':
-        response['text'] = summary
+        response['text'] = answer['summary']
     else:
-        response['textLen'] = len(summary) 
+        response['textLen'] = len(answer['summary']) 
     
     return jsonify(response), 200
 
