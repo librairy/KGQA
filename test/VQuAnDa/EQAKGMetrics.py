@@ -45,9 +45,9 @@ def exactMatchScore(string1,string2):
         total+=1
     return matches/total
 
-def writeResults(csvwriter, question, modelAnswerLong, obtainedAnswer, queryTime, textLen):  
+def writeResults(question, modelAnswerLong, obtainedAnswer, queryTime, textLen):  
     '''
-    Funcion auxiliar que extrae la respuesta que se espera, hace la distancia de levenshtein y escribe en el csv:
+    Funcion auxiliar que extrae la respuesta que se espera, hace la distancia de levenshtein y añade a la lista de filas:
     -Pregunta
     -Respuesta modelo y nuestra respuesta
     -Distancia de levenshtein entre ambas respuestas
@@ -68,9 +68,10 @@ def writeResults(csvwriter, question, modelAnswerLong, obtainedAnswer, queryTime
             reference = modelAnswer.split()
             candidate = obtainedAnswer.split()
 
-        csvwriter.writerow( [question, modelAnswer, obtainedAnswer, distance, sentence_bleu(obtainedAnswer,[modelAnswer]).score, exactMatchScore(reference,candidate), queryTime, textLen, isAnswered] )
+        rows.append( [question, modelAnswer, obtainedAnswer, distance, sentence_bleu(obtainedAnswer,[modelAnswer]).score, exactMatchScore(reference,candidate), queryTime, textLen, isAnswered] )
 
-def evaluateQuestion(i,queryURL,csvwriter):
+
+def evaluateQuestion(i,queryURL):
     '''
     Funcion auxiliar para paralelizar la ejecucion de consultas y escritura en csv de resultados. Realiza la consulta (midiendo el tiempo que tarda) y llama a writeResults
     '''
@@ -80,7 +81,7 @@ def evaluateQuestion(i,queryURL,csvwriter):
     queryTime = round((time.time() - queryStartTime),2)
 
     #Pasamos las respuestas a minuscula y llamamos a extractAndCompare.
-    writeResults(csvwriter, i['question'], i['verbalized_answer'].lower(),jsonResponse['answer'].lower(),queryTime,jsonResponse['textLen'])
+    writeResults(i['question'], i['verbalized_answer'].lower(),jsonResponse['answer'].lower(),queryTime,jsonResponse['textLen'])
 
 def EQAKGMetrics(pool, JSONroute, queryURL, csvRoute):
     '''
@@ -88,7 +89,7 @@ def EQAKGMetrics(pool, JSONroute, queryURL, csvRoute):
     una url a través de la cual realizar consultas y un csv donde guardar los resultados, hace una serie de metricas:
     - Realiza las preguntas del JSON dado
     - Lo compara con la respuesta esperada y obtiene varias metricas de rendimiento (Distancia de Levenshtein, BLEU, EM,...)
-    - Guarda en el CSV la pregunta, la respuesta esperada, la respuesta obtenida y estas metricas
+    - Escribe en el CSV la pregunta, la respuesta esperada, la respuesta obtenida y estas metricas
     '''
     VQuandaData = jsonToDict(JSONroute)
 
@@ -98,15 +99,27 @@ def EQAKGMetrics(pool, JSONroute, queryURL, csvRoute):
 
         #Escribimos el Header
         csvwriter.writerow( ["Question", "Answer", "Response", "Levenshtein Distance","BLEU Score","EM Score","Query Time","Text Length","Is Answered"])
-
+        count = 0
         for i in VQuandaData:
-            pool.apply_async(evaluateQuestion(i,queryURL,csvwriter))
+            #Paraleliza con metodos asincronos
+            pool.apply_async(evaluateQuestion, (i,queryURL))
+            count += 1
+            #Escribimos en el csv cada 24 lineas y limpiamos la lista de columnas una vez lo guardamos en el csv
+            if(count % 24 == 0):
+                csvwriter.writerows(rows)
+                rows[:] = []
         pool.close()
         pool.join()
+        csv.writerows(rows)
         f.close()
 
+#Creamos el array donde guardaremos las columnas como variable global para que sea accesible por los multiprocesos
+rows = []
 if __name__ == '__main__':
-    pool = mp.Pool(mp.cpu_count())
-    queryUrl = "http://localhost:5000/eqakg/dbpedia/en?text=false"
-    #queryUrl = "https://librairy.linkeddata.es/eqakg/dbpedia/en?text=false" 
-    EQAKGMetrics(pool,"test.json",queryUrl,"results/VQuanda.csv")
+    with mp.Manager() as manager:
+        rows = manager.list()
+        #pool = mp.Pool(mp.cpu_count())
+        pool = mp.Pool(4)
+        queryUrl = "http://localhost:5000/eqakg/dbpedia/en?text=false"
+        #queryUrl = "https://librairy.linkeddata.es/eqakg/dbpedia/en?text=false" 
+        EQAKGMetrics(pool,"test.json",queryUrl,"results/VQuanda.csv")
