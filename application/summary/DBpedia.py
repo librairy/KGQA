@@ -23,7 +23,7 @@ class DBpedia(kg_summarizer.Summarizer):
         text = ""
         
         for entity in doc.spans['dbpedia_spotlight']:
-            print("Entity: ", entity, entity.kb_id_)
+            #print("Entity: ", entity, entity.kb_id_)
             properties = {}
             
             fromRelations = self.get_from_properties(entity.kb_id_)

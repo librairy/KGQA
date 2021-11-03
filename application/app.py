@@ -50,6 +50,9 @@ def handle_question(request,kg_summarizer):
     else:
         response['textLen'] = len(answer['summary']) 
     
+    print("Question: ", question)
+    print("Answer: ", response['answer'])
+    
     return jsonify(response), 200
 
 
