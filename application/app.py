@@ -8,6 +8,8 @@ import application.summary.DBpediaES as dbpedia_es
 import application.summary.WikidataEN as wikidata_en
 import application.summary.WikidataES as wikidata_es
 import application.extraction.BertEN as bert_en
+import application.response.AnswererEN as answerer_en
+
 
 
 app = Flask(__name__)
@@ -20,6 +22,7 @@ dbpediaES = dbpedia_es.DBpediaES()
 wikidataEN = wikidata_en.WikidataEN()
 wikidataES = wikidata_es.WikidataES()
 bertEN = bert_en.BertEN()
+answererEN = answerer_en.AnswererEN()
 
 
 def decapitalize(str):
@@ -31,19 +34,27 @@ def before_request():
     app.logger.info('Request with question: %s for the uri %s .', request.method, request.path)
 
 
-def handle_question(request,kg_summarizer):
+def handle_question(request,kg_summarizer,extractive_qa,response_builder):
     question = request.form['question']
     text = request.args.get('text')
 
     if question is None:
         return jsonify({'error': 'question not received.'}), 200
     
+    # Compose Summary
     question = decapitalize(question)
     summary = kg_summarizer.get_summary(question)
-    answer = bertEN.get_answer(question,summary)
+    
+    # Extract Answer   
+    answer = extractive_qa.get_answer(question,summary)
+    
+    # Create Reponse
+    value = response_builder.get_response(question, answer['value'])
+        
+    # Return value
     response = {}
     response['question'] = question
-    response['answer'] = answer['value']
+    response['answer'] = value
     response['score'] = answer['score']
     if text.lower() == 'true':
         response['text'] = answer['summary']
@@ -57,23 +68,23 @@ def handle_question(request,kg_summarizer):
 @app.route('/eqakg/dbpedia/en', methods=['GET'])
 @app.route('/eqakg/dbpedia', methods=['GET'])
 def get_dbpedia_en():
-    return handle_question(request, dbpediaEN)
+    return handle_question(request, dbpediaEN, bertEN, answererEN)
 
 ## Spanish DBpedia 
 @app.route('/eqakg/dbpedia/es', methods=['GET'])
 def get_dbpedia_es():
-    return handle_question(request, dbpediaES)
+    return handle_question(request, dbpediaES, bertEN, answererEN)
 
 ## English Wikidata 
-@app.route('/eqakg/wikidata/en', methods=['GET'])
-@app.route('/eqakg/wikidata', methods=['GET'])
-def get_wikidata_en():
-    return handle_question(request, wikidataEN)
+#@app.route('/eqakg/wikidata/en', methods=['GET'])
+#@app.route('/eqakg/wikidata', methods=['GET'])
+#def get_wikidata_en():
+#    return handle_question(request, wikidataEN)
 
 ## Spanish Wikidata 
-@app.route('/eqakg/wikidata/es', methods=['GET'])
-def get_wikidata_es():
-    return handle_question(request, wikidataES)
+#@app.route('/eqakg/wikidata/es', methods=['GET'])
+#def get_wikidata_es():
+#    return handle_question(request, wikidataES)
 
 
 @app.errorhandler(404)
