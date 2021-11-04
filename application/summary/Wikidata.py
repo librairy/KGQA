@@ -29,7 +29,7 @@ class Wikidata(kg_summarizer.Summarizer):
         
         for entity in doc._.linkedEntities:
             properties = {}
-            print("Entity:",entity)
+            #print("Entity:",entity)
             
             fromRelations = self.get_from_properties(entity.get_id())
             
@@ -49,7 +49,7 @@ class Wikidata(kg_summarizer.Summarizer):
     
 
     def get_from_properties(self,entity):
-        print("Entity:", entity)
+        #print("Entity:", entity)
         query = """SELECT ?propertyLabel
                     (GROUP_CONCAT(DISTINCT ?valueLabel;separator=", ") AS ?value)
                 WHERE{
