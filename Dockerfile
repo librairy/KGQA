@@ -12,5 +12,8 @@ COPY application/ /app/application/
 
 WORKDIR /app
 
+RUN wget https://delicias.dia.fi.upm.es/nextcloud/index.php/s/qNoezAoNSWnzzto/download -O /app/resources.zip
+RUN unzip resources.zip 
+
 ENTRYPOINT ["python3"]
 CMD ["manage.py","runprodserver"]

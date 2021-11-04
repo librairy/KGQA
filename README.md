@@ -9,7 +9,7 @@
 
 ## Basic Overview
 
-Web service that extracts natural language answers from a knowledge base based on natural language questions. 
+Web service that creates natural language answers from natural language questions using as knowledge base a combination of structured (KG) and unstructured (documents) data. 
 
 ## Quick Start (based on a Docker environment)
 
@@ -78,6 +78,7 @@ If you prefer to start the service via a Python environment instead of using Doc
     ```
     pip install -r requirement.txt
     ```
+1. Download and unzip the following [file](https://delicias.dia.fi.upm.es/nextcloud/index.php/s/qNoezAoNSWnzzto) in the project directory. It contains the models used by the service. The folder 'resources_dir' is created.
 1. Run the service (`runserver` for development mode and `runprodserver` for production mode ):
     ```
     python manage.py runserver

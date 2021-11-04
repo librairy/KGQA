@@ -37,6 +37,7 @@ def before_request():
 def handle_question(request,kg_summarizer,extractive_qa,response_builder):
     question = request.form['question']
     text = request.args.get('text')
+    print("Making question:",question,"..")
 
     if question is None:
         return jsonify({'error': 'question not received.'}), 200
@@ -61,8 +62,7 @@ def handle_question(request,kg_summarizer,extractive_qa,response_builder):
     else:
         response['textLen'] = len(answer['summary']) 
     
-    print("Question: ", question)
-    print("Answer: ", response['answer'])
+    print("Response: ", response['answer'])
     
     return jsonify(response), 200
 

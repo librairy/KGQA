@@ -17,13 +17,15 @@ class AnswererEN:
         
     def get_response(self, question, answer):
         category = self.classifier.get_category(question)
+        print("Category:",category['category'])
+        print("Type:",category['type'])
         response = answer
         if (category['category'] == 'boolean'):
             if not answer:
                 response = False
             else:
                 response = True
-        elif (category['type'] == 'number'):
+        elif (len(category['type']) > 0) and (category['type'][0] == 'number'):
             if not answer:
                 response = 0
             else:
