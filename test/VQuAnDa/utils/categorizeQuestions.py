@@ -1,17 +1,6 @@
 import csv
-import re
-from levenshteinDistanceJSON import jsonToDict
-
-def nthOfChar(string, char, n):
-    '''
-    Funcion auxiliar que extrae un substring hasta el n-esimo caracter
-    '''
-    regex=r'^((?:[^%c]*%c){%d}[^%c]*)%c(.*)' % (char,char,n-1,char,char)
-    regexGroups = re.match(regex, string)
-    if regexGroups is not None:
-        return regexGroups.group(1)
-    else:
-        return ""
+from utils import jsonToDict
+from utils import nthOfChar
 
 def extractNthWords(jsonRoute, questionList, n):
     '''

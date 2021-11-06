@@ -124,7 +124,7 @@ def EQAKGMetrics(pool, rows, counter, JSONroute, queryURL, csvRoute):
 
     #Escribimos lo que quede
     with open(csvRoute, 'a', newline='', encoding="utf-8") as f:
-        (pd.DataFrame.from_records(rows, columns=header)).to_csv(f,header=False, sep=';', quoting=csv.QUOTE_ALL)
+        (pd.DataFrame.from_records(rows, columns=header)).to_csv(f,header=False, index=False, sep=';', quoting=csv.QUOTE_ALL)
         f.close()
 
 #Creamos el array donde guardaremos las columnas y el contador como variables globales para que sean accesibles por los multiprocesos
