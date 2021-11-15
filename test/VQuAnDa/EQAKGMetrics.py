@@ -9,6 +9,7 @@ from sacrebleu import sentence_bleu
 import multiprocessing as mp
 import os
 import pandas as pd
+import nltk
 
 def jsonToDict(route) -> dict:
     '''
@@ -66,11 +67,11 @@ def writeResults(csvRoute, rows, counter, question, modelAnswerLong, obtainedAns
             isAnswered = "NO" 
         distance = "None"
         if obtainedAnswer is not None:
-            distance = enchant.utils.levenshtein(modelAnswer,obtainedAnswer)
+            distance = enchant.utils.levenshtein(modelAnswer,obtainedAnswer)*100
             reference = modelAnswer.split()
             candidate = obtainedAnswer.split()
-
-            rows.append( [question, modelAnswer, obtainedAnswer, distance, sentence_bleu(obtainedAnswer,[modelAnswer]).score, exactMatchScore(reference,candidate), queryTime, textLen, isAnswered] )
+            
+            rows.append( [question, modelAnswer, obtainedAnswer, distance, sentence_bleu(obtainedAnswer,[modelAnswer]).score, nltk.translate.bleu_score.sentence_bleu([modelAnswer], obtainedAnswer)*100, nltk.translate.meteor_score(modelAnswer, obtainedAnswer), exactMatchScore(reference,candidate), queryTime, textLen, isAnswered] )
             counter.value += 1
             #print("Contador: ", counter.value)
 
@@ -130,7 +131,7 @@ def EQAKGMetrics(pool, rows, counter, JSONroute, queryURL, csvRoute):
 #Creamos el array donde guardaremos las columnas y el contador como variables globales para que sean accesibles por los multiprocesos
 rows = None
 counter = None
-header = ["Question", "Answer", "Response", "Levenshtein Distance","BLEU Score","EM Score","Query Time","Text Length","Is Answered"]
+header = ["Question", "Answer", "Response", "Levenshtein Distance","BLEU Score (SacreBleu)","BLEU Score (ntlk)","Meteor Score","EM Score","Query Time","Text Length","Is Answered"]
 
 if __name__ == '__main__':
 
