@@ -10,6 +10,7 @@ import multiprocessing as mp
 import os
 import pandas as pd
 import nltk
+from pprint import pprint
 
 def jsonToDict(route) -> dict:
     '''
@@ -38,22 +39,21 @@ def queryJSON(queryURL, json):
 
 def exactMatchScore(string1,string2):
     '''
-    Funcion auxiliar que incorpora la medida EM (exact match)
+    Funcion auxiliar que incorpora la medida EM (Exact Match). 1 si ambas cadenas son iguales, 0 e.o.c.
+    Para listas de cadenas, comprueba si ambas contienen los mismos elementos (no importa el orden)
     '''
-    matches = 0
-    total = 0
-    for (x,y) in itertools.zip_longest(string1,string2):
-        if(x == y):
-            matches+=1
-        total+=1
-    return matches/total
+    if ("," in string1) and ("," in string2):
+        string1 = string1.split(",")
+        string2 = string2.split(",")
+        return int((len(string1) == len(string2)) and (set(string1) == set(string2)))
+    return int(string1 == string2)
 
 def writeResults(csvRoute, rows, counter, question, modelAnswerLong, obtainedAnswer, queryTime, textLen):  
     '''
     Funcion auxiliar que extrae la respuesta que se espera, hace la distancia de levenshtein y añade a la lista de filas:
     -Pregunta
     -Respuesta modelo y nuestra respuesta
-    -Distancia de levenshtein entre ambas respuestas
+    -Métricas con respecto a la respuesta modelo (Distancia Levenshtein, BLEU, EM, Meteor...)
     -Tiempo que ha tardado en ejecutarse la consulta
     -Longitud del texto del que se ha obtenido nuestra respuesta
     -Si la pregunta dada tiene respuesta modelo o no

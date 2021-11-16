@@ -22,14 +22,14 @@ class AnswererEN:
         response = answer
         if (category['category'] == 'boolean'):
             if not answer:
-                response = False
+                response = "False"
             else:
-                response = True
+                response = "True"
         elif (len(category['type']) > 0) and (category['type'][0] == 'number'):
             if not answer:
-                response = 0
+                response = str(0)
             else:
-                response = len(answer.split(","))
+                response = str(len(answer.split(",")))
         return response
         
         
