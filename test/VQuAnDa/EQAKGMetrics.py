@@ -71,7 +71,7 @@ def writeResults(csvRoute, rows, counter, question, modelAnswerLong, obtainedAns
             reference = modelAnswer.split()
             candidate = obtainedAnswer.split()
             
-            rows.append( [question, modelAnswer, obtainedAnswer, distance, sentence_bleu(obtainedAnswer,[modelAnswer]).score, nltk.translate.bleu_score.sentence_bleu([modelAnswer], obtainedAnswer)*100, nltk.translate.meteor_score(modelAnswer, obtainedAnswer), exactMatchScore(reference,candidate), queryTime, textLen, isAnswered] )
+            rows.append( [question, modelAnswer, obtainedAnswer, distance, sentence_bleu(obtainedAnswer,[modelAnswer]).score, nltk.translate.bleu_score.sentence_bleu([modelAnswer], obtainedAnswer)*100, nltk.translate.meteor_score.single_meteor_score([modelAnswer], [obtainedAnswer]), exactMatchScore(reference,candidate), queryTime, textLen, isAnswered] )
             counter.value += 1
             #print("Contador: ", counter.value)
 
