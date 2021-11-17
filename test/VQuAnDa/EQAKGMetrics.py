@@ -14,7 +14,7 @@ from pprint import pprint
 
 def jsonToDict(route) -> dict:
     '''
-    Funcion auxiliar que dada la ruta de un json, lo abre y lo convierte a diccionario
+    Funcion auxiliar que dada la ruta de un json, lo abre y lo convierte a lista de diccionarios
     '''
     with open(route, encoding="utf-8") as f:
         return json.load(f)
