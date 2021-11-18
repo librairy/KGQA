@@ -113,8 +113,9 @@ def EQAKGMetrics(pool, rows, counter, JSONroute, queryURL, csvRoute):
     - Escribe en el CSV la pregunta, la respuesta esperada, la respuesta obtenida y estas metricas
     '''
     vanillaData = JSONLineToDict(JSONroute)
-    vanillaData[:] = [value for counter, value in enumerate(vanillaData) if counter <= 999]
+    vanillaData[:] = [value for counter, value in enumerate(vanillaData) if counter > 3992 and counter <= 7500]
 
+    '''
     #Escribimos el Header
     with open(csvRoute,'w', newline='', encoding="utf-8") as f:
 
@@ -122,6 +123,7 @@ def EQAKGMetrics(pool, rows, counter, JSONroute, queryURL, csvRoute):
         global header
         csvwriter.writerow(header)
         f.close()
+    '''
         
     for i in vanillaData:
         #Paraleliza con metodos asincronos

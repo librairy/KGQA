@@ -27,12 +27,10 @@ def findValueIndex(dictList, key, value):
 dictList = JSONLineToDict("Vanilla_Dataset_Test.json")
 print(len(dictList))
 
+#df = pd.read_csv("VANiLLA.csv", 'r', encoding="utf-8")
+#print(df.iloc[-1,1])
 
-dictList[:] = [value for counter, value in enumerate(dictList) if counter >= 1000 and counter < 2000]
-print(len(dictList))
+print(findValueIndex(dictList, 'question', "what was carlos alberto arroyo del río's place of death"))
 
-for i in dictList:
-    print(i['question'])
-
-#pprint(JSONLineToDict("Vanilla_Dataset_Test.json","test.json"))
+#pprint(JSONLineToDict(""Vanilla_Dataset_Test.json"","test.json"))
 
