@@ -24,13 +24,17 @@ def findValueIndex(dictList, key, value):
             return i
     return -1
 
+def extractLatestQuestionCSV(csvRoute):
+    df = pd.read_csv(csvRoute, sep=";")
+    return df.iloc[-1,0]
+
+
 dictList = JSONLineToDict("Vanilla_Dataset_Test.json")
-print(len(dictList))
+#pprint(dictList)
+#print(len(dictList))
+dictList[:] = [value for counter, value in enumerate(dictList) if counter > 2999]
+#print(len(dictList))
+question = extractLatestQuestionCSV("VANiLLA.csv")
+#print(question)
 
-#df = pd.read_csv("VANiLLA.csv", 'r', encoding="utf-8")
-#print(df.iloc[-1,1])
-
-print(findValueIndex(dictList, 'question', "what was carlos alberto arroyo del río's place of death"))
-
-#pprint(JSONLineToDict(""Vanilla_Dataset_Test.json"","test.json"))
-
+print("Index:", findValueIndex(dictList, 'question', question))
