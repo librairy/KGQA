@@ -76,7 +76,7 @@ If you prefer to start the service via a Python environment instead of using Doc
     ```    
 1. Install the dependencies:
     ```
-    pip install -r requirement.txt
+    pip install -r requirements.txt
     ```
 1. Download and unzip the following [file](https://delicias.dia.fi.upm.es/nextcloud/index.php/s/Jp5FeoBn57c8k4M) in the project directory. It contains the models used by the service. The folder 'resources_dir' is created.
 1. Run the service (`runserver` for development mode and `runprodserver` for production mode ):
