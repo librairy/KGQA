@@ -32,6 +32,7 @@ def do_question(question_info):
   start = timer()
   question_txt = question_info['question']+"?"
   if (len(question_info['answers']) < 1 ):
+    print("EMPTY answer")
     return {}
   answer_txt = ",".join(question_info['answers']).lower()
   print("->",question_txt, answer_txt)
@@ -47,15 +48,16 @@ def do_question(question_info):
       'answer':answer_txt,
       'response': response_txt,
       'levenshtein': nltk.edit_distance(answer_txt, response_txt),
-      'sacre_bleu': sentence_bleu(response_txt,[answer_txt]).score,
-      'bleu': nltk.translate.bleu_score.sentence_bleu([answer_txt], response_txt),
-      'meteor': nltk.translate.meteor_score.single_meteor_score([answer_txt], [response_txt]),
+      'sacre_bleu': sentence_bleu(response_txt,answer_txt.split(" ")).score,
+      'bleu': nltk.translate.bleu_score.sentence_bleu([answer_txt.split(" ")], response_txt.split(" ")),
+      'meteor': nltk.translate.meteor_score.single_meteor_score(answer_txt.split(" "), response_txt.split(" ")),
       'em': exactMatchScore(answer_txt,response_txt),
       'time': end-start,
       'length': len(response_txt),
       'answered': len(answer_txt)>0,
       'text': response_json['text']
   }
+  print("<-",result)
   return result
 
 
@@ -78,7 +80,8 @@ csv_fields = ['Question','Answer','Response','Levenshtein Distance','BLEU Score 
 if __name__ == '__main__':
  
  for key in fq_dataset:
-     pool = Pool(4)
+     pool_size = 4    
+     pool = Pool(pool_size)
      data = requests.get(fq_dataset[key])
      data_json = json.loads(data.text)
      questions = data_json['questions']
@@ -98,7 +101,7 @@ if __name__ == '__main__':
 
       min = 0
       max = 0
-      incr = 2
+      incr = pool_size
       counter = 0    
 
       while(max < len(questions)):
@@ -109,12 +112,11 @@ if __name__ == '__main__':
        responses = pool.map(do_question, questions[min:max])
        print("[",datetime.now(),"]","writing",len(responses)," responses...")
        try:
-        rows = [ ["\""+result['question']+"\"",result['answer'],"\""+result['response']+"\"",result['levenshtein'],result['sacre_bleu'],result['bleu'],result['meteor'],result['em'],result['time'],result['length'],result['answered'],"\""+result['text']+"\""] for result in responses if len(result)>0 ]
+        rows = [ [result['question'],result['answer'],result['response'],result['levenshtein'],result['sacre_bleu'],result['bleu'],result['meteor'],result['em'],result['time'],result['length'],result['answered'],result['text']] for result in responses if len(result)>0 ]
         csvwriter.writerows(rows)
        except e:
         print("Write error. Wait for 5secs..",e)        
        counter=max
-       break
     
         
 
