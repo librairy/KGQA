@@ -31,6 +31,8 @@ def exactMatchScore(string1,string2):
 def do_question(question_info):
   start = timer()
   question_txt = question_info['question']+"?"
+  if (len(question_info['answers']) < 1 ):
+    return {}
   answer_txt = ",".join(question_info['answers']).lower()
   print("->",question_txt, answer_txt)
   response = requests.get("https://librairy.linkeddata.es/eqakg/dbpedia", params={ 'text': True}, data={'question':question_txt})
