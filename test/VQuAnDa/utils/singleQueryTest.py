@@ -1,9 +1,9 @@
 import requests
 from pprint import pprint
 
-queryURL = "https://librairy.linkeddata.es/eqakg/dbpedia/en?text=false"
+queryURL = "http://localhost:5000/eqakg/dbpedia/en?text=false"
 
-questions = ["Where was Fernando Alonso born?","How many ingedients are required to make the Ragout Fin?"]
+questions = ["What tonality is Paganini's Caprice 24 written in?"]
 
 for i in questions:
     

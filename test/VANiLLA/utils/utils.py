@@ -32,7 +32,7 @@ def extractLatestQuestionCSV(csvRoute):
 dictList = JSONLineToDict("Vanilla_Dataset_Test.json")
 #pprint(dictList)
 #print(len(dictList))
-dictList[:] = [value for counter, value in enumerate(dictList) if counter > 2999]
+#dictList[:] = [value for counter, value in enumerate(dictList) if counter > 10635]
 #print(len(dictList))
 question = extractLatestQuestionCSV("VANiLLA.csv")
 #print(question)
