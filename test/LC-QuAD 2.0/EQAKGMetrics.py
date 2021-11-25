@@ -12,6 +12,13 @@ import pandas as pd
 import nltk
 from pprint import pprint
 
+def csvToDict(route) -> dict:
+    '''
+    Funcion auxiliar que dada la ruta de un csv, lo abre y lo convierte a lista de diccionarios
+    '''
+    df = pd.read_csv(route, sep=";")
+    return df.to_dict('records')
+
 def jsonToDict(route) -> dict:
     '''
     Funcion auxiliar que dada la ruta de un json, lo abre y lo convierte a lista de diccionarios
@@ -70,14 +77,16 @@ def writeResults(csvRoute, rows, counter, question, modelAnswer, obtainedAnswer,
     -Tiempo que ha tardado en ejecutarse la consulta
     -Longitud del texto del que se ha obtenido nuestra respuesta
     '''    
-    #La respuesta esperada se obtiene con una expresion regular (sacar texto entre corchetes)
-    
+    isAnswered = "YES"
+    if modelAnswer == "":
+        isAnswered = "NO" 
+
     if obtainedAnswer is not None:
         distance = enchant.utils.levenshtein(modelAnswer,obtainedAnswer)*100
         reference = modelAnswer.split()
         candidate = obtainedAnswer.split()
             
-        rows.append( [question, modelAnswer, obtainedAnswer, distance, sentence_bleu(obtainedAnswer,[modelAnswer]).score, nltk.translate.bleu_score.sentence_bleu([modelAnswer], obtainedAnswer)*100, nltk.translate.meteor_score.single_meteor_score([modelAnswer], [obtainedAnswer]), exactMatchScore(reference,candidate), queryTime, textLen] )
+        rows.append( [question, modelAnswer, obtainedAnswer, distance, sentence_bleu(obtainedAnswer,[modelAnswer]).score, nltk.translate.bleu_score.sentence_bleu([modelAnswer], obtainedAnswer)*100, nltk.translate.meteor_score.single_meteor_score([modelAnswer], [obtainedAnswer]), exactMatchScore(reference,candidate), queryTime, textLen, isAnswered] )
         counter.value += 1
         #print("Contador: ", counter.value)
 
@@ -102,7 +111,7 @@ def evaluateQuestion(csvRoute, i, rows, counter, queryURL):
     queryTime = round((time.time() - queryStartTime),2)
 
     #Pasamos las respuestas a minuscula y llamamos a extractAndCompare.
-    writeResults(csvRoute, rows, counter, i['question'], i['answer'].lower(),jsonResponse['answer'].lower(),queryTime,jsonResponse['textLen'])
+    writeResults(csvRoute, rows, counter, i['Question'], i['Entities/Answer'].lower(),jsonResponse['answer'].lower(),queryTime,jsonResponse['textLen'])
 
 def EQAKGMetrics(pool, rows, counter, JSONroute, queryURL, csvRoute):
     '''
@@ -112,10 +121,9 @@ def EQAKGMetrics(pool, rows, counter, JSONroute, queryURL, csvRoute):
     - Lo compara con la respuesta esperada y obtiene varias metricas de rendimiento (Distancia de Levenshtein, BLEU, EM,...)
     - Escribe en el CSV la pregunta, la respuesta esperada, la respuesta obtenida y estas metricas
     '''
-    vanillaData = JSONLineToDict(JSONroute)
-    vanillaData[:] = [value for counter, value in enumerate(vanillaData) if counter > 19270 and counter < 20000]
+    LCQuadData = csvToDict(JSONroute)
+    #LCQuadData[:] = [value for counter, value in enumerate(vanillaData) if counter > x]
 
-    '''
     #Escribimos el Header
     with open(csvRoute,'w', newline='', encoding="utf-8") as f:
 
@@ -123,9 +131,8 @@ def EQAKGMetrics(pool, rows, counter, JSONroute, queryURL, csvRoute):
         global header
         csvwriter.writerow(header)
         f.close()
-    '''
         
-    for i in vanillaData:
+    for i in LCQuadData:
         #Paraleliza con metodos asincronos
         pool.apply_async(evaluateQuestion, (csvRoute,i,rows,counter,queryURL))
 
@@ -140,7 +147,7 @@ def EQAKGMetrics(pool, rows, counter, JSONroute, queryURL, csvRoute):
 #Creamos el array donde guardaremos las columnas y el contador como variables globales para que sean accesibles por los multiprocesos
 rows = None
 counter = None
-header = ["Question", "Answer", "Response", "Levenshtein Distance","BLEU Score (SacreBleu)","BLEU Score (ntlk)","Meteor Score","EM Score","Query Time","Text Length"]
+header = ["Question", "Answer", "Response", "Levenshtein Distance","BLEU Score (SacreBleu)","BLEU Score (ntlk)","Meteor Score","EM Score","Query Time","Text Length","Is Answered"]
 
 if __name__ == '__main__':
 
@@ -154,4 +161,4 @@ if __name__ == '__main__':
         queryUrl = "http://localhost:5000/eqakg/dbpedia/en?text=false"
         #queryUrl = "https://librairy.linkeddata.es/eqakg/dbpedia/en?text=false" 
 
-        EQAKGMetrics(pool,rows,counter,"Vanilla_Dataset_Test.json",queryUrl,"results/VANiLLA.csv")
+        EQAKGMetrics(pool,rows,counter,"Entities.csv",queryUrl,"results/LC-Quad_2.csv")

@@ -17,16 +17,7 @@ def QIDtoEntity(QIDList,entityList):
         response = urlopen(jsonURL)
         jsonEntityData = json.loads(response.read())
         entityList.append(jsonEntityData["entities"][i]["labels"]["en"]["value"])
-        
-def recursive_items(dictionary):
-    for key, value in dictionary.items():
-        if type(value) is dict:
-            yield (key, value)
-            yield from recursive_items(value)
-        else:
-            yield (key, value)
-
-
+    
 url = "http://query.wikidata.org/sparql"
 query = [
 "SELECT ?answer WHERE { wd:Q242542 wdt:P20 ?answer . ?answer wdt:P1376 wd:Q110888}"
@@ -55,24 +46,5 @@ for i in query:
             print(j[queriedValue]['value'].rsplit('/', 1)[-1])
         else:
             print(j[queriedValue]['value'])
-
-
-a = {
-    'a': {"b": {"c": 2, 
-              "d": 4}, 
-          "e": {"f": 6}
-        }
-
-}
-
-
-for key, value in recursive_items(a):
-    if (key == "b"):
-        print(key, value)
-
-
-for k, v in a.items():
-    for k1, v1 in v.items():
-        print(k1)
 
 #QIDtoEntity(["Q42493"],[""])
