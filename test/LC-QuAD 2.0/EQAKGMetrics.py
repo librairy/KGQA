@@ -43,7 +43,7 @@ def queryJSON(queryURL, json):
     '''
     Funcion auxiliar que dado un JSON con una pregunta, realiza una consulta (con esta pregunta) a una URL
     '''
-    question = json['question']
+    question = json['Question']
     files = {
         'question': (None, question),
     }
@@ -91,7 +91,7 @@ def writeResults(csvRoute, rows, counter, question, modelAnswer, obtainedAnswer,
         #print("Contador: ", counter.value)
 
         #Escribimos cuando el valor del contador llegue a 24
-        if(counter.value != 0 and counter.value % 24 == 0):
+        if(counter.value != 0 and counter.value % 6 == 0):
             #print("Escribiendo. Contador: ", counter.value)
             with open(csvRoute, 'a', newline='', encoding="utf-8") as f:
                 (pd.DataFrame.from_records(rows, columns=header)).to_csv(f, header=False, index=False, sep=';', quoting=csv.QUOTE_ALL)
@@ -161,4 +161,4 @@ if __name__ == '__main__':
         queryUrl = "http://localhost:5000/eqakg/dbpedia/en?text=false"
         #queryUrl = "https://librairy.linkeddata.es/eqakg/dbpedia/en?text=false" 
 
-        EQAKGMetrics(pool,rows,counter,"Entities.csv",queryUrl,"results/LC-Quad_2.csv")
+        EQAKGMetrics(pool,rows,counter,"LC-Quad_Dataset.csv",queryUrl,"results/LC-Quad.csv")

@@ -29,7 +29,7 @@ class AnswererEN:
             if not answer:
                 response = str(0)
             else:
-                if (type(answer) != int):
+                if not ((answer.replace('.', '', 1)).isdigit()):
                     response = str(len(answer.split(",")))
         return response
         

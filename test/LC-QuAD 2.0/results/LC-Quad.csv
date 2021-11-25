@@ -1,0 +1,7 @@
+"Question";"Answer";"Response";"Levenshtein Distance";"BLEU Score (SacreBleu)";"BLEU Score (ntlk)";"Meteor Score";"EM Score";"Query Time";"Text Length";"Is Answered"
+"What is population of Somalia that is point in time is 2009-0-0 ?";"9380854";"15893219";"700";"0.0";"7.711523862191632e-153";"0.0";"0";"23.43";"404";"YES"
+"What is population of Clermont-Ferrand that is point in time is 2013-1-1 ?";"141463";"2415";"400";"0.0";"5.780789590099596e-153";"0.0";"0";"40.15";"473";"YES"
+"What is lakes on river of Lake Winnipeg ?";"nelson river";"assiniboine river";"900";"49.99999999999999";"34.31501915902152";"0.0";"0";"81.94";"564";"YES"
+"Give me mode of transport that contains the word vehicle in their name";"motor vehicle, electric vehicle";"truck & bus transportation";"2700";"0.0";"5.278753436406651e-153";"0.0";"0";"95.14";"540";"YES"
+"what is the end time for Jonathan Swift has residence as Whitehaven ?";"1671-01-01t00:00:00z";"death";"1900";"0.0";"6.065720248837714e-231";"0.0";"0";"106.85";"576";"YES"
+"what is the for work for Danny Elfman has nominated for as Academy Award for Best Original Score ?";"milk, big fish";"nicholas volpe";"1300";"0.0";"1.4083766486855611e-229";"0.0";"0";"95.63";"297";"YES"
