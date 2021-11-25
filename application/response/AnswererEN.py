@@ -29,7 +29,8 @@ class AnswererEN:
             if not answer:
                 response = str(0)
             else:
-                response = str(len(answer.split(",")))
+                if (type(answer) != int):
+                    response = str(len(answer.split(",")))
         return response
         
         
