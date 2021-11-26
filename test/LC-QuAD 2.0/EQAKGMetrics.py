@@ -122,8 +122,9 @@ def EQAKGMetrics(pool, rows, counter, JSONroute, queryURL, csvRoute):
     - Escribe en el CSV la pregunta, la respuesta esperada, la respuesta obtenida y estas metricas
     '''
     LCQuadData = csvToDict(JSONroute)
-    #LCQuadData[:] = [value for counter, value in enumerate(vanillaData) if counter > x]
-
+    LCQuadData[:] = [value for counter, value in enumerate(LCQuadData) if counter > 478]
+    
+    """
     #Escribimos el Header
     with open(csvRoute,'w', newline='', encoding="utf-8") as f:
 
@@ -131,7 +132,8 @@ def EQAKGMetrics(pool, rows, counter, JSONroute, queryURL, csvRoute):
         global header
         csvwriter.writerow(header)
         f.close()
-        
+    """
+
     for i in LCQuadData:
         #Paraleliza con metodos asincronos
         pool.apply_async(evaluateQuestion, (csvRoute,i,rows,counter,queryURL))
