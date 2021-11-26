@@ -96,6 +96,77 @@ If you prefer to start the service via a Python environment instead of using Doc
      * Debug mode: off
      * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
     ```
+    
+## Local Set up (based on a Mac M1 environment)
+1. Clone this repo
+	```
+	git clone https://github.com/librairy/EQAKG.git
+	```
+1. Move into `EQAKG` directory.
+    ```
+	cd EQAKG
+	```
+1. Create and activate a virtual environment:
+    ````
+    conda env create --file=m1-environment.yml --name .eqakg
+    conda activate .eqakg
+    `````
+1. Install the Apple edition of `tensorflow`
+    ````
+    pip install --upgrade --force --no-dependencies tensorflow-macos
+    pip install --upgrade --force --no-dependencies tensorflow-metal
+    `````
+1. Install the required libraries:
+    ````
+    pip install Flask==1.1.4
+    pip install Flask-Cors==3.0.10
+    pip install Flask-Script==2.0.6
+
+    pip install spacy
+    pip install spacy-dbpedia-spotlight==0.2.1
+    pip install spacy-entity-linker==1.0.1
+    pip install spacy-legacy==3.0.8
+    ````
+1. Compile and Intall the `tokenizers` from Huggingface: 
+    ````
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    cd /Users/cbadenes/Projects
+    git clone https://github.com/huggingface/tokenizers
+    cd tokenizers/bindings/python
+    pip install setuptools_rust
+    python setup.py install
+    `````
+1. Compile and Intall the `transformers` from Huggingface: 
+    ````
+    pip install git+https://github.com/huggingface/transformers
+    `````
+1. Install and update final requirements
+    ````
+    pip install flatbuffers
+    pip install keras==2.6.0
+    ````
+1. And finally, install `torch`
+    ````
+    pip install torch
+    ````
+1. Download and unzip the following [file](https://delicias.dia.fi.upm.es/nextcloud/index.php/s/Jp5FeoBn57c8k4M) in the project directory. It contains the models used by the service. The folder 'resources_dir' is created.
+1. Run the service (`runserver` for development mode and `runprodserver` for production mode ):
+    ```
+    python manage.py runserver
+    ```
+1.  It may take some minutes to load some external resources. The following logs will appear when everything is ready:
+
+    ```
+    Answering for predictions without further training.
+    Loaded
+    Ready to answer question from Wikidata in english:
+     * Serving Flask app "application.app" (lazy loading)
+     * Environment: production
+        WARNING: This is a development server. Do not use it in a production deployment.
+        Use a production WSGI server instead.
+     * Debug mode: off
+     * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+    ```
 
 ## Server routes
 
