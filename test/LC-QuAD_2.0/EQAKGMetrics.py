@@ -122,7 +122,7 @@ def EQAKGMetrics(pool, rows, counter, JSONroute, queryURL, csvRoute):
     - Escribe en el CSV la pregunta, la respuesta esperada, la respuesta obtenida y estas metricas
     '''
     LCQuadData = csvToDict(JSONroute)
-    LCQuadData[:] = [value for counter, value in enumerate(LCQuadData) if counter > 478]
+    LCQuadData[:] = [value for counter, value in enumerate(LCQuadData) if counter > 4724]
     
     """
     #Escribimos el Header
