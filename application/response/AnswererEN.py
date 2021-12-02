@@ -20,19 +20,21 @@ class AnswererEN:
         print("Category:",category['category'])
         print("Type:",category['type'])
         response = answer
+        response2 = ""
         if (category['category'] == 'boolean'):
             if not answer:
+                response2 = "None"
                 response = "False"
             else:
+                response2 = answer
                 response = "True"
         elif (len(category['type']) > 0) and (category['type'][0] == 'number'):
             if not answer:
+                response2 = "None"
                 response = str(0)
             else:
                 if not ((answer.replace('.', '', 1)).isdigit()):
+                    response2 = answer
                     response = str(len(answer.split(",")))
-        return response
-        
-        
-        
+        return [response,response2]       
         
