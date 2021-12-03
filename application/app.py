@@ -115,7 +115,6 @@ def get_cord19_en():
 def get_all_en():
     return handle_question(request, [dbpediaEN, cord19EN], robertaEN, answererEN)
 
-
 @app.errorhandler(404)
 def page_not_found(error):
     app.logger.error('Page not found. Method: %s uri: %s', request.method, request.path)
