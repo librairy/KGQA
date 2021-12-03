@@ -1,9 +1,9 @@
 import requests
 from pprint import pprint
 
-queryURL = "http://localhost:5000/eqakg/dbpedia/en?text=true"
+queryURL = "http://localhost:5000/eqakg/wikidata/en?text=false"
 
-questions = ["count the number of people became famous for when Andrew Jackson was a commander ?"]
+questions = ["what city was alex golfis born in"]
 
 for i in questions:
     
@@ -13,4 +13,4 @@ for i in questions:
     
     response = requests.get(queryURL, files = files)
 
-    pprint(response.json())
+    pprint(response)

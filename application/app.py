@@ -82,15 +82,15 @@ def get_dbpedia_es():
     return handle_question(request, dbpediaES, bertEN, answererEN)
 
 ## English Wikidata 
-#@app.route('/eqakg/wikidata/en', methods=['GET'])
-#@app.route('/eqakg/wikidata', methods=['GET'])
-#def get_wikidata_en():
-#    return handle_question(request, wikidataEN)
+@app.route('/eqakg/wikidata/en', methods=['GET'])
+@app.route('/eqakg/wikidata', methods=['GET'])
+def get_wikidata_en():
+    return handle_question(request, wikidataEN, bertEN, answererEN)
 
 ## Spanish Wikidata 
-#@app.route('/eqakg/wikidata/es', methods=['GET'])
-#def get_wikidata_es():
-#    return handle_question(request, wikidataES)
+@app.route('/eqakg/wikidata/es', methods=['GET'])
+def get_wikidata_es():
+    return handle_question(request, wikidataES, bertEN, answererEN)
 
 
 @app.errorhandler(404)
