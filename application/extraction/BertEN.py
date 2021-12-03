@@ -19,7 +19,7 @@ class BertEN:
         sentences = [i for i in context.split(".") if len(i.split(" ")) < 50]
         
         #print("Sentences in Summary:", len(sentences))
-        for chunk in self.chunks(sentences,10):
+        for chunk in self.chunks(sentences,20):
             #print("getting partial answer")    
             text = ". ".join(chunk)
             #print("num tokens:", len(text.split(" ")), "num_characters:", len(text))
