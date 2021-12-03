@@ -57,7 +57,8 @@ def handle_question(request,kg_summarizer,extractive_qa,response_builder):
     # Return value
     response = {}
     response['question'] = question
-    response['answer'] = value
+    response['answer'] = value[0]
+    response['answer-2'] = value[1]
     response['score'] = answer['score']
     if text.lower() == 'true':
         response['text'] = answer['summary']
