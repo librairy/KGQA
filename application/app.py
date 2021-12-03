@@ -36,6 +36,8 @@ def before_request():
 
 def handle_question(request,kg_summarizer,extractive_qa,response_builder):
     question = request.form['question']
+    if 'query' in request.args:
+        question = request.args.get('question')
     text = request.args.get('text')
     print("Making question:",question,"..")
 
