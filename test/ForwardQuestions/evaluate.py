@@ -36,7 +36,7 @@ def do_question(question_info):
     return {}
   answer_txt = ",".join(question_info['answers']).lower()
   print("->",question_txt, answer_txt)
-  response = requests.get("https://librairy.linkeddata.es/eqakg/dbpedia", params={ 'text': True}, data={'question':question_txt})
+  response = requests.get("http://127.0.0.1:5000/eqakg/dbpedia/en", params={ 'text': True}, data={'question':question_txt})
   if (response.status_code != 200):
     print("ERROR",response)
     return {}
