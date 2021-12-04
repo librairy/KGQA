@@ -13,7 +13,8 @@ class Wikidata(kg_summarizer.Summarizer):
         
         print("Loading Wikidata Entity Linker ("+lang+") from spaCy model")
 
-        self.nlp = spacy.blank(lang) 
+        self.nlp = spacy.load("en_core_web_sm")
+        #self.nlp = spacy.blank(lang) 
         self.nlp.add_pipe('sentencizer')
         # add pipeline (declared through entry_points in setup.py)
         self.nlp.add_pipe("entityLinker", last=True)

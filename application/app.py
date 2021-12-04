@@ -7,7 +7,10 @@ import application.summary.DBpediaEN as dbpedia_en
 import application.summary.DBpediaES as dbpedia_es
 import application.summary.WikidataEN as wikidata_en
 import application.summary.WikidataES as wikidata_es
+import application.summary.Cord19EN as cord19_en
 import application.extraction.BertEN as bert_en
+import application.extraction.RobertaCovidEN as roberta_covid_en
+import application.extraction.RobertaEN as roberta_en
 import application.response.AnswererEN as answerer_en
 
 
@@ -21,7 +24,10 @@ dbpediaEN = dbpedia_en.DBpediaEN()
 dbpediaES = dbpedia_es.DBpediaES()
 wikidataEN = wikidata_en.WikidataEN()
 wikidataES = wikidata_es.WikidataES()
+cord19EN = cord19_en.Cord19EN()
 bertEN = bert_en.BertEN()
+robertaCovidEN = roberta_covid_en.RobertaCovidEN()
+robertaEN = roberta_en.RobertaEN()
 answererEN = answerer_en.AnswererEN()
 
 
@@ -34,7 +40,7 @@ def before_request():
     app.logger.info('Request with question: %s for the uri %s .', request.method, request.path)
 
 
-def handle_question(request,kg_summarizer,extractive_qa,response_builder):
+def handle_question(request,summarizer_list,extractive_qa,response_builder):
     question = request.form['question']
     if 'query' in request.args:
         question = request.args.get('question')
@@ -46,7 +52,12 @@ def handle_question(request,kg_summarizer,extractive_qa,response_builder):
     
     # Compose Summary
     question = decapitalize(question)
-    summary = kg_summarizer.get_summary(question)
+    summary = ""
+    for summarizer in summarizer_list:
+        print(summarizer)
+        partial_summary = summarizer.get_summary(question)
+        print(partial_summary)
+        summary += partial_summary + " "
     
     # Extract Answer   
     answer = extractive_qa.get_answer(question,summary)
@@ -74,24 +85,35 @@ def handle_question(request,kg_summarizer,extractive_qa,response_builder):
 @app.route('/eqakg/dbpedia/en', methods=['GET'])
 @app.route('/eqakg/dbpedia', methods=['GET'])
 def get_dbpedia_en():
-    return handle_question(request, dbpediaEN, bertEN, answererEN)
+    return handle_question(request, [dbpediaEN], robertaEN, answererEN)
 
 ## Spanish DBpedia 
 @app.route('/eqakg/dbpedia/es', methods=['GET'])
 def get_dbpedia_es():
-    return handle_question(request, dbpediaES, bertEN, answererEN)
+    return handle_question(request, [dbpediaES], robertaEN, answererEN)
 
 ## English Wikidata 
 @app.route('/eqakg/wikidata/en', methods=['GET'])
 @app.route('/eqakg/wikidata', methods=['GET'])
 def get_wikidata_en():
-    return handle_question(request, wikidataEN, bertEN, answererEN)
+    return handle_question(request, [wikidataEN], robertaEN, answererEN)
 
 ## Spanish Wikidata 
 @app.route('/eqakg/wikidata/es', methods=['GET'])
 def get_wikidata_es():
-    return handle_question(request, wikidataES, bertEN, answererEN)
+    return handle_question(request, [wikidataES], robertaEN, answererEN)
 
+## English DBpedia 
+@app.route('/eqakg/cord19/en', methods=['GET'])
+@app.route('/eqakg/cord19', methods=['GET'])
+def get_cord19_en():
+    return handle_question(request, [cord19EN], robertaCovidEN, answererEN)
+
+## All combined 
+@app.route('/eqakg/all/en', methods=['GET'])
+@app.route('/eqakg/all', methods=['GET'])
+def get_all_en():
+    return handle_question(request, [dbpediaEN, cord19EN], robertaEN, answererEN)
 
 @app.errorhandler(404)
 def page_not_found(error):
