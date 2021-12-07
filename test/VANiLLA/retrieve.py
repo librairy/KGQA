@@ -5,15 +5,16 @@ import re
 import time
 import multiprocessing as mp
 import pandas as pd
-import traceback
-from pprint import pprint
 
-def jsonToDict(route):
+def JSONLineToDict(JSONRoute):
     '''
-    Funcion auxiliar que dada la ruta de un json, lo abre y lo convierte a lista de diccionarios
-    '''
-    with open(route, encoding="utf-8") as f:
-        return json.load(f)
+    Funcion auxiliar que dado un archivo json con JSONObjects en cada linea,
+    lo abre y lo convierte a lista de diccionarios
+    '''  
+    with open(JSONRoute) as f:
+        jsonList = list(f)
+    
+    return json.loads(json.dumps([json.loads(jsonLine) for jsonLine in jsonList]))
 
 def queryJSON(queryURL, questionDict):
     '''
@@ -28,18 +29,13 @@ def queryJSON(queryURL, questionDict):
     #Obtenemos la respuesta como JSonObject y la devolvemos
     return response.json()
 
-def writeResults(csvRoute, rows, counter, question, modelAnswerLong, obtainedAnswer, queryTime, text):  
+def writeResults(csvRoute, rows, counter, question, modelAnswer, obtainedAnswer, queryTime, text):  
     '''
     Funcion auxiliar que extrae la respuesta que se espera
     '''    
     #La respuesta esperada se obtiene con una expresion regular (sacar texto entre corchetes)
-    modelAnswerLongGroups = re.search(r"\[([^\)]+)\]", modelAnswerLong)
     if obtainedAnswer is None:
         obtainedAnswer = "None"
-    if modelAnswerLongGroups is None:
-        modelAnswer = "None"
-    else:
-        modelAnswer = modelAnswerLongGroups.group(1)
     
     rows.append( [question, modelAnswer, obtainedAnswer, queryTime, text] )
     counter.value += 1
@@ -73,14 +69,14 @@ def answerQuestion(csvRoute, questionDict, rows, counter, queryURL):
         text = re.sub(evidence, "[" + evidence + "]", text)
     
     #Pasamos las respuestas a minuscula y llamamos a writeResults.
-    writeResults(csvRoute, rows, counter, questionDict['question'], questionDict['verbalized_answer'].lower(),jsonResponse['answer'].lower(),queryTime,text.lower())
+    writeResults(csvRoute, rows, counter, questionDict['question'], questionDict['answer'].lower(),jsonResponse['answer'].lower(),queryTime,text.lower())
 
 def retriever(pool, rows, counter, JSONroute, queryURL, csvRoute, writeHeader = False):
     '''
     Funcion que dado un JSON con preguntas y respuestas, una url a través de la cual realizar consultas y un csv donde guardar los resultados, 
     obtiene la respuesta a la pregunta y la vuelca junto al texto a partir del cual se genero en un CSV
     '''
-    dataset = jsonToDict(JSONroute)
+    dataset = JSONLineToDict(JSONroute)
 
     #Escribimos el Header
     if writeHeader:
@@ -120,4 +116,4 @@ if __name__ == '__main__':
         queryUrl = "http://localhost:5000/eqakg/dbpedia/en?text=true"
         #queryUrl = "https://librairy.linkeddata.es/eqakg/dbpedia/en?text=false" 
 
-        retriever(pool,rows,counter,"data/test.json",queryUrl,"results/VQuAnDa.csv", writeHeader=True)
+        retriever(pool,rows,counter,"data/Vanilla_Dataset_Test.json",queryUrl,"results/VANiLLA.csv", writeHeader=True)
