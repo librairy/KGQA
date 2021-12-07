@@ -76,7 +76,7 @@ def writeResults(csvRoute, rows, counter, question, modelAnswerLong, obtainedAns
             #print("Contador: ", counter.value)
 
             #Escribimos cuando el valor del contador llegue a 24
-            if(counter.value != 0 and counter.value % 24 == 0):
+            if(counter.value != 0 and counter.value % 8 == 0):
                 #print("Escribiendo. Contador: ", counter.value)
                 with open(csvRoute, 'a', newline='', encoding="utf-8") as f:
                     (pd.DataFrame.from_records(rows, columns=header)).to_csv(f, header=False, index=False, sep=';', quoting=csv.QUOTE_ALL)
@@ -142,7 +142,7 @@ if __name__ == '__main__':
 
         pool = mp.Pool(processes=6, initargs = (counter,rows,))
 
-        queryUrl = "http://localhost:5000/eqakg/dbpedia/en?text=false"
+        queryUrl = "http://localhost:5000/eqakg/dbpedia/en?text=true"
         #queryUrl = "https://librairy.linkeddata.es/eqakg/dbpedia/en?text=false" 
 
-        EQAKGMetrics(pool,rows,counter,"test.json",queryUrl,"results/VQuanda.csv")
+        EQAKGMetrics(pool,rows,counter,"data/test.json",queryUrl,"results/VQuanda.csv")

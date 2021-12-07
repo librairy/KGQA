@@ -68,7 +68,8 @@ class DBpedia(kg_summarizer.Summarizer):
         	'format': 'application/json', 
         	'timeout': 120000, 
         	'signal_void':'on', 
-        	'signal_unconnected':'on' }
+        	'signal_unconnected':'on' 
+		}
     
     	response = requests.get(self.dbpedia_url, params=payload)
     	
