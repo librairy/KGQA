@@ -28,6 +28,10 @@ def evaluateQuestion(questionDict):
     '''
     modelAnswer = questionDict['Answer']
     obtainedAnswer = questionDict['Response']
+    if obtainedAnswer == "true":
+        obtainedAnswer = "yes"  
+    elif obtainedAnswer == "false":
+        obtainedAnswer = "no"
 
     sacreBleuScore = sentence_bleu(obtainedAnswer,[modelAnswer]).score
     bleuScore = nltk.translate.bleu_score.sentence_bleu([modelAnswer], obtainedAnswer)*100
@@ -64,6 +68,6 @@ def evaluator(csvRoute1, csvRoute2, writeHeader = False):
         f.close()
 
 rows = []
-header = ["Question","BLEU","SacreBLEU","Meteor","EM","Cosine Similarity"]
+header = ["Question","SacreBLEU","BLEU","Meteor","EM","Cosine Similarity"]
 
 evaluator("results/VQuAnDa.csv","results/VQuAnDa_Evaluation.csv", writeHeader=True)
