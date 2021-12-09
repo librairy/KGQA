@@ -66,4 +66,4 @@ def evaluator(csvRoute1, csvRoute2, writeHeader = False):
 rows = []
 header = ["Question","BLEU","SacreBLEU","Meteor","EM","Cosine Similarity"]
 
-evaluator("results/VANiLLA.csv","results/VANiLLA_Evaluation.csv", writeHeader=True)
+evaluator("results/LC-QuAD.csv","results/LC-QuAD-Evaluation.csv", writeHeader=True)

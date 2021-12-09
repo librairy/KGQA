@@ -1,26 +1,22 @@
 import requests
-import json
 import csv
 import re
 import time
 import multiprocessing as mp
 import pandas as pd
 
-def JSONLineToDict(JSONRoute):
+def csvToDict(route):
     '''
-    Funcion auxiliar que dado un archivo json con JSONObjects en cada linea,
-    lo abre y lo convierte a lista de diccionarios
-    '''  
-    with open(JSONRoute) as f:
-        jsonList = list(f)
-    
-    return json.loads(json.dumps([json.loads(jsonLine) for jsonLine in jsonList]))
+    Funcion auxiliar que dada la ruta de un csv, lo abre y lo convierte a lista de diccionarios
+    '''
+    df = pd.read_csv(route, sep=";")
+    return df.to_dict('records')
 
 def queryJSON(queryURL, questionDict):
     '''
     Funcion auxiliar que dado un JSON con una pregunta, realiza una consulta (con esta pregunta) a una URL
     '''
-    question = questionDict['question']
+    question = questionDict['Question']
     files = {
         'question': (None, question),
     }
@@ -69,18 +65,18 @@ def answerQuestion(csvRoute, questionDict, rows, counter, queryURL):
         text = re.sub(evidence, "[" + evidence + "]", text)
     
     #Pasamos las respuestas a minuscula y llamamos a writeResults.
-    writeResults(csvRoute, rows, counter, questionDict['question'], questionDict['answer'].lower(),jsonResponse['answer'].lower(),queryTime,text.lower())
+    writeResults(csvRoute, rows, counter, questionDict['Question'], questionDict['Entities/Answer'].lower(),jsonResponse['answer'].lower(),queryTime,text.lower())
 
-def retriever(pool, rows, counter, JSONroute, queryURL, csvRoute, writeHeader = False):
+def retriever(pool, rows, counter, csvRoute1, queryURL, csvRoute2, writeHeader = False):
     '''
     Funcion que dado un JSON con preguntas y respuestas, una url a través de la cual realizar consultas y un csv donde guardar los resultados, 
     obtiene la respuesta a la pregunta y la vuelca junto al texto a partir del cual se genero en un CSV
     '''
-    dataset = JSONLineToDict(JSONroute)
+    dataset = csvToDict(csvRoute1)
 
     #Escribimos el Header
     if writeHeader:
-        with open(csvRoute,'w', newline='', encoding="utf-8") as f:
+        with open(csvRoute2,'w', newline='', encoding="utf-8") as f:
 
             csvwriter = csv.writer(f,delimiter=';', quotechar='"', quoting=csv.QUOTE_ALL)
             global header
@@ -89,13 +85,13 @@ def retriever(pool, rows, counter, JSONroute, queryURL, csvRoute, writeHeader = 
         
     for i in dataset:
         #Paraleliza con metodos asincronos
-        pool.apply_async(answerQuestion, (csvRoute,i,rows,counter,queryURL))
+        pool.apply_async(answerQuestion, (csvRoute2,i,rows,counter,queryURL))
 
     pool.close()
     pool.join()
 
     #Escribimos lo que quede
-    with open(csvRoute, 'a', newline='', encoding="utf-8") as f:
+    with open(csvRoute2, 'a', newline='', encoding="utf-8") as f:
         (pd.DataFrame.from_records(rows, columns=header)).to_csv(f,header=False, index=False, sep=';', quoting=csv.QUOTE_ALL)
         f.close()
 
@@ -116,4 +112,4 @@ if __name__ == '__main__':
         queryUrl = "http://localhost:5000/eqakg/dbpedia/en?text=true"
         #queryUrl = "https://librairy.linkeddata.es/eqakg/dbpedia/en?text=false" 
 
-        retriever(pool,rows,counter,"data/Vanilla_Dataset_Test.json",queryUrl,"results/VANiLLA.csv", writeHeader=True)
+        retriever(pool,rows,counter,"data/LC-Quad_Dataset.csv",queryUrl,"results/LC-Quad.csv", writeHeader=True)
