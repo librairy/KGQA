@@ -54,9 +54,7 @@ def handle_question(request,summarizer_list,extractive_qa,response_builder):
     question = decapitalize(question)
     summary = ""
     for summarizer in summarizer_list:
-        print(summarizer)
         partial_summary = summarizer.get_summary(question)
-        print(partial_summary)
         summary += partial_summary + " "
     
     # Extract Answer   
