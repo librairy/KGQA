@@ -3,6 +3,10 @@ from sacrebleu import sentence_bleu
 import pandas as pd
 import nltk
 from sklearn.metrics.pairwise import cosine_similarity
+from sentence_transformers import SentenceTransformer
+
+#Inicializamos modelo
+model = SentenceTransformer('bert-base-nli-mean-tokens')
 
 def csvToDict(route) -> dict:
     '''
@@ -33,8 +37,12 @@ def evaluateQuestion(questionDict):
     bleuScore = nltk.translate.bleu_score.sentence_bleu([modelAnswer], obtainedAnswer)*100
     meteorScore = nltk.translate.meteor_score.meteor_score([[modelAnswer]],[obtainedAnswer])*100
     
+    #Creamos los embeddings y hacemos Cosine Similarity entre respuesta y respuesta modelo
+    answerEmbeddings = model.encode([obtainedAnswer, modelAnswer])
+    cosineSimilarity = cosine_similarity([answerEmbeddings[0]], answerEmbeddings[1:])
+
     global rows
-    rows.append( [questionDict['Question'], sacreBleuScore, bleuScore, meteorScore, exactMatchScore(modelAnswer,obtainedAnswer),"placeholder"] )
+    rows.append( [questionDict['Question'], sacreBleuScore, bleuScore, meteorScore, exactMatchScore(modelAnswer,obtainedAnswer),cosineSimilarity[0][0]] )
 
 def evaluator(csvRoute1, csvRoute2, writeHeader = False):
     '''
