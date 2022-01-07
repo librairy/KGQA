@@ -52,25 +52,31 @@ def main():
 
         return answerList
 
-    def annotateContext(answer, context):
+    def annotateContext(response, answer, context):
         '''
         Funcion auxiliar que anota la respuesta sobre el texto de evidencia
         '''
+        tag = "ANSWER"
+        if response['answer-2'] != "":
+            answer = response['answer-2']
+            tag = "EVIDENCE"
+
         answerPosition = context.find(answer)
         answerPositionEnd = answerPosition + len(answer)
-        annotated_text(context[:answerPosition],(answer,"ANSWER","#8ef"),context[answerPositionEnd:],)
+        annotated_text(context[:answerPosition],(answer,tag,"#8ef"),context[answerPositionEnd:],)
 
     if question:
         with st.spinner(text=':hourglass: Looking for answers...'):
             results = getAnswers(data)
             for i in results:
                 answer = i['answer']
+                st.write("**Answer: **", answer)
                 #answer_display.subheader(answer)
                 if answer:
                         context = '...' + i['text'] + '...'
                         source = "source"
                         relevance = i['score']
-                        annotateContext(answer, context)
+                        annotateContext(i, answer, context)
                         '**Relevance:** ', relevance , '**source:** ' , source
 
     if question and st.sidebar.checkbox('Show debug info'):
