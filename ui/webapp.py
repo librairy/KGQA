@@ -37,10 +37,14 @@ def main():
     st.sidebar.subheader('Options')
     answerNumber = st.sidebar.slider('How many relevant answers do you want?', min_value=1, max_value=5)
 
+    #Lista de bases de conocimiento sobre las que haremos nuestra consulta
     knowledgeBases = ["dbpedia"]
 
     @st.cache(show_spinner=False)
     def getAnswers(data):
+        '''
+        Funcion auxiliar que obtiene una lista con todas las respuestas sobre las distintas bases de conocimiento
+        '''
         answerList = []
         for i in knowledgeBases:
             queryURL = "http://localhost:5000/eqakg/" + i + "/en?text=true"
@@ -49,9 +53,12 @@ def main():
         return answerList
 
     def annotateContext(answer, context):
-        idx = context.find(answer)
-        idx_end = idx + len(answer)
-        annotated_text(context[:idx],(answer,"ANSWER","#8ef"),context[idx_end:],)
+        '''
+        Funcion auxiliar que anota la respuesta sobre el texto de evidencia
+        '''
+        answerPosition = context.find(answer)
+        answerPositionEnd = answerPosition + len(answer)
+        annotated_text(context[:answerPosition],(answer,"ANSWER","#8ef"),context[answerPositionEnd:],)
 
     if question:
         with st.spinner(text=':hourglass: Looking for answers...'):
