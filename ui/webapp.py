@@ -1,13 +1,11 @@
 import streamlit as st
-from streamlit import cli as stcli
 import requests
 from annotated_text import annotated_text
-import sys
 import operator
 
 def queryJSON(queryURL, question):
     '''
-    Funcion auxiliar que dado un JSON con una pregunta, realiza una consulta (con esta pregunta) a una URL
+    Funcion auxiliar que realiza las preguntas al servidor de EQA
     '''
     files = {
         'question': (None, question),
@@ -95,9 +93,5 @@ def main():
         st.subheader('API JSON Response')
         st.write(results)
 
-if __name__ == '__main__':
-    if st._is_running_with_streamlit:
-        main()
-    else:
-        sys.argv = ["streamlit", "run", sys.argv[0]]
-        sys.exit(stcli.main())
+if __name__ == "__main__":
+    main()
