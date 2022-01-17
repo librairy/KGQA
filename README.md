@@ -97,7 +97,7 @@ If you prefer to start the service via a Python environment instead of using Doc
      * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
     ```
     
-## Local Set up (based on a Mac M1 environment)
+## Local Set up (based on a Python and Mac M1 environment)
 1. Clone this repo
 	```
 	git clone https://github.com/librairy/EQAKG.git
@@ -170,12 +170,14 @@ If you prefer to start the service via a Python environment instead of using Doc
 
 ## Server routes
 
-The message body must contain the `question` field with the natural language question, and the query parameter `text` sets whether the summary generated has to be retrieved or not.
+The message body must contain the `question` field with the natural language question, and the query parameter `evidence` sets whether the summary generated has to be retrieved or not.
 
 The availabe URIs are:
-- `/eqakg/dbpedia/en` : solve questions using the English edition of DBpedia.
-- `/eqakg/dbpedia/es` : solve questions using the Spanish edition of DBpedia.
-- `/eqakg/wikidata/en`: solve questions using the English edition of Wikidata.
+- `/muheqa/dbpedia/en` : solve questions using the English edition of DBpedia.
+- `/muheqa/dbpedia/es` : solve questions using the Spanish edition of DBpedia.
+- `/muheqa/wikidata/en`: solve questions using the English edition of Wikidata.
+- `/muheqa/wikidata/es`: solve questions using the Spanish edition of Wikidata.
+- `/muheqa/wikidata/en`: solve questions using the English edition of Wikidata.
 
 
 ## Example
@@ -183,7 +185,7 @@ The availabe URIs are:
 To answer the question *Where was Fernando Alonso born?* using DBpedia:
 
    ```
-    curl --location --request GET 'localhost:5000/eqakg/dbpedia/en?text=false' --form 'question="Where was Fernando Alonso born?"'
+    curl --location --request GET 'localhost:5000/muheqa/dbpedia/en?text=false' --form 'question="Where was Fernando Alonso born?"'
    ```
 
 And the response:
