@@ -44,7 +44,7 @@ def handle_question(request,summarizer_list,extractive_qa,response_builder):
     question = request.form['question']
     if 'query' in request.args:
         question = request.args.get('question')
-    text = request.args.get('text')
+    req_evidence = request.args.get('evidence')
     print("Making question:",question,"..")
 
     if question is None:
@@ -67,12 +67,10 @@ def handle_question(request,summarizer_list,extractive_qa,response_builder):
     response = {}
     response['question'] = question
     response['answer'] = value[0]
-    response['answer-2'] = value[1]
     response['score'] = answer['score']
-    if text.lower() == 'true':
-        response['text'] = answer['summary']
-    else:
-        response['textLen'] = len(answer['summary']) 
+    response['result'] = value[1]    
+    if req_evidence.lower() == 'true':
+        response['evidence'] = answer['summary']
     
     print("Response: ", response['answer'])
     
@@ -80,36 +78,36 @@ def handle_question(request,summarizer_list,extractive_qa,response_builder):
 
 
 ## English DBpedia 
-@app.route('/eqakg/dbpedia/en', methods=['GET'])
-@app.route('/eqakg/dbpedia', methods=['GET'])
+@app.route('/muheqa/dbpedia/en', methods=['GET'])
+@app.route('/muheqa/dbpedia', methods=['GET'])
 def get_dbpedia_en():
     return handle_question(request, [dbpediaEN], robertaEN, answererEN)
 
 ## Spanish DBpedia 
-@app.route('/eqakg/dbpedia/es', methods=['GET'])
+@app.route('/muheqa/dbpedia/es', methods=['GET'])
 def get_dbpedia_es():
     return handle_question(request, [dbpediaES], robertaEN, answererEN)
 
 ## English Wikidata 
-@app.route('/eqakg/wikidata/en', methods=['GET'])
-@app.route('/eqakg/wikidata', methods=['GET'])
+@app.route('/muheqa/wikidata/en', methods=['GET'])
+@app.route('/muheqa/wikidata', methods=['GET'])
 def get_wikidata_en():
     return handle_question(request, [wikidataEN], robertaEN, answererEN)
 
 ## Spanish Wikidata 
-@app.route('/eqakg/wikidata/es', methods=['GET'])
+@app.route('/muheqa/wikidata/es', methods=['GET'])
 def get_wikidata_es():
     return handle_question(request, [wikidataES], robertaEN, answererEN)
 
 ## English DBpedia 
-@app.route('/eqakg/cord19/en', methods=['GET'])
-@app.route('/eqakg/cord19', methods=['GET'])
+@app.route('/muheqa/cord19/en', methods=['GET'])
+@app.route('/muheqa/cord19', methods=['GET'])
 def get_cord19_en():
     return handle_question(request, [cord19EN], robertaCovidEN, answererEN)
 
 ## All combined 
-@app.route('/eqakg/all/en', methods=['GET'])
-@app.route('/eqakg/all', methods=['GET'])
+@app.route('/muheqa/all/en', methods=['GET'])
+@app.route('/muheqa/all', methods=['GET'])
 def get_all_en():
     return handle_question(request, [dbpediaEN, cord19EN], robertaEN, answererEN)
 

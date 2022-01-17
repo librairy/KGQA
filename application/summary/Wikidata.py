@@ -27,13 +27,13 @@ class Wikidata(kg_summarizer.Summarizer):
         
         for entity in doc._.linkedEntities:
             properties = {}
-            #print("Entity:",entity)
-            
+            print("Wikidata entity:",entity)
+                    
             fromRelations = self.get_from_properties(entity.get_id())
             
             if fromRelations != None:
                 for result in fromRelations["results"]["bindings"]:
-                    properties[result["propertyLabel"]["value"]]= result["value"]["value"]
+                    properties[result["propertyLabel"]["value"]]= result["value"]["value"]                        
             
             toRelations = self.get_to_properties(entity.get_id())
             
@@ -47,14 +47,39 @@ class Wikidata(kg_summarizer.Summarizer):
     
 
     def get_from_properties(self,entity):
-        #print("Entity:", entity)
+        entity_uri = "wd:Q" + str(entity)
         query = """SELECT ?propertyLabel
                     (GROUP_CONCAT(DISTINCT ?valueLabel;separator=", ") AS ?value)
                 WHERE{
-                    ?item ?label \" """+entity+" \"@"+self.lang+""" .
-                    ?item ?prop ?value .
+                    """+entity_uri+""" ?prop ?value .
                     ?property wikibase:directClaim ?prop .
-                    SERVICE wikibase:label {bd:serviceParam wikibase:language """+self.lang+""".
+                    SERVICE wikibase:label {bd:serviceParam wikibase:language \""""+self.lang+"""\" .
+                                        ?property rdfs:label ?propertyLabel .
+                                        ?value rdfs:label ?valueLabel .}
+            }
+            GROUP BY ?propertyLabel
+        """
+        
+        payload = {
+        	#'default-graph-uri': 'http://wikidata.org', 
+        	'query': query, 
+        	'format': 'json', 
+        	'timeout': 120000, 
+        	'signal_void':'on', 
+        	'signal_unconnected':'on' }
+        response = requests.get(self.wikidata_url, params=payload)
+        
+        return response.json()
+
+
+    def get_to_properties(self,entity):
+        entity_uri = "wd:Q" + str(entity)
+        query = """SELECT ?propertyLabel
+                    (GROUP_CONCAT(DISTINCT ?valueLabel;separator=", ") AS ?value)
+                WHERE{
+                    ?value ?prop """+entity_uri+""" .
+                    ?property wikibase:directClaim ?prop .
+                    SERVICE wikibase:label {bd:serviceParam wikibase:language \""""+self.lang+"""\" .
                                         ?property rdfs:label ?propertyLabel .
                                         ?value rdfs:label ?valueLabel .}
             }
@@ -63,39 +88,12 @@ class Wikidata(kg_summarizer.Summarizer):
         payload = {
         	#'default-graph-uri': 'http://wikidata.org', 
         	'query': query, 
-        	'format': 'application/json', 
+        	'format': 'json', 
         	'timeout': 120000, 
         	'signal_void':'on', 
         	'signal_unconnected':'on' }
+        
         response = requests.get(self.wikidata_url, params=payload)
-    	
+        
         return response.json()
-
-
-    def get_to_properties(self,entity):
-    
-    	query = """"SELECT ?propertyLabel
-                    (GROUP_CONCAT(DISTINCT ?valueLabel;separator=", ") AS ?value)
-                WHERE{
-                    ?item ?label \" """+entity+" \"@"+self.lang+""" .
-                    ?item ?prop ?value .
-                    ?property wikibase:directClaim ?prop .
-                    SERVICE wikibase:label {bd:serviceParam wikibase:language """+self.lang+""".
-                                        ?property rdfs:label ?propertyLabel .
-                                        ?value rdfs:label ?valueLabel .}
-            }
-            GROUP BY ?propertyLabel
-        """
-    
-    	payload = {
-        	#'default-graph-uri': 'http://wikidata.org', 
-        	'query': query, 
-        	'format': 'application/json', 
-        	'timeout': 120000, 
-        	'signal_void':'on', 
-        	'signal_unconnected':'on' }
-    
-    	response = requests.get(self.wikidata_url, params=payload)
-    
-    	return response.json()
 

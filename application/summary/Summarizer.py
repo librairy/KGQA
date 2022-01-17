@@ -8,7 +8,7 @@ class Summarizer:
             self.of_text = " of "
             self.is_text = " is "
         elif lang == 'es':
-            self.the_text = " El "
+            self.the_text = " "
             self.of_text = " de "
             self.is_text = " es "
         
