@@ -13,7 +13,7 @@ import application.extraction.RobertaCovidEN as roberta_covid_en
 import application.extraction.RobertaEN as roberta_en
 import application.response.AnswererEN as answerer_en
 
-
+from pprint import pprint
 
 app = Flask(__name__)
 app.config.from_object(config)
@@ -44,7 +44,7 @@ def handle_question(request,summarizer_list,extractive_qa,response_builder):
     question = request.form['question']
     if 'query' in request.args:
         question = request.args.get('question')
-    req_evidence = request.args.get('evidence')
+    textBool = request.args.get('text')
     print("Making question:",question,"..")
 
     if question is None:
@@ -68,8 +68,8 @@ def handle_question(request,summarizer_list,extractive_qa,response_builder):
     response['question'] = question
     response['answer'] = value[0]
     response['score'] = answer['score']
-    response['result'] = value[1]    
-    if req_evidence.lower() == 'true':
+    response['result'] = value[1]
+    if textBool.lower() == 'true':
         response['evidence'] = answer['summary']
     
     print("Response: ", response['answer'])
