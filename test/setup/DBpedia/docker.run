@@ -1,0 +1,1 @@
+docker run -p 8890:8890 -e DEFAULT_GRAPH=http://dbpedia.org -d aksw/dbpedia

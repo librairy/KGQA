@@ -11,7 +11,7 @@ class Wikidata(kg_summarizer.Summarizer):
         self.wikidata_url = url
         self.lang = lang
         
-        print("Loading Wikidata Entity Linker ("+lang+") from spaCy model")
+        print("Linked to Wikidata ("+lang+"):",self.wikidata_url)
 
         self.nlp = spacy.load("en_core_web_sm")
         #self.nlp = spacy.blank(lang) 
@@ -67,9 +67,12 @@ class Wikidata(kg_summarizer.Summarizer):
         	'timeout': 120000, 
         	'signal_void':'on', 
         	'signal_unconnected':'on' }
-        response = requests.get(self.wikidata_url, params=payload)
-        
-        return response.json()
+        try:
+            response = requests.get(self.wikidata_url, params=payload)
+            return response.json()
+        except Exception as e:
+            print("Error on Wikidata query:",e)
+            return {}
 
 
     def get_to_properties(self,entity):
@@ -93,7 +96,10 @@ class Wikidata(kg_summarizer.Summarizer):
         	'signal_void':'on', 
         	'signal_unconnected':'on' }
         
-        response = requests.get(self.wikidata_url, params=payload)
-        
-        return response.json()
+        try:
+            response = requests.get(self.wikidata_url, params=payload)
+            return response.json()
+        except Exception as e:
+            print("Error on Wikidata query:",e)
+            return {}
 

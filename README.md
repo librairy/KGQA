@@ -185,7 +185,7 @@ The availabe URIs are:
 To answer the question *Where was Fernando Alonso born?* using DBpedia:
 
    ```
-    curl --location --request GET 'localhost:5000/muheqa/dbpedia/en?text=false' --form 'question="Where was Fernando Alonso born?"'
+    curl --location --request GET 'localhost:5000/muheqa/dbpedia/en?evidence=false' --form 'question="Where was Fernando Alonso born?"'
    ```
 
 And the response:
