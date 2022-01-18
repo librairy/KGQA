@@ -25,18 +25,20 @@ def main():
         ]
 
         for i in knowledgeBases:
-            queryURL = "http://127.0.0.1:5000/eqakg/" + i + "/en?text=true"
-            answerList.append(queryJSON(queryURL,data["question"]))
+            queryURL = "http://127.0.0.1:5000/muheqa/" + i + "/en?text=true"
+            answer = queryJSON(queryURL,data["question"])
+            answer["source"] = i
+            answerList.append(answer)
 
         return answerList
-
+    
     def annotateContext(response, answer, context):
         '''
         Funcion auxiliar que anota la respuesta sobre el texto de evidencia
         '''
         tag = "ANSWER"
         color = "#adff2f"
-        if response['answer-2'] != "":
+        if response['result'] != "":
             answer = response['answer-2']
             tag = "EVIDENCE"
             color = "#8ef"
@@ -68,10 +70,10 @@ def main():
     }
 
     st.sidebar.subheader('Options')
-    answerNumber = st.sidebar.slider('How many relevant answers do you want?', min_value=1, max_value=10)
+    answerNumber = st.sidebar.slider('How many relevant answers do you want?', 1, 10, 5)
 
     #Lista de bases de conocimiento sobre las que haremos nuestra consulta
-    knowledgeBases = ["dbpedia"]
+    knowledgeBases = ["dbpedia", "wikidata"]
 
     if question:
         with st.spinner(text=':hourglass: Looking for answers...'):
@@ -85,8 +87,8 @@ def main():
                 answer = i['answer']
                 if answer:
                     st.write("**Answer: **", answer)
-                    context = '...' + i['text'] + '...'
-                    source = "source"
+                    context = '...' + i['evidence'] + '...'
+                    source = i['source']
                     relevance = i['score']
                     annotateContext(i, answer, context)
                     '**Relevance:** ', relevance , '**Source:** ' , source

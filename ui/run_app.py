@@ -20,7 +20,7 @@ def checkEQAServer():
 
     while True:
         try:
-            requests.get("http://127.0.0.1:5000/eqakg/dbpedia/en?text=false", files = files)
+            requests.get("http://127.0.0.1:5000/muheqa/dbpedia/en?text=false", files = files)
             break
         except requests.exceptions.ConnectionError:
             print("EQA SERVER CHECK > Failed to establish connection")
