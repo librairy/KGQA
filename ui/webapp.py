@@ -47,6 +47,7 @@ def main():
         answerPositionEnd = answerPosition + len(answer)
         annotated_text(context[:answerPosition],(answer,tag,color),context[answerPositionEnd:],)
 
+    #Atributos de la pestana
     st.set_page_config(
         page_title = "MuHeQa",
         page_icon = ":book:",
@@ -54,10 +55,12 @@ def main():
         initial_sidebar_state = "auto",
     )
 
+    #Titulo y subtitulo del cuerpo de la interfaz
     st.title('MuHeQa UI')
 
     st.subheader('Question Answering over Multiple and Heterogeneous Knowledge Bases')
     
+    #Texto del cuerpo de la pagina web con Markdown (convierte de texto a HTML)
     st.markdown("""
     Streamlit Web Interface based on MuHeQa - Web Service that creates Natural Language answers from Natural Language questions using as Knowledge Base a combination of both Structured (Knowledge Graphs) and Unstructured (documents) Data.
     """, unsafe_allow_html=True)
@@ -69,13 +72,16 @@ def main():
         'answerNumber': 10
     }
 
+    #Establecemos el titulo de la barra lateral
     st.sidebar.subheader('Options')
+    #Control deslizante para el numero de respuestas a mostrar
     answerNumber = st.sidebar.slider('How many relevant answers do you want?', 1, 10, 5)
 
     #Lista de bases de conocimiento sobre las que haremos nuestra consulta
     knowledgeBases = ["dbpedia", "wikidata"]
 
     if question:
+        #Mensaje de carga para las preguntas. Se muestra mientras que estas se obtienen.
         with st.spinner(text=':hourglass: Looking for answers...'):
             counter = 0
             results = getAnswers(data)
@@ -93,6 +99,7 @@ def main():
                     annotateContext(i, answer, context)
                     '**Relevance:** ', relevance , '**Source:** ' , source
 
+    #Checkbox para debug. Si tenemos respuesta y la caja es marcada, imprimimos las respuestas JSON obtenidas.
     if question and st.sidebar.checkbox('Show debug info'):
         st.subheader('API JSON Response')
         st.write(results)
