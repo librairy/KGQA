@@ -10,41 +10,41 @@ class Wikidata(kg_summarizer.Summarizer):
         super().__init__(lang)
         self.wikidata_url = url
         self.lang = lang
-        
+
         print("Linked to Wikidata ("+lang+"):",self.wikidata_url)
 
         self.nlp = spacy.load("en_core_web_sm")
-        #self.nlp = spacy.blank(lang) 
+        #self.nlp = spacy.blank(lang)
         self.nlp.add_pipe('sentencizer')
         # add pipeline (declared through entry_points in setup.py)
         self.nlp.add_pipe("entityLinker", last=True)
-    
+
 
     def get_summary(self,question):
         doc = self.nlp(question)
-        
+
         text = ""
-        
+
         for entity in doc._.linkedEntities:
             properties = {}
             print("Wikidata entity:",entity)
-                    
+
             fromRelations = self.get_from_properties(entity.get_id())
-            
-            if fromRelations != None:
+
+            if fromRelations != None and 'results' in fromRelations :
                 for result in fromRelations["results"]["bindings"]:
-                    properties[result["propertyLabel"]["value"]]= result["value"]["value"]                        
-            
+                    properties[result["propertyLabel"]["value"]]= result["value"]["value"]
+
             toRelations = self.get_to_properties(entity.get_id())
-            
-            if toRelations != None:
+
+            if toRelations != None and 'results' in toRelations:
                 for result in toRelations["results"]["bindings"]:
                     properties[result["propertyLabel"]["value"]]= result["value"]["value"]
-        
+
             partial_summary = super().get_single_fact_summary(entity.get_label(),properties)
             text +=  partial_summary
         return text
-    
+
 
     def get_from_properties(self,entity):
         entity_uri = "wd:Q" + str(entity)
@@ -59,13 +59,13 @@ class Wikidata(kg_summarizer.Summarizer):
             }
             GROUP BY ?propertyLabel
         """
-        
+
         payload = {
-        	#'default-graph-uri': 'http://wikidata.org', 
-        	'query': query, 
-        	'format': 'json', 
-        	'timeout': 120000, 
-        	'signal_void':'on', 
+        	#'default-graph-uri': 'http://wikidata.org',
+        	'query': query,
+        	'format': 'json',
+        	'timeout': 120000,
+        	'signal_void':'on',
         	'signal_unconnected':'on' }
         try:
             response = requests.get(self.wikidata_url, params=payload)
@@ -89,17 +89,16 @@ class Wikidata(kg_summarizer.Summarizer):
             GROUP BY ?propertyLabel
         """
         payload = {
-        	#'default-graph-uri': 'http://wikidata.org', 
-        	'query': query, 
-        	'format': 'json', 
-        	'timeout': 120000, 
-        	'signal_void':'on', 
+        	#'default-graph-uri': 'http://wikidata.org',
+        	'query': query,
+        	'format': 'json',
+        	'timeout': 120000,
+        	'signal_void':'on',
         	'signal_unconnected':'on' }
-        
+
         try:
             response = requests.get(self.wikidata_url, params=payload)
             return response.json()
         except Exception as e:
             print("Error on Wikidata query:",e)
             return {}
-
