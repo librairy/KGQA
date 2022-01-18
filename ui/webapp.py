@@ -25,7 +25,7 @@ def main():
         ]
 
         for i in knowledgeBases:
-            queryURL = "http://127.0.0.1:5000/muheqa/" + i + "/en?text=true"
+            queryURL = "http://127.0.0.1:5000/muheqa/" + i + "/en?evidence=true"
             answer = queryJSON(queryURL,data["question"])
             answer["source"] = i
             answerList.append(answer)

@@ -63,8 +63,8 @@ def answerQuestion(csvRoute, questionDict, rows, counter, queryURL):
 
     queryTime = round((time.time() - queryStartTime),2)
 
-    text = jsonResponse['text']
-    evidence = jsonResponse['answer-2']
+    text = jsonResponse['evidence']
+    evidence = jsonResponse['result']
     if evidence != "":
         text = re.sub(evidence, "[" + evidence + "]", text)
     
@@ -113,7 +113,7 @@ if __name__ == '__main__':
 
         pool = mp.Pool(processes=6, initargs = (counter,rows,))
 
-        queryUrl = "http://localhost:5000/eqakg/dbpedia/en?text=true"
+        queryUrl = "http://localhost:5000/eqakg/dbpedia/en?evidence=true"
         #queryUrl = "https://librairy.linkeddata.es/eqakg/dbpedia/en?text=false" 
 
         retriever(pool,rows,counter,"data/Vanilla_Dataset_Test.json",queryUrl,"results/VANiLLA.csv", writeHeader=True)

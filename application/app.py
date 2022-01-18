@@ -44,7 +44,7 @@ def handle_question(request,summarizer_list,extractive_qa,response_builder):
     question = request.form['question']
     if 'query' in request.args:
         question = request.args.get('question')
-    textBool = request.args.get('text')
+    return_evidence = request.args.get('evidence')
     print("Making question:",question,"..")
 
     if question is None:
@@ -69,7 +69,7 @@ def handle_question(request,summarizer_list,extractive_qa,response_builder):
     response['answer'] = value[0]
     response['score'] = answer['score']
     response['result'] = value[1]
-    if textBool.lower() == 'true':
+    if return_evidence.lower() == 'true':
         response['evidence'] = answer['summary']
     
     print("Response: ", response['answer'])

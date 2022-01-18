@@ -117,7 +117,7 @@ if __name__ == '__main__':
 
         pool = mp.Pool(processes=6, initargs = (counter,rows,))
 
-        queryUrl = "http://localhost:5000/muheqa/dbpedia/en?text=true"
-        #queryUrl = "https://librairy.linkeddata.es/muheqa/dbpedia/en?text=true" 
+        queryUrl = "http://localhost:5000/muheqa/dbpedia/en?evidence=true"
+        #queryUrl = "https://librairy.linkeddata.es/muheqa/dbpedia/en?evidence=true" 
 
         retriever(pool,rows,counter,"data/test.json",queryUrl,"results/VQuAnDa.csv", writeHeader=True)
