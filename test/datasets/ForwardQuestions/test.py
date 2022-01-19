@@ -6,7 +6,14 @@ from multiprocessing import Pool
 from datetime import datetime
 from timeit import default_timer as timer
 
-endpoint= "all"
+##############################################################
+# Test Parameters
+input_file      = "data/available_questions.json"
+output_file     = "results/available_questions_all.json"
+endpoint        = "muheqa/all/en"
+use_entities    = False
+use_evidence    = True
+###############################################################
 
 def do_question(question_info):
   start = timer()
@@ -14,7 +21,13 @@ def do_question(question_info):
   if (not ref_question.endswith("?")):
       ref_question += "?"
   ref_answers = question_info['object']
-  response = requests.get("http://127.0.0.1:5000/muheqa/"+endpoint+"/en", params={ 'evidence': True}, data={'question':ref_question})
+  input_data = {'question':ref_question}
+  entities=""
+  if (use_entities):
+      entity_id = question_info['subjectCode']
+      entity_name = question_info['subjet']
+      input_data['entities']=entity_id+";"+entity_name
+  response = requests.get("http://127.0.0.1:5000/"+endpoint, params={ 'evidence': use_evidence}, data=input_data)
   if (response.status_code != 200):
     print("QUERY ERROR:",ref_question, " <- response:", response.text)
     return {}
@@ -33,20 +46,15 @@ def do_question(question_info):
 
 if __name__ == '__main__':
 
- filename = "all_questions.json"
- file = os.path.join("data", filename)
- print("reading file",file,"..")
- with open(file,'r') as json_file:
+ print("reading file",input_file,"..")
+ with open(input_file,'r') as json_file:
   data = json.load(json_file)
- print("start")
 
  pool_size = 1
  pool = Pool(pool_size)
  questions = data['questions']
  print(file, ":",len(questions),"questions")
 
- new_filename = filename.split(".")[0]+"_"+endpoint+"."+filename.split(".")[1]
- output_file = os.path.join("results", new_filename)
  with open(output_file, 'w') as json_writer:
 
   incr = pool_size
