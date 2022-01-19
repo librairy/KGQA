@@ -44,19 +44,38 @@ def handle_question(request,summarizer_list,extractive_qa,response_builder):
     question = request.form['question']
     if 'query' in request.args:
         question = request.args.get('question')
-    req_evidence = request.args.get('evidence')
-    print("Making question:",question,"..")
 
     if question is None:
         return jsonify({'error': 'question not received.'}), 200
+
+    entities = None
+    if 'entities' in request.form:
+        entities = request.form['entities']
+    if 'entities' in request.args:
+        entities = request.args.get('entities')
+    entity_list = []
+    if entities is not None:
+        print("entities:",entities)
+        for e in entities.split(","):
+            values = e.split(";")
+            entity_list.append({ 'id': values[0], 'name': values[1]})
+
+    req_evidence = request.args.get('evidence')
+    print("Making question:",question,"..")
+
 
     # Compose Summary
     question = decapitalize(question)
     summary = ""
     for summarizer in summarizer_list:
-        partial_summary = summarizer.get_summary(question)
+        partial_summary = ""
+        if (len(entity_list)==0):
+            partial_summary = summarizer.get_summary(question)
+        else:
+            partial_summary = summarizer.get_summary_from_entities(question,entity_list)
         summary += partial_summary + " "
 
+    print("summary:",summary)        
     # Extract Answer
     answer = extractive_qa.get_answer(question,summary)
 

@@ -22,32 +22,33 @@ class Wikidata(kg_summarizer.Summarizer):
 
     def get_summary(self,question):
         doc = self.nlp(question)
+        entities = [{ 'id':"Q"+str(e.get_id()), 'name':e.get_label() } for e in doc._.linkedEntities]
+        return self.get_summary_from_entities(question, entities)
 
+    def get_summary_from_entities(self,question,entities):
         text = ""
-
-        for entity in doc._.linkedEntities:
+        print("Wikidata Entities:",entities)
+        for entity in entities:
             properties = {}
-            print("Wikidata entity:",entity)
 
-            fromRelations = self.get_from_properties(entity.get_id())
+            fromRelations = self.get_from_properties(entity['id'])
 
             if fromRelations != None and 'results' in fromRelations :
                 for result in fromRelations["results"]["bindings"]:
                     properties[result["propertyLabel"]["value"]]= result["value"]["value"]
 
-            toRelations = self.get_to_properties(entity.get_id())
+            toRelations = self.get_to_properties(entity['id'])
 
             if toRelations != None and 'results' in toRelations:
                 for result in toRelations["results"]["bindings"]:
                     properties[result["propertyLabel"]["value"]]= result["value"]["value"]
 
-            partial_summary = super().get_single_fact_summary(entity.get_label(),properties)
+            partial_summary = super().get_single_fact_summary(entity['name'],properties)
             text +=  partial_summary
         return text
 
-
     def get_from_properties(self,entity):
-        entity_uri = "wd:Q" + str(entity)
+        entity_uri = "wd:" + str(entity)
         query = """SELECT ?propertyLabel
                     (GROUP_CONCAT(DISTINCT ?valueLabel;separator=", ") AS ?value)
                 WHERE{
@@ -76,7 +77,7 @@ class Wikidata(kg_summarizer.Summarizer):
 
 
     def get_to_properties(self,entity):
-        entity_uri = "wd:Q" + str(entity)
+        entity_uri = "wd:" + str(entity)
         query = """SELECT ?propertyLabel
                     (GROUP_CONCAT(DISTINCT ?valueLabel;separator=", ") AS ?value)
                 WHERE{
@@ -88,6 +89,7 @@ class Wikidata(kg_summarizer.Summarizer):
             }
             GROUP BY ?propertyLabel
         """
+
         payload = {
         	#'default-graph-uri': 'http://wikidata.org',
         	'query': query,

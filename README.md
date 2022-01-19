@@ -9,7 +9,7 @@
 
 ## Basic Overview
 
-Web service that creates natural language answers from natural language questions using as knowledge base a combination of structured (KG) and unstructured (documents) data. 
+Web service that creates natural language answers from natural language questions using as knowledge base a combination of structured (KG) and unstructured (documents) data.
 
 ## Quick Start (based on a Docker environment)
 
@@ -55,7 +55,7 @@ Let's explore DBpedia through natural language questions:
 
 ## Local Set up (based on a Python environment)
 
-If you prefer to start the service via a Python environment instead of using Docker images, you will need to have Python version [3.9.5](https://www.python.org/downloads/release/python-395/) 64-bit installed: 
+If you prefer to start the service via a Python environment instead of using Docker images, you will need to have Python version [3.9.5](https://www.python.org/downloads/release/python-395/) 64-bit installed:
 
 1. Clone this repo
 
@@ -96,7 +96,7 @@ If you prefer to start the service via a Python environment instead of using Doc
      * Debug mode: off
      * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
     ```
-    
+
 ## Local Set up (based on a Python and Mac M1 environment)
 1. Clone this repo
 	```
@@ -127,7 +127,7 @@ If you prefer to start the service via a Python environment instead of using Doc
     pip install spacy-entity-linker==1.0.1
     pip install spacy-legacy==3.0.8
     ````
-1. Compile and Intall the `tokenizers` from Huggingface: 
+1. Compile and Intall the `tokenizers` from Huggingface:
     ````
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
     cd /Users/cbadenes/Projects
@@ -136,7 +136,7 @@ If you prefer to start the service via a Python environment instead of using Doc
     pip install setuptools_rust
     python setup.py install
     `````
-1. Compile and Intall the `transformers` from Huggingface: 
+1. Compile and Intall the `transformers` from Huggingface:
     ````
     pip install git+https://github.com/huggingface/transformers
     `````
@@ -185,7 +185,7 @@ The availabe URIs are:
 To answer the question *Where was Fernando Alonso born?* using DBpedia:
 
    ```
-    curl --location --request GET 'localhost:5000/muheqa/dbpedia/en?evidence=false' --form 'question="Where was Fernando Alonso born?"'
+    curl --location --request GET 'http://127.0.0.1:5000/muheqa/dbpedia/en?evidence=false' --form 'question="Where was Fernando Alonso born?"'
    ```
 
 And the response:
@@ -197,5 +197,3 @@ And the response:
      "textLen":10143
    }
    ```
-
-

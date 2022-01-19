@@ -18,29 +18,32 @@ class DBpedia(kg_summarizer.Summarizer):
 
     def get_summary(self,question):
         doc = self.nlp(question)
+        entities = [{ 'id': e.kb_id_, 'name': e.text} for e in doc.spans['dbpedia_spotlight']]
+        text = self.get_summary_from_entities(question, entities)
+        return text
 
+
+    def get_summary_from_entities(self,question,entities):
         text = ""
-
-        for entity in doc.spans['dbpedia_spotlight']:
-            print("Entity: ", entity,"[", entity.kb_id_,"]")
+        print("DBpedia entities:",entities)
+        for entity in entities:
             properties = {}
 
-            fromRelations = self.get_from_properties(entity.kb_id_)
+            fromRelations = self.get_from_properties(entity['id'])
 
             if fromRelations != None:
                 for result in fromRelations["results"]["bindings"]:
                     properties[result["propertyLabel"]["value"]]= result["valueLabel"]["value"]
 
-            toRelations = self.get_to_properties(entity.kb_id_)
+            toRelations = self.get_to_properties(entity['id'])
 
             if toRelations != None:
                 for result in toRelations["results"]["bindings"]:
                     properties[result["propertyLabel"]["value"]]= result["valueLabel"]["value"]
 
-            partial_summary = super().get_single_fact_summary(entity.text,properties)
+            partial_summary = super().get_single_fact_summary(entity['name'],properties)
             text +=  partial_summary
         return text
-
 
     def get_from_properties(self,entity):
         query = "PREFIX dbr: <http://dbpedia.org/resource/> \n" + "SELECT ?propertyLabel (GROUP_CONCAT(DISTINCT ?valueLabel ; SEPARATOR=\", \") AS ?valueLabel ) {\n"+ "<" + entity + """> ?property ?value .
