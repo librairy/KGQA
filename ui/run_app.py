@@ -13,6 +13,8 @@ def runServer(dir):
 def checkEQAServer():
     """
     Funcion auxiliar que comprueba que el servidor de EQA esta corriendo
+    haciendo una pregunta al servidor y viendo que no de ConnectionError
+    TO-DO: Usar HEAD Request para ahorrar recursos
     """
     files = {
         'question': (None, "Where was Fernando Alonso born?"),
@@ -20,7 +22,7 @@ def checkEQAServer():
 
     while True:
         try:
-            requests.get("http://127.0.0.1:5000/muheqa/dbpedia/en?text=false", files = files)
+            requests.get("http://127.0.0.1:5000/muheqa/dbpedia/en?evidence=false", files = files)
             break
         except requests.exceptions.ConnectionError:
             print("EQA SERVER CHECK > Failed to establish connection")

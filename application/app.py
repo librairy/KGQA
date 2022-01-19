@@ -44,6 +44,7 @@ def handle_question(request,summarizer_list,extractive_qa,response_builder):
     question = request.form['question']
     if 'query' in request.args:
         question = request.args.get('question')
+    print("Making question:",question,"..")
 
     if question is None:
         return jsonify({'error': 'question not received.'}), 200
@@ -75,7 +76,7 @@ def handle_question(request,summarizer_list,extractive_qa,response_builder):
             partial_summary = summarizer.get_summary_from_entities(question,entity_list)
         summary += partial_summary + " "
 
-    print("summary:",summary)        
+    print("summary:",summary)
     # Extract Answer
     answer = extractive_qa.get_answer(question,summary)
 
