@@ -65,33 +65,8 @@ def parseDataset(dataset):
     df = df[["question_id","question","answer"]]
     df.to_csv(datasetRoute + "parsedDataset.csv", sep = ";", quoting=csv.QUOTE_ALL, index=False)
 
+
 #Ejecutamos parseDataset para nuestros datasets
-"""
 datasets = ["VANiLLA","VQuAnDa","LC-QuAD_2.0"]
 for i in datasets:
     parseDataset(i)
-"""
-
-
-"""
-#Read json file
-import json
-with open('mdrive.json') as f:
- data = json.load(f)
-#Install Library
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-
-
-# use creds to create a client to interact with the Google Drive API
-scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive','https://www.googleapis.com/auth/drive.file','https://www.googleapis.com/auth/spreadsheets']
-creds = ServiceAccountCredentials.from_json_keyfile_name('mdrive.json', scope)
-client = gspread.authorize(creds)
-
-# Find a workbook by name and open the first sheet
-# Make sure you use the right name here.
-sheet = client.open("webscrap").sheet1
-
-# Extract and print all of the values
-data = sheet.get_all_records()
-"""
