@@ -8,6 +8,7 @@ resources_dir
 .DS_Store
 # C extensions
 *.so
+/apicache-py3/
 
 # Distribution / packaging
 .Python
