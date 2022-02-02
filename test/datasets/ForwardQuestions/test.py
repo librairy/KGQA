@@ -5,19 +5,44 @@ import jsonlines
 from multiprocessing import Pool
 from datetime import datetime
 from timeit import default_timer as timer
+import pywikibot
+
 
 ##############################################################
 # Test Parameters
-input_file      = "data/available_questions.json"
-output_file     = "results/available_questions_all.json"
-endpoint        = "muheqa/all/en"
+limit           = 33000
+input_file      = "data/all_questions.json"
+endpoint        = "muheqa/wikidata/en"
 use_entities    = False
-use_evidence    = True
+get_evidence    = True
 ###############################################################
+test_name            = "_".join([endpoint.split("/")[1], str(int(use_entities)), str(int(get_evidence)), str(limit)])
+output_file     = "results/bert/"+test_name+".json"
+
+site = pywikibot.Site("wikidata", "wikidata")
+repo = site.data_repository()
+
+def is_valid(question_info):
+    subject_code = question_info['subjectCode'].replace(" ","_")
+    url = "https://www.wikidata.org/wiki/"+subject_code
+    item = pywikibot.ItemPage(repo, subject_code)
+    try:
+        item_dict = item.get()
+        print("Entity:", subject_code,"exists")
+        return True
+    except pywikibot.exceptions.IsRedirectPageError as e:
+        print("Entity:",subject_code,"is redirected")
+        return False
+    except pywikibot.exceptions.NoPageError as e:
+        print("Entity:",subject_code,"is missing")
+        return False
+
 
 def do_question(question_info):
   start = timer()
   ref_question = question_info['question']
+  if (not is_valid(question_info)):
+      return {}
   if (not ref_question.endswith("?")):
       ref_question += "?"
   ref_answers = question_info['object']
@@ -27,7 +52,7 @@ def do_question(question_info):
       entity_id = question_info['subjectCode']
       entity_name = question_info['subjet']
       input_data['entities']=entity_id+";"+entity_name
-  response = requests.get("http://127.0.0.1:5000/"+endpoint, params={ 'evidence': use_evidence}, data=input_data)
+  response = requests.get("http://127.0.0.1:5000/"+endpoint, params={ 'evidence': get_evidence}, data=input_data)
   if (response.status_code != 200):
     print("QUERY ERROR:",ref_question, " <- response:", response.text)
     return {}
@@ -37,7 +62,7 @@ def do_question(question_info):
       'ref_question':ref_question,
       'ref_answers':ref_answers,
       'answer': str(response_json['answer']),
-      'score': response_json['score'],
+      'confidence': response_json['confidence'],
       'evidence': response_json['evidence'],
       'time': end-start
   }
@@ -46,14 +71,14 @@ def do_question(question_info):
 
 if __name__ == '__main__':
 
- print("reading file",input_file,"..")
+ print("reading file",input_file," in test:", test_name,"..")
  with open(input_file,'r') as json_file:
   data = json.load(json_file)
 
  pool_size = 1
  pool = Pool(pool_size)
  questions = data['questions']
- print(file, ":",len(questions),"questions")
+ print(input_file, ":",len(questions),"questions")
 
  with open(output_file, 'w') as json_writer:
 
@@ -61,7 +86,8 @@ if __name__ == '__main__':
   min = 0
   max = incr
 
-  total = len(questions)
+  #total = len(questions)
+  total = limit
 
   while(min < total):
    responses = pool.map(do_question, questions[min:max])
