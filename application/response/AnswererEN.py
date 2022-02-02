@@ -22,7 +22,10 @@ class AnswererEN:
         response = answer
         response2 = answer
         if (category['category'] == 'boolean'):
-            if not answer:
+            q_parts = question.lower().split(" ")
+            if ('or' in q_parts):
+                response = answer
+            elif not answer:
                 response2 = "None"
                 response = "False"
             else:
