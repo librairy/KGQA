@@ -12,6 +12,7 @@ import application.extraction.BertEN as bert_en
 import application.extraction.RobertaCovidEN as roberta_covid_en
 import application.extraction.RobertaEN as roberta_en
 import application.response.AnswererEN as answerer_en
+import application.workflow as wf
 
 from pprint import pprint
 
@@ -20,6 +21,7 @@ app.config.from_object(config)
 
 cors = CORS(app)
 
+workflow = wf.Workflow()
 dbpediaEN = dbpedia_en.DBpediaEN()
 dbpediaES = dbpedia_es.DBpediaES()
 wikidataEN = wikidata_en.WikidataEN()
@@ -31,10 +33,6 @@ robertaEN = roberta_en.RobertaEN()
 answererEN = answerer_en.AnswererEN()
 
 
-def decapitalize(str):
-    return str[:1].lower() + str[1:]
-
-
 @app.before_request
 def before_request():
     app.logger.info('Request with question: %s for the uri %s .', request.method, request.path)
@@ -44,54 +42,20 @@ def handle_question(request,summarizer_list,extractive_qa,response_builder):
     question = request.form['question']
     if 'query' in request.args:
         question = request.args.get('question')
-    print("Making question:",question,"..")
-
     if question is None:
         return jsonify({'error': 'question not received.'}), 200
 
-    entities = None
+    req = { 'question': question}
+
     if 'entities' in request.form:
-        entities = request.form['entities']
+        req['entities'] = request.form['entities']
     if 'entities' in request.args:
-        entities = request.args.get('entities')
-    entity_list = []
-    if entities is not None:
-        print("input entities:",entities)
-        for e in entities.split("#"):
-            values = e.split(";")
-            entity_list.append({ 'id': values[0], 'name': values[1]})
+        req['entities'] = request.args.get('entities')
 
-    req_evidence = request.args.get('evidence')
+    if ('evidence' in request.args):
+        req['evidence'] = request.args.get('evidence')
 
-
-    # Compose Summary
-    question = decapitalize(question)
-    summary = ""
-    for summarizer in summarizer_list:
-        partial_summary = ""
-        if (len(entity_list)==0):
-            partial_summary = summarizer.get_summary(question)
-        else:
-            partial_summary = summarizer.get_summary_from_entities(question,entity_list)
-        summary += partial_summary + " "
-
-    # Extract Answer
-    answer = extractive_qa.get_answer(question,summary)
-
-    # Create Reponse
-    value = response_builder.get_response(question, answer['value'])
-
-    # Return value
-    response = {}
-    response['question'] = question
-    response['answer'] = value[0]
-    response['confidence'] = answer['score']
-    response['result'] = value[1]
-    if req_evidence.lower() == 'true':
-        response['evidence'] = answer['summary']
-
-    print("Response: ", response['answer'])
-
+    response = workflow.process(req,summarizer_list,extractive_qa,response_builder)
     return jsonify(response), 200
 
 
