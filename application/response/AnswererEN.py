@@ -18,7 +18,7 @@ class AnswererEN:
     def get_response(self, question, answer):
         category = self.classifier.get_category(question)
         print("Category:",category['category'])
-        print("Type:",category['type'])
+        #print("Type:",category['type'])
         response = answer
         response2 = answer
         if (category['category'] == 'boolean'):
