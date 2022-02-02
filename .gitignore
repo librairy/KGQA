@@ -5,7 +5,7 @@ __pycache__/
 *-env/**
 eqakg-env/**
 resources_dir
-
+.DS_Store
 # C extensions
 *.so
 
