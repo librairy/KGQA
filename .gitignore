@@ -8,7 +8,8 @@ resources_dir
 .DS_Store
 # C extensions
 *.so
-/apicache-py3/
+apicache-py3/
+throttle.ctrl
 
 # Distribution / packaging
 .Python
