@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 from annotated_text import annotated_text
 import operator
-#from utils import db
+from utils import db
 
 def queryJSON(queryURL, question):
     '''
@@ -82,7 +82,7 @@ def main():
     answerNumber = st.sidebar.slider('How many relevant answers do you want?', 1, 10, 5)
 
     #Lista de bases de conocimiento sobre las que haremos nuestra consulta
-    knowledgeBases = ["dbpedia", "wikidata"]
+    knowledgeBases = ["wikidata","dbpedia","cord19"]
 
     if question:
         #Mensaje de carga para las preguntas. Se muestra mientras que estas se obtienen.
@@ -90,7 +90,7 @@ def main():
             counter = 0
             buttonKey = 1
             results = getAnswers(data)
-            results.sort(key = operator.itemgetter('score'), reverse = True)
+            results.sort(key = operator.itemgetter('confidence'), reverse = True)
             for i in results:
                 if counter >= answerNumber:
                     break
@@ -100,7 +100,7 @@ def main():
                     st.write("**Answer: **", answer)
                     context = '...' + i['evidence'] + '...'
                     source = i['source']
-                    relevance = i['score']
+                    relevance = i['confidence']
                     annotateContext(i, answer, context)
                     '**Relevance:** ', relevance , '**Source:** ' , source
                     col1, col2 = st.columns([1,1])

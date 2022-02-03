@@ -41,7 +41,7 @@ def insertRow(sheet):
     """
     pass
 
-def getQuestionsInSheet(sheet):
+def getRecordsInSheet(sheet):
     """
     Funcion auxiliar que obtiene todas las preguntas en una determinada hoja
     Sea esta hoja un dataset de EQA que sigue nuestro formato
@@ -49,7 +49,4 @@ def getQuestionsInSheet(sheet):
     client = gspread.authorize(creds)
     sheetClient = client.open("MuHeQa_Validation").worksheet(sheet)
     records = sheetClient.get_all_records()
-    questions = []
-    for i in records:
-        questions.append(i["question"])
-    return questions
+    return records
