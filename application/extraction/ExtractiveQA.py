@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from transformers import pipeline
 
-class LanguageModel:
+class ExtractiveQA:
 
     def __init__(self,name):
         print("Loading "+name+" model..")
