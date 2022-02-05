@@ -2,36 +2,34 @@ from flask import Flask, request, abort, jsonify, send_from_directory#, session,
 from logging.handlers import RotatingFileHandler
 from application import config
 from flask_cors import CORS
-
-import application.summary.DBpediaEN as dbpedia_en
-import application.summary.DBpediaES as dbpedia_es
-import application.summary.WikidataEN as wikidata_en
-import application.summary.WikidataES as wikidata_es
-import application.summary.Cord19EN as cord19_en
-import application.extraction.BertEN as bert_en
-import application.extraction.RobertaCovidEN as roberta_covid_en
-import application.extraction.RobertaEN as roberta_en
-import application.response.AnswererEN as answerer_en
-import application.workflow as wf
-
 from pprint import pprint
+
+import application.summary.kg.dbpedia.DBpediaEN as dbpedia_en
+import application.summary.kg.wikidata.WikidataEN as wikidata_en
+import application.summary.txt.Cord19EN as cord19_en
+
+import application.extraction.BertEQA as bert_eqa_en
+import application.extraction.RobertaCovidEQA as roberta_covid_en
+import application.extraction.RobertaEQA as roberta_en
+
+import application.response.BertAnswererEN as response_en
+
+import application.workflow as wf
 
 app = Flask(__name__)
 app.config.from_object(config)
 
 cors = CORS(app)
 
-workflow = wf.Workflow()
 dbpediaEN = dbpedia_en.DBpediaEN()
-dbpediaES = dbpedia_es.DBpediaES()
 wikidataEN = wikidata_en.WikidataEN()
-wikidataES = wikidata_es.WikidataES()
 cord19EN = cord19_en.Cord19EN()
-bertEN = bert_en.BertEN()
-robertaCovidEN = roberta_covid_en.RobertaCovidEN()
-robertaEN = roberta_en.RobertaEN()
-answererEN = answerer_en.AnswererEN()
 
+bertEQA = bert_eqa_en.BertEQA()
+robertaCovidEQA = roberta_covid_en.RobertaCovidEQA()
+robertaEQA = roberta_en.RobertaEQA()
+
+bertRsp = response_en.BertAnswererEN()
 
 @app.before_request
 def before_request():
@@ -43,7 +41,7 @@ def handle_question(request,summarizer_list,extractive_qa,response_builder):
     if 'query' in request.args:
         question = request.args.get('question')
     if question is None:
-        return jsonify({'error': 'question not received.'}), 200
+        return jsonify({'error': 'question not received.'}), 400
 
     req = { 'question': question}
 
@@ -55,7 +53,8 @@ def handle_question(request,summarizer_list,extractive_qa,response_builder):
     if ('evidence' in request.args):
         req['evidence'] = request.args.get('evidence')
 
-    response = workflow.process(req,summarizer_list,extractive_qa,response_builder)
+    workflow = wf.Workflow(summarizer_list,extractive_qa,response_builder)
+    response = workflow.process(req)
     return jsonify(response), 200
 
 
@@ -63,35 +62,35 @@ def handle_question(request,summarizer_list,extractive_qa,response_builder):
 @app.route('/muheqa/dbpedia/en', methods=['GET'])
 @app.route('/muheqa/dbpedia', methods=['GET'])
 def get_dbpedia_en():
-    return handle_question(request, [dbpediaEN], bertEN, answererEN)
+    return handle_question(request, [dbpediaEN], bertEQA, bertRsp)
 
 ## Spanish DBpedia
 @app.route('/muheqa/dbpedia/es', methods=['GET'])
 def get_dbpedia_es():
-    return handle_question(request, [dbpediaES], bertEN, answererEN)
+    return handle_question(request, [dbpediaES], bertEQA, bertRsp)
 
 ## English Wikidata
 @app.route('/muheqa/wikidata/en', methods=['GET'])
 @app.route('/muheqa/wikidata', methods=['GET'])
 def get_wikidata_en():
-    return handle_question(request, [wikidataEN], bertEN, answererEN)
+    return handle_question(request, [wikidataEN], bertEQA, bertRsp)
 
 ## Spanish Wikidata
 @app.route('/muheqa/wikidata/es', methods=['GET'])
 def get_wikidata_es():
-    return handle_question(request, [wikidataES], bertEN, answererEN)
+    return handle_question(request, [wikidataES], bertEQA, bertRsp)
 
 ## English DBpedia
 @app.route('/muheqa/cord19/en', methods=['GET'])
 @app.route('/muheqa/cord19', methods=['GET'])
 def get_cord19_en():
-    return handle_question(request, [cord19EN], robertaCovidEN, answererEN)
+    return handle_question(request, [cord19EN], robertaCovidEQA, bertRsp)
 
 ## All combined
 @app.route('/muheqa/all/en', methods=['GET'])
 @app.route('/muheqa/all', methods=['GET'])
 def get_all_en():
-    return handle_question(request, [dbpediaEN, wikidataEN, cord19EN], robertaCovidEN, answererEN)
+    return handle_question(request, [dbpediaEN, wikidataEN, cord19EN], robertaCovidEQA, bertRsp)
 
 @app.errorhandler(404)
 def page_not_found(error):
