@@ -19,8 +19,8 @@ Variables globales:
 """
 scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
 spreadsheet = "MuHeQa_Validation"
-spreadsheet_id = "1TY6Tj1OwITOW3o1nYRFFRY1bunvHNImUj-J0omRq4-I"
-sheet = "Validation"
+spreadsheetId = "1TY6Tj1OwITOW3o1nYRFFRY1bunvHNImUj-J0omRq4-I"
+validationSheet = "Validation"
 
 if os.path.exists('credentials.json'):
     creds = ServiceAccountCredentials.from_json_keyfile_name('credentials.json', scope)
@@ -35,21 +35,29 @@ def connectToSheet():
     service = build("sheets","v4",credentials=creds)
     return service.spreadsheets()
 
-def insertRow(sheet):
+def insertRow():
     """
     Funcion auxiliar que inserta una nueva fila en la Hoja de Validacion
     """
     pass
 
-def getQuestionsInSheet(sheet):
+def getRecordsInSheet(sheet):
     """
     Funcion auxiliar que obtiene todas las preguntas en una determinada hoja
     Sea esta hoja un dataset de EQA que sigue nuestro formato
     """
     client = gspread.authorize(creds)
-    sheetClient = client.open("MuHeQa_Validation").worksheet(sheet)
+    sheetClient = client.open(spreadsheet).worksheet(sheet)
     records = sheetClient.get_all_records()
-    questions = []
-    for i in records:
-        questions.append(i["question"])
-    return questions
+    return records
+
+def getDatasetsInSheet(sheet):
+    """
+    Funcion auxiliar que devuelve una lista con  
+    el nombre de las hojas que contienen un Dataset
+    """
+    sheetMetadata = sheet.get(spreadsheetId=spreadsheetId).execute()
+    properties = sheetMetadata.get('sheets')
+    datasetList = []
+    [datasetList.append(i.get("properties").get('title')) for i in properties if "Dataset" in i.get("properties").get('title')]
+    return datasetList
