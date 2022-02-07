@@ -22,7 +22,7 @@ The MuHeQA (Multiple and Heterogeneous Question-Answering) system creates natura
 
 ## Preparation
 
-1. Prepare an environment with [Python 3](https://www.python.org/downloads/release/python-395/) and [Conda](https://docs.conda.io)
+1. Prepare a [Python 3](https://www.python.org/downloads/release/python-395/) environment with  [Conda](https://docs.conda.io) installed
 1. Clone this repo
 	  ```
 	  git clone https://github.com/librairy/MuHeQA.git
