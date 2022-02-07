@@ -7,7 +7,7 @@
 ![Task](https://img.shields.io/badge/task-EQAKG-green.svg)
 [![License](https://img.shields.io/badge/license-Apache2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
-The MuHeQA (Multiple and Heterogeneous Question-Answering) system as presented in [XXX]() to creates natural language answers from natural language questions using knowledge base from both structured (KG) and unstructured (documents) data sources.
+The MuHeQA (Multiple and Heterogeneous Question-Answering) system creates natural language answers from natural language questions using knowledge base from both structured (KG) and unstructured (documents) data sources.
 
 
 ```bibtex
@@ -54,7 +54,7 @@ If you prefer to start the service via a Python environment instead of using Doc
     pip install --upgrade --force --no-dependencies tensorflow-macos
     pip install --upgrade --force --no-dependencies tensorflow-metal
     `````
-1. Install the required libraries:
+1. Install the following libraries:
     ````
     pip install Flask==1.1.4
     pip install Flask-Cors==3.0.10
@@ -65,7 +65,7 @@ If you prefer to start the service via a Python environment instead of using Doc
     pip install spacy-entity-linker==1.0.1
     pip install spacy-legacy==3.0.8
     ````
-1. Compile and install the `tokenizers` from Huggingface:
+1. Compile and install the `tokenizers` module from Huggingface:
     ````
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
     cd /Users/cbadenes/Projects
@@ -74,40 +74,36 @@ If you prefer to start the service via a Python environment instead of using Doc
     pip install setuptools_rust
     python setup.py install
     `````
-1. Compile and Intall the `transformers` from Huggingface:
+1. Compile and install the `transformers` module from Huggingface:
     ````
     pip install git+https://github.com/huggingface/transformers
     `````
-1. Install and update final requirements
+1. And finally, install `torch` and `keras`
     ````
     pip install flatbuffers
     pip install keras==2.6.0
-    ````
-1. And finally, install `torch`
-    ````
-    pip install torch
+		pip install torch
     ````
 
-## Quick start
+## Service start-up
 
+1. Once the environment is ready, just execute the following command (`runserver` for development mode and `runprodserver` for production mode ):
+    ```
+    python manage.py runserver
+    ```
+1.  It may take some minutes to load some external resources. The following logs will appear when everything is ready:
 
-		1. Run the service (`runserver` for development mode and `runprodserver` for production mode ):
-		    ```
-		    python manage.py runserver
-		    ```
-		1.  It may take some minutes to load some external resources. The following logs will appear when everything is ready:
-
-		    ```
-		    Answering for predictions without further training.
-		    Loaded
-		    Ready to answer question from Wikidata in english:
-		     * Serving Flask app "application.app" (lazy loading)
-		     * Environment: production
-		        WARNING: This is a development server. Do not use it in a production deployment.
-		        Use a production WSGI server instead.
-		     * Debug mode: off
-		     * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-		    ```
+    ```
+    Answering for predictions without further training.
+    Loaded
+    Ready to answer question from Wikidata in english:
+     * Serving Flask app "application.app" (lazy loading)
+     * Environment: production
+        WARNING: This is a development server. Do not use it in a production deployment.
+        Use a production WSGI server instead.
+     * Debug mode: off
+     * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+    ```
 
 
 
