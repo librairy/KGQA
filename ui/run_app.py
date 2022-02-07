@@ -8,10 +8,10 @@ def runServer(dir):
     """
     Funcion auxiliar que ejecuta el servidor de EQA
     """
-    p = subprocess.Popen(["python", "manage.py", "runserver"], cwd = dir)        
+    subprocess.Popen(["python", "manage.py", "runserver"], cwd = dir)        
 
 def checkEQAServer():
-    """
+    """ 
     Funcion auxiliar que comprueba que el servidor de EQA esta corriendo
     haciendo una pregunta al servidor y viendo que no de ConnectionError
     TO-DO: Usar HEAD Request para ahorrar recursos
@@ -42,4 +42,4 @@ if __name__ == '__main__':
     checkEQAServer()
 
     #Corremos la interfaz web
-    p = subprocess.run(["streamlit", "run", "webapp.py"], cwd = fileDir)    
+    subprocess.run(["streamlit", "run", "webapp.py"], cwd = fileDir)    
