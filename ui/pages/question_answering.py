@@ -15,7 +15,7 @@ def queryJSON(queryURL, question):
     response = requests.get(queryURL, files = files)
     return response.json()
 
-def app():
+def main():
 
     @st.cache(show_spinner=False, allow_output_mutation=True)
     def getAnswers(data):

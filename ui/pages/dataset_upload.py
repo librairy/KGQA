@@ -1,6 +1,6 @@
 import streamlit as st
 
-def app():
+def main():
 
     #Subtitulo de la seccion de subida de conjuntos de datos
     st.subheader('Dataset Upload')

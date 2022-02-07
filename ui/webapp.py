@@ -1,7 +1,7 @@
 import streamlit as st
 
 #Importamos el gestor de multiples paginas
-from multipage import MultiPage 
+from utils.multipage import MultiPage 
 #Importamos las aplicaciones correspondientes a las distintas paginas de nuestra interfaz
 from pages import question_answering, dataset_upload
 
@@ -26,8 +26,8 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 #Agregamos las distintas paginas
-app.add_page("Question-Answering",question_answering.app)
-app.add_page("Upload Dataset",dataset_upload.app)
+app.add_page("Question-Answering",question_answering.main)
+app.add_page("Upload Dataset",dataset_upload.main)
 
 #Ejecutamos el codigo de la pagina principal
 app.run()
