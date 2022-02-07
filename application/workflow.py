@@ -33,19 +33,19 @@ class Workflow:
             partial_summary = summarizer.get_summary(question, entity_list)
             summary += partial_summary + ". "
 
-        # Extract Answer
-        answer = self.evidence_component.get_answer(question,summary)
-
-        # Create Reponse
-        response = self.answer_component.get_response(question, answer['value'])
-
-        # Return value
         result = {}
         result['question'] = question
-        result['answer'] = response
-        result['confidence'] = answer['score']
-        if (str(req_evidence).lower() == 'true'):
-            result['evidence'] = answer['summary']
+        result['answer'] = "-"
+        result['confidence'] = 0.0
+        if (len(summary) > 0 ):
+            # Extract Answer
+            answer = self.evidence_component.get_answer(question,summary)
+            result['confidence'] = answer['score']
+            if (str(req_evidence).lower() == 'true'):
+                result['evidence'] = answer['summary']
+            # Create Reponse
+            response = self.answer_component.get_response(question, answer['value'])
+            result['answer'] = response
 
         print("Response: ", result['answer'])
 
