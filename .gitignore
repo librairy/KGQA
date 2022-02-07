@@ -10,7 +10,7 @@ resources_dir
 *.so
 apicache-py3/
 throttle.ctrl
-
+pytorch_model.bin
 # Distribution / packaging
 .Python
 build/
