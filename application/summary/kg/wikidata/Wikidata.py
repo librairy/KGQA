@@ -26,7 +26,12 @@ class Wikidata(kg_summarizer.KGSummarizer):
         if (len(candidate_entities) == 0):
             doc = self.nlp(question)
             print("doc:",doc)
-            candidate_entities = [{ 'id':"Q"+str(e.get_id()), 'name':e.get_label() } for e in doc._.linkedEntities]
+            for entity in doc._.linkedEntities:
+                # filter by entity facts
+                if (len(entity.get_sub_entities(limit=1))==0):
+                    candidate_entities.append({ 'id': "Q"+str(entity.get_id()), 'name': entity.get_label()})
+            #candidate_entities = [{ 'id':"Q"+str(e.get_id()), 'name':e.get_label() } for e in doc._.linkedEntities]
+
         text = ""
         print("Wikidata Entities:",candidate_entities)
         for entity in candidate_entities:
@@ -74,7 +79,7 @@ class Wikidata(kg_summarizer.KGSummarizer):
             response = requests.get(self.wikidata_url, params=payload)
             return response.json()
         except Exception as e:
-            print("Error on Wikidata query:",e)
+            print("Error on Wikidata query:",payload, " =>",e)
             return {}
 
 
@@ -104,5 +109,5 @@ class Wikidata(kg_summarizer.KGSummarizer):
             response = requests.get(self.wikidata_url, params=payload)
             return response.json()
         except Exception as e:
-            print("Error on Wikidata query:",e)
+            print("Error on Wikidata query:",payload, " =>",e)
             return {}
