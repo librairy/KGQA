@@ -4,6 +4,7 @@ import pathlib
 import os.path
 from transformers import T5Tokenizer, T5ForConditionalGeneration,Adafactor
 
+# Download model (pytorch_model.bin) in model/ folder from:
 class DataModel:
 
     def __init__(self):
