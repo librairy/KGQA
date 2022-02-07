@@ -22,12 +22,10 @@ The MuHeQA (Multiple and Heterogeneous Question-Answering) system creates natura
 
 ## Preparation
 
-If you prefer to start the service via a Python environment instead of using Docker images, you will need to have Python version [3.9.5](https://www.python.org/downloads/release/python-395/) 64-bit installed:
-
 1. Prepare an environment with [Python 3](https://www.python.org/downloads/release/python-395/) and [Conda](https://docs.conda.io)
 1. Clone this repo
 	  ```
-	  git clone https://github.com/librairy/EQAKG.git
+	  git clone https://github.com/librairy/MuHeQA.git
 	  ```
 1. Move into the root directory.
     ```
