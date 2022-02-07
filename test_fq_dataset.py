@@ -28,7 +28,8 @@ class FQTest(unittest.TestCase):
         print("###############  Test:")
         self.input_data = "application/datasets/forwardquestions/data/all_questions.json"
         self.dataset    = fqd.ForwardQuestionsDataset(input_file=self.input_data)
-        self.size       = 100
+        self.size       = 1000
+        self.out_folder = "results/"
 
     def tearDown(self):
         print("Test done!")
@@ -44,7 +45,7 @@ class FQTest(unittest.TestCase):
         extraction  = bertEQA
         response    = bertRsp
         workflow    = wf.Workflow(summary,extraction,response)
-        count       = self.dataset.test(workflow,file_name=test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
+        count       = self.dataset.test(workflow,file_name=self.out_folder+test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
         self.assertEqual(count, self.size)
 
     def test_fq_001(self):
@@ -54,7 +55,7 @@ class FQTest(unittest.TestCase):
         extraction  = bertEQA
         response    = bertRsp
         workflow    = wf.Workflow(summary,extraction,response)
-        count       = self.dataset.test(workflow,file_name=test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
+        count       = self.dataset.test(workflow,file_name=self.out_folder+test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
         self.assertEqual(count, self.size)
 
     def test_fq_002(self):
@@ -64,7 +65,7 @@ class FQTest(unittest.TestCase):
         extraction  = bertEQA
         response    = bertRsp
         workflow    = wf.Workflow(summary,extraction,response)
-        count       = self.dataset.test(workflow,file_name=test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
+        count       = self.dataset.test(workflow,file_name=self.out_folder+test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
         self.assertEqual(count, self.size)
 
     def test_fq_003(self):
@@ -74,7 +75,7 @@ class FQTest(unittest.TestCase):
         extraction  = bertEQA
         response    = bertRsp
         workflow    = wf.Workflow(summary,extraction,response)
-        count       = self.dataset.test(workflow,file_name=test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
+        count       = self.dataset.test(workflow,file_name=self.out_folder+test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
         self.assertEqual(count, self.size)
 
     def test_fq_004(self):
@@ -84,7 +85,7 @@ class FQTest(unittest.TestCase):
         extraction  = robertaEQA
         response    = bertRsp
         workflow    = wf.Workflow(summary,extraction,response)
-        count       = self.dataset.test(workflow,file_name=test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
+        count       = self.dataset.test(workflow,file_name=self.out_folder+test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
         self.assertEqual(count, self.size)
 
     def test_fq_005(self):
@@ -94,7 +95,7 @@ class FQTest(unittest.TestCase):
         extraction  = robertaEQA
         response    = bertRsp
         workflow    = wf.Workflow(summary,extraction,response)
-        count       = self.dataset.test(workflow,file_name=test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
+        count       = self.dataset.test(workflow,file_name=self.out_folder+test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
         self.assertEqual(count, self.size)
 
     def test_fq_006(self):
@@ -104,7 +105,7 @@ class FQTest(unittest.TestCase):
         extraction  = robertaEQA
         response    = bertRsp
         workflow    = wf.Workflow(summary,extraction,response)
-        count       = self.dataset.test(workflow,file_name=test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
+        count       = self.dataset.test(workflow,file_name=self.out_folder+test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
         self.assertEqual(count, self.size)
 
     def test_fq_007(self):
@@ -114,7 +115,7 @@ class FQTest(unittest.TestCase):
         extraction  = robertaEQA
         response    = bertRsp
         workflow    = wf.Workflow(summary,extraction,response)
-        count       = self.dataset.test(workflow,file_name=test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
+        count       = self.dataset.test(workflow,file_name=self.out_folder+test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
         self.assertEqual(count, self.size)
 
 
