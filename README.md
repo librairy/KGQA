@@ -58,7 +58,7 @@ The MuHeQA (Multiple and Heterogeneous Question-Answering) system creates natura
     pip install Flask-Cors==3.0.10
     pip install Flask-Script==2.0.6
 
-    pip install spacy
+    pip install spacy==3.0.6
     pip install spacy-dbpedia-spotlight==0.2.1
     pip install spacy-entity-linker==1.0.1
     pip install spacy-legacy==3.0.8
@@ -92,18 +92,25 @@ The MuHeQA (Multiple and Heterogeneous Question-Answering) system creates natura
 1.  It may take some minutes to load some external resources. The following logs will appear when everything is ready:
 
     ```
-    Answering for predictions without further training.
-    Loaded
-    Ready to answer question from Wikidata in english:
+    Loading RDF2nlg model: /Users/cbadenes/Projects/muheqa/application/summary/kg/nlg/model ..
+    model ready
+    Linked to DBpedia(en): http://dbpedia.org/sparql
+    Linked to Wikidata (en): http://query.wikidata.org/sparql
+    Ready to answer question from the English edition of CORD-19 collection
+    Loading bert-large-uncased-whole-word-masking-finetuned-squad model..
+    model ready
+    Loading deepset/roberta-base-squad2-covid model..
+    model ready
+    Loading deepset/roberta-base-squad2 model..
+    model ready
+    English answerer is ready
      * Serving Flask app "application.app" (lazy loading)
      * Environment: production
-        WARNING: This is a development server. Do not use it in a production deployment.
-        Use a production WSGI server instead.
+       WARNING: This is a development server. Do not use it in a production deployment.
+       Use a production WSGI server instead.
      * Debug mode: off
      * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
     ```
-
-
 
 
 ## Server routes
@@ -111,11 +118,10 @@ The MuHeQA (Multiple and Heterogeneous Question-Answering) system creates natura
 The message body must contain the `question` field with the natural language question, and the query parameter `evidence` sets whether the summary generated has to be retrieved or not.
 
 The availabe URIs are:
-- `/muheqa/dbpedia/en` : solve questions using the English edition of DBpedia.
-- `/muheqa/dbpedia/es` : solve questions using the Spanish edition of DBpedia.
-- `/muheqa/wikidata/en`: solve questions using the English edition of Wikidata.
-- `/muheqa/wikidata/es`: solve questions using the Spanish edition of Wikidata.
-- `/muheqa/wikidata/en`: solve questions using the English edition of Wikidata.
+- `/muheqa/dbpedia` : solve questions using the English edition of DBpedia.
+- `/muheqa/wikidata`: solve questions using the English edition of Wikidata.
+- `/muheqa/cord19`: solve questions using the Covid-19 Open Research Dataset.
+- `/muheqa/all`: solve questions using all sources of information.
 
 
 ## Example
