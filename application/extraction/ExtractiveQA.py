@@ -28,4 +28,6 @@ class ExtractiveQA:
                 response['value']=result['answer']
                 response['score']=score
                 response['summary']=text
+                response['start']=result['start']
+                response['end']=result['end']
         return response
