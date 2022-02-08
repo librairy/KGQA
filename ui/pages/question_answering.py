@@ -13,7 +13,9 @@ def queryJSON(queryURL, question):
         'question': (None, question),
     }
     response = requests.get(queryURL, files = files)
-    return response.json()
+    #Si la respuesta del servidor es distinta de None, devolvemos esta respuesta en formato json.
+    if response:
+        return response.json()
 
 def main():
 
@@ -29,8 +31,10 @@ def main():
         for i in knowledgeBases:
             queryURL = "http://127.0.0.1:5000/muheqa/" + i + "/en?evidence=true"
             answer = queryJSON(queryURL,data["question"])
-            answer["source"] = i
-            answerList.append(answer)
+            #Si la respuesta es distinta de None, guardamos la fuente y agregamos la respuesta a la lista de contestaciones
+            if answer:
+                answer["source"] = i
+                answerList.append(answer)
 
         return answerList
     
@@ -40,11 +44,12 @@ def main():
         '''
         tag = "ANSWER"
         color = "#adff2f"
+        """
         if response['result'] != response['answer']:
             answer = response['result']
             tag = "EVIDENCE"
             color = "#8ef"
-    
+        """
         answerPosition = context.find(answer)
         answerPositionEnd = answerPosition + len(answer)
         annotated_text(context[:answerPosition],(answer,tag,color),context[answerPositionEnd:],)
@@ -81,6 +86,9 @@ def main():
     dataset = st.selectbox("Select a DataSet", selectorList)
     #Boton que hace una pregunta aleatoria
     randomQuestion = st.button("Random Question")
+    
+    #Inicializamos la variable modeLAnswer para que no sea referenciada antes de su asignacion
+    modelAnswer = None
 
     if randomQuestion:
         randomDict = random.choice(random.choices(recordList, weights=map(len, recordList))[0])
@@ -121,12 +129,12 @@ def main():
                 counter += 1
                 answer = i['answer']
                 if answer:
-                    st.write("**Answer: **", answer)
                     context = '...' + i['evidence'] + '...'
                     source = i['source']
                     relevance = i['confidence']
                     annotateContext(i, answer, context)
-                    '**Relevance:** ', relevance , '**Source:** ' , source
+                    st.write("**Answer: **", answer)
+                    st.write('**Relevance:** ', relevance , '**Source:** ' , source)
                     col1, col2 = st.columns([1,1])
                     with col1:
                         isRight = st.button("👍", buttonKey)
