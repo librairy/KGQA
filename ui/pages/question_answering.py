@@ -38,21 +38,26 @@ def main():
 
         return answerList
     
-    def annotateContext(response, answer, context):
+    def annotateContext(response):
         '''
         Funcion auxiliar que anota la respuesta sobre el texto de evidencia
         '''
+        #Por defecto la etiqueta del texto anotado sera "ANSWER" y el color verde
         tag = "ANSWER"
         color = "#adff2f"
-        """
-        if response['result'] != response['answer']:
-            answer = response['result']
+        #Guardamos la respuesta, el contexto, y su principio y final en el texto
+        answer = response["answer"]
+        context = response["evidence"]["summary"]
+        answerStart = response["evidence"]["start"]
+        answerEnd = response["evidence"]["end"]
+        answerInText = (response["evidence"]["summary"])[answerStart:answerEnd]
+        #Si la respuesta en el texto es distinta de la respuesta en el json:
+        if answer != answerInText:
+            #Cambiamos la etiqueta a "EVIDENCE" y el color a a azul
             tag = "EVIDENCE"
             color = "#8ef"
-        """
-        answerPosition = context.find(answer)
-        answerPositionEnd = answerPosition + len(answer)
-        annotated_text(context[:answerPosition],(answer,tag,color),context[answerPositionEnd:],)
+        #Marcamos en el texto de evidencia la respuesta
+        annotated_text(context[:answerStart],(answerInText,tag,color),context[answerEnd:],)
 
     #Creamos la conexion para la base de datos de validacion
     worksheet = db.connectToSheet()
@@ -123,16 +128,16 @@ def main():
             buttonKey = 1
             results = getAnswers(data)
             results.sort(key = operator.itemgetter('confidence'), reverse = True)
-            for i in results:
+            for response in results:
                 if counter >= answerNumber:
                     break
                 counter += 1
-                answer = i['answer']
+                answer = response['answer']
                 if answer:
-                    context = '...' + i['evidence'] + '...'
-                    source = i['source']
-                    relevance = i['confidence']
-                    annotateContext(i, answer, context)
+                    context = "..." + response["evidence"]["summary"] + "..."
+                    source = response["source"]
+                    relevance = response["confidence"]
+                    annotateContext(response)
                     st.write("**Answer: **", answer)
                     st.write('**Relevance:** ', relevance , '**Source:** ' , source)
                     col1, col2 = st.columns([1,1])
