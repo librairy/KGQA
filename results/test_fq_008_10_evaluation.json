@@ -1,0 +1,9 @@
+{"total": 10, "exact-match": 0.2, "partial-match": 0.2, "macro-average": 0.2, "tp": 2.0, "fp": 17.0, "fn": 15.0, "micro-average": 0.10526315789473684, "text-similarity": 0.633457139134407}
+{"total": 0, "exact-match": 0.0, "partial-match": 0.0, "macro-average": 0.0, "tp": 0, "fp": 0, "fn": 0, "micro-average": 0.0, "text-similarity": 0.0, "filtered": {"who": 2, "what": 8}, "filter": "how"}
+{"total": 0, "exact-match": 0.0, "partial-match": 0.0, "macro-average": 0.0, "tp": 0, "fp": 0, "fn": 0, "micro-average": 0.0, "text-similarity": 0.0, "filtered": {"who": 2, "what": 8}, "filter": "where"}
+{"total": 8, "exact-match": 0.25, "partial-match": 0.25, "macro-average": 0.25, "tp": 2.0, "fp": 10.0, "fn": 11.0, "micro-average": 0.16666666666666666, "text-similarity": 0.6365243680775166, "filtered": {"who": 2, "what": 8}, "filter": "what"}
+{"total": 2, "exact-match": 0.0, "partial-match": 0.0, "macro-average": 0.0, "tp": 0.0, "fp": 7.0, "fn": 4.0, "micro-average": 0.0, "text-similarity": 0.621188223361969, "filtered": {"who": 2, "what": 8}, "filter": "who"}
+{"total": 0, "exact-match": 0.0, "partial-match": 0.0, "macro-average": 0.0, "tp": 0, "fp": 0, "fn": 0, "micro-average": 0.0, "text-similarity": 0.0, "filtered": {"who": 2, "what": 8}, "filter": "when"}
+{"total": 0, "exact-match": 0.0, "partial-match": 0.0, "macro-average": 0.0, "tp": 0, "fp": 0, "fn": 0, "micro-average": 0.0, "text-similarity": 0.0, "filtered": {"who": 2, "what": 8}, "filter": "which"}
+{"total": 0, "exact-match": 0.0, "partial-match": 0.0, "macro-average": 0.0, "tp": 0, "fp": 0, "fn": 0, "micro-average": 0.0, "text-similarity": 0.0, "filtered": {"who": 2, "what": 8}, "filter": "is"}
+{"total": 0, "exact-match": 0.0, "partial-match": 0.0, "macro-average": 0.0, "tp": 0, "fp": 0, "fn": 0, "micro-average": 0.0, "text-similarity": 0.0, "filtered": {"who": 2, "what": 8}, "filter": "in"}
