@@ -32,11 +32,12 @@ class DBpedia(kg_summarizer.KGSummarizer):
                 for result in fromRelations["results"]["bindings"]:
                     properties[result["propertyLabel"]["value"]]= result["valueLabel"]["value"]
 
-            toRelations = self.get_to_properties(entity['id'])
+            ## getting entities related to this one    
+            #toRelations = self.get_to_properties(entity['id'])
 
-            if toRelations != None:
-                for result in toRelations["results"]["bindings"]:
-                    properties[result["propertyLabel"]["value"]]= result["valueLabel"]["value"]
+            #if toRelations != None:
+            #    for result in toRelations["results"]["bindings"]:
+            #        properties[result["propertyLabel"]["value"]]= result["valueLabel"]["value"]
 
             partial_summary = super().get_single_fact_summary(entity['name'],properties)
             text +=  partial_summary

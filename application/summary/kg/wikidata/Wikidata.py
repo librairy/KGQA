@@ -1,5 +1,7 @@
 import spacy
 import requests
+from datetime import datetime
+from timeit import default_timer as timer
 
 import application.summary.kg.KGSummarizer as kg_summarizer
 
@@ -43,11 +45,12 @@ class Wikidata(kg_summarizer.KGSummarizer):
                 for result in fromRelations["results"]["bindings"]:
                     properties[result["propertyLabel"]["value"]]= result["value"]["value"]
 
-            toRelations = self.get_to_properties(entity['id'])
+            ## getting entitites related to this one
+            #toRelations = self.get_to_properties(entity['id'])
 
-            if toRelations != None and 'results' in toRelations:
-                for result in toRelations["results"]["bindings"]:
-                    properties[result["propertyLabel"]["value"]]= result["value"]["value"]
+            #if toRelations != None and 'results' in toRelations:
+            #    for result in toRelations["results"]["bindings"]:
+            #        properties[result["propertyLabel"]["value"]]= result["value"]["value"]
 
             partial_summary = super().get_single_fact_summary(entity['name'],properties)
             text +=  partial_summary
@@ -56,6 +59,7 @@ class Wikidata(kg_summarizer.KGSummarizer):
 
     def get_from_properties(self,entity):
         entity_uri = "wd:" + str(entity)
+        start = timer()
         query = """SELECT ?propertyLabel
                     (GROUP_CONCAT(DISTINCT ?valueLabel;separator=", ") AS ?value)
                 WHERE{
@@ -68,23 +72,45 @@ class Wikidata(kg_summarizer.KGSummarizer):
             GROUP BY ?propertyLabel
         """
 
+        headers = {
+            'User-Agent': 'Mozilla/5.0',
+            'From': 'cbadenes@fi.upm.es'  # This is another valid field
+        }
+
         payload = {
         	#'default-graph-uri': 'http://wikidata.org',
         	'query': query,
         	'format': 'json',
-        	'timeout': 120000,
+        	'timeout': 70000,
         	'signal_void':'on',
         	'signal_unconnected':'on' }
         try:
-            response = requests.get(self.wikidata_url, params=payload)
+            response = requests.get(self.wikidata_url, params=payload, headers=headers)
             return response.json()
+        except requests.exceptions.Timeout as e:
+            end = timer()
+            # Maybe set up for a retry, or continue in a retry loop
+            print("TimeOut-Error on Wikidata query:",query, " =>",e,"Elapsed-Time:",end-start)
+            return {}
+        except requests.exceptions.TooManyRedirects:
+            end = timer()
+            # Tell the user their URL was bad and try a different one
+            print("TooMany-Redirect-Error on Wikidata query:",query, " =>",e,"Elapsed-Time:",end-start)
+            return {}
+        except requests.exceptions.RequestException as e:
+            end = timer()
+            # catastrophic error. bail.
+            print("Request-Error on Wikidata query:",query, " =>",e,"Elapsed-Time:",end-start)
+            return {}
         except Exception as e:
-            print("Error on Wikidata query:",payload, " =>",e)
+            end = timer()
+            print("Error on Wikidata query:",query, " =>",e,"Elapsed-Time:",end-start)
             return {}
 
 
     def get_to_properties(self,entity):
         entity_uri = "wd:" + str(entity)
+        start = timer()
         query = """SELECT ?propertyLabel
                     (GROUP_CONCAT(DISTINCT ?valueLabel;separator=", ") AS ?value)
                 WHERE{
@@ -97,17 +123,38 @@ class Wikidata(kg_summarizer.KGSummarizer):
             GROUP BY ?propertyLabel
         """
 
+        headers = {
+            'User-Agent': 'Mozilla/5.0',
+            'From': 'cbadenes@fi.upm.es'  # This is another valid field
+        }
+
         payload = {
         	#'default-graph-uri': 'http://wikidata.org',
         	'query': query,
         	'format': 'json',
-        	'timeout': 120000,
+        	'timeout': 70000,
         	'signal_void':'on',
         	'signal_unconnected':'on' }
 
         try:
-            response = requests.get(self.wikidata_url, params=payload)
+            response = requests.get(self.wikidata_url, params=payload, headers=headers)
             return response.json()
+        except requests.exceptions.Timeout as e:
+            end = timer()
+            # Maybe set up for a retry, or continue in a retry loop
+            print("TimeOut-Error on Wikidata query:",query, " =>",e,"Elapsed-Time:",end-start)
+            return {}
+        except requests.exceptions.TooManyRedirects:
+            end = timer()
+            # Tell the user their URL was bad and try a different one
+            print("TooMany-Redirect-Error on Wikidata query:",query, " =>",e,"Elapsed-Time:",end-start)
+            return {}
+        except requests.exceptions.RequestException as e:
+            end = timer()
+            # catastrophic error. bail.
+            print("Request-Error on Wikidata query:",query, " =>",e,"Elapsed-Time:",end-start)
+            return {}
         except Exception as e:
-            print("Error on Wikidata query:",payload, " =>",e)
+            end = timer()
+            print("Error on Wikidata query:",query, " =>",e,"Elapsed-Time:",end-start)
             return {}

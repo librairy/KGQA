@@ -42,7 +42,8 @@ class Workflow:
             answer = self.evidence_component.get_answer(question,summary)
             result['confidence'] = answer['score']
             if (str(req_evidence).lower() == 'true'):
-                result['evidence'] = answer['summary']
+                evidence_info = { 'summary':answer['summary'], 'start':answer['start'], 'end':answer['end']}
+                result['evidence'] = evidence_info
             # Create Reponse
             response = self.answer_component.get_response(question, answer['value'])
             result['answer'] = response
