@@ -34,10 +34,19 @@ class EvalTest(unittest.TestCase):
         self.assertEqual(count, len(self.query_types)+1)
 
     def test_all(self):
+        files = []
         for filename in os.scandir(self.input_folder):
             if filename.is_file():
-        	    self.evaluate(filename.path)
-
+                files.append(filename.path)
+        for file in files:
+            if (file.endswith('_evaluation.json')):
+                continue
+            else:
+                eval_file = file.split(".json")[0]+"_evaluation.json"
+                if (eval_file in files):
+                    continue
+                else:
+                    self.evaluate(file)
 
 if __name__ == '__main__':
     import xmlrunner
