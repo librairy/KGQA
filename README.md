@@ -32,17 +32,15 @@ The MuHeQA (Multiple and Heterogeneous Question-Answering) system creates natura
 	  cd MuHeQA
 	  ```
 1. Download the [RDF Verbalizer model](https://delicias.dia.fi.upm.es/nextcloud/index.php/s/bRxnH93Df9Psaeo) into the `application/summary/kg/nlg/model` folder
+    ```
+    wget -O application/summary/kg/nlg/model/pytorch_model.bin https://delicias.dia.fi.upm.es/nextcloud/index.php/s/bRxnH93Df9Psaeo/download
+    ```
 1. Download the [answer classifier](https://delicias.dia.fi.upm.es/nextcloud/index.php/s/Jp5FeoBn57c8k4M) and unzip into the root project directory. The folder `resources_dir/` is created.
-1. Create a new `conda` environment from the `environment.yml` file:
     ```
-    conda env create -f environment.yml
+    wget -O resources.zip https://delicias.dia.fi.upm.es/nextcloud/index.php/s/Jp5FeoBn57c8k4M/download
+    unzip resources.zip
     ```
-1. Activate the environment:
-		```
-		conda activate .muheqa
-		```
-1. In case you have a device based on Apple's M1 chip skip to [M1 Environment](#m1-environment) step
-1. Install the dependencies:
+1. Install dependencies (in case you have a device based on Apple's M1 chip skip to the [M1 Environment](#m1-environment) step):    
 		```
 		pip install -r requirements.txt
 		```
@@ -52,17 +50,6 @@ The MuHeQA (Multiple and Heterogeneous Question-Answering) system creates natura
     pip install --upgrade --force --no-dependencies tensorflow-macos
     pip install --upgrade --force --no-dependencies tensorflow-metal
     `````
-1. Install the following libraries:
-    ````
-    pip install Flask==1.1.4
-    pip install Flask-Cors==3.0.10
-    pip install Flask-Script==2.0.6
-
-    pip install spacy==3.0.6
-    pip install spacy-dbpedia-spotlight==0.2.1
-    pip install spacy-entity-linker==1.0.1
-    pip install spacy-legacy==3.0.8
-    ````
 1. Compile and install the `tokenizers` module from Huggingface:
     ````
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -76,11 +63,9 @@ The MuHeQA (Multiple and Heterogeneous Question-Answering) system creates natura
     ````
     pip install git+https://github.com/huggingface/transformers
     `````
-1. And finally, install `torch` and `keras`
+1. And finally, install the rest of dependencies:
     ````
-    pip install flatbuffers
-    pip install keras==2.6.0
-		pip install torch
+    pip install -r min-requirements.txt    
     ````
 
 ## Service start-up
