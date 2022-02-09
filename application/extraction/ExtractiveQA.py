@@ -18,16 +18,19 @@ class ExtractiveQA:
 
         #print("Sentences in Summary:", len(sentences))
         for chunk in self.chunks(sentences,20):
-            #print("getting partial answer")
-            text = ". ".join(chunk)
-            #print("num tokens:", len(text.split(" ")), "num_characters:", len(text))
-            result = self.question_answerer(question=question, context=text, min_answer_len=1, max_answer_len=100)
-            #print(f"Partial Answer: '{result['answer']}', score: {round(result['score'], 4)}, start: {result['start']}, end: {result['end']}")
-            score = round(result['score'], 4)
-            if (score > response['score']):
-                response['value']=result['answer']
-                response['score']=score
-                response['summary']=text
-                response['start']=result['start']
-                response['end']=result['end']
+            try:
+                #print("getting partial answer")
+                text = ". ".join(chunk)
+                #print("num tokens:", len(text.split(" ")), "num_characters:", len(text))
+                result = self.question_answerer(question=question, context=text, min_answer_len=1, max_answer_len=100)
+                #print(f"Partial Answer: '{result['answer']}', score: {round(result['score'], 4)}, start: {result['start']}, end: {result['end']}")
+                score = round(result['score'], 4)
+                if (score > response['score']):
+                    response['value']=result['answer']
+                    response['score']=score
+                    response['summary']=text
+                    response['start']=result['start']
+                    response['end']=result['end']
+            except Exception as e:
+                print("Error extracting answer:",e)
         return response
