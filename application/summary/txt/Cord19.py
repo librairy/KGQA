@@ -14,7 +14,7 @@ class Cord19(summarizer.Summarizer):
         self.nlp = spacy.load("en_core_web_sm")
 
 
-    def get_summary(self,question):
+    def get_summary(self,question,entities):
         # extract named entites
         ner_api = "https://librairy.linkeddata.es/bio-ner/entities"
         message = {'text':question}
@@ -46,7 +46,7 @@ class Cord19(summarizer.Summarizer):
             if token.pos_ in valid_pos:
                 search_filter.append("text_t:"+token.text)
 
-        pprint.pprint(search_filter)
+        #pprint.pprint(search_filter)
 
         entities = ['']
         text = ""
