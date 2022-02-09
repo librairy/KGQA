@@ -8,6 +8,7 @@ resources_dir
 .DS_Store
 # C extensions
 *.so
+pywikibot.lwp
 apicache-py3/
 throttle.ctrl
 pytorch_model.bin
