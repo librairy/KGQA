@@ -38,7 +38,7 @@ class FQTest(unittest.TestCase):
     ###     Wikidata
     ############################################################################
 
-    @unittest.skip
+    #@unittest.skip
     def test_fq_000(self):
         test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
         entities    = False
@@ -49,7 +49,7 @@ class FQTest(unittest.TestCase):
         count       = self.dataset.test(workflow,file_name=self.out_folder+test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
         self.assertEqual(count, self.size)
 
-    @unittest.skip
+    #@unittest.skip
     def test_fq_001(self):
         test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
         entities    = False
@@ -60,7 +60,7 @@ class FQTest(unittest.TestCase):
         count       = self.dataset.test(workflow,file_name=self.out_folder+test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
         self.assertEqual(count, self.size)
 
-    @unittest.skip
+    #@unittest.skip
     def test_fq_002(self):
         test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
         entities    = True
@@ -71,6 +71,7 @@ class FQTest(unittest.TestCase):
         count       = self.dataset.test(workflow,file_name=self.out_folder+test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
         self.assertEqual(count, self.size)
 
+    #@unittest.skip
     def test_fq_003(self):
         test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
         entities    = True
@@ -81,6 +82,7 @@ class FQTest(unittest.TestCase):
         count       = self.dataset.test(workflow,file_name=self.out_folder+test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
         self.assertEqual(count, self.size)
 
+    #@unittest.skip
     def test_fq_004(self):
         test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
         entities    = False
@@ -91,6 +93,7 @@ class FQTest(unittest.TestCase):
         count       = self.dataset.test(workflow,file_name=self.out_folder+test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
         self.assertEqual(count, self.size)
 
+    #@unittest.skip
     def test_fq_005(self):
         test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
         entities    = False
@@ -101,6 +104,7 @@ class FQTest(unittest.TestCase):
         count       = self.dataset.test(workflow,file_name=self.out_folder+test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
         self.assertEqual(count, self.size)
 
+    #@unittest.skip
     def test_fq_006(self):
         test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
         entities    = True
@@ -111,6 +115,7 @@ class FQTest(unittest.TestCase):
         count       = self.dataset.test(workflow,file_name=self.out_folder+test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
         self.assertEqual(count, self.size)
 
+    #@unittest.skip
     def test_fq_007(self):
         test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
         entities    = True
@@ -126,6 +131,7 @@ class FQTest(unittest.TestCase):
     ###     DBpedia
     ############################################################################
 
+    #@unittest.skip
     def test_fq_008(self):
         test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
         entities    = False
@@ -136,6 +142,7 @@ class FQTest(unittest.TestCase):
         count       = self.dataset.test(workflow,file_name=self.out_folder+test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
         self.assertEqual(count, self.size)
 
+    #@unittest.skip
     def test_fq_009(self):
         test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
         entities    = False
@@ -146,6 +153,7 @@ class FQTest(unittest.TestCase):
         count       = self.dataset.test(workflow,file_name=self.out_folder+test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
         self.assertEqual(count, self.size)
 
+    #@unittest.skip
     def test_fq_010(self):
         test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
         entities    = False
@@ -156,6 +164,7 @@ class FQTest(unittest.TestCase):
         count       = self.dataset.test(workflow,file_name=self.out_folder+test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
         self.assertEqual(count, self.size)
 
+    #@unittest.skip
     def test_fq_011(self):
         test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
         entities    = False
@@ -170,6 +179,7 @@ class FQTest(unittest.TestCase):
     ###     Wikidata+DBpedia
     ############################################################################
 
+    #@unittest.skip
     def test_fq_012(self):
         test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
         entities    = False
@@ -180,6 +190,7 @@ class FQTest(unittest.TestCase):
         count       = self.dataset.test(workflow,file_name=self.out_folder+test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
         self.assertEqual(count, self.size)
 
+    #@unittest.skip
     def test_fq_013(self):
         test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
         entities    = False
@@ -190,6 +201,7 @@ class FQTest(unittest.TestCase):
         count       = self.dataset.test(workflow,file_name=self.out_folder+test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
         self.assertEqual(count, self.size)
 
+    #@unittest.skip
     def test_fq_014(self):
         test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
         entities    = False
@@ -200,6 +212,7 @@ class FQTest(unittest.TestCase):
         count       = self.dataset.test(workflow,file_name=self.out_folder+test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
         self.assertEqual(count, self.size)
 
+    #@unittest.skip        
     def test_fq_015(self):
         test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
         entities    = False
