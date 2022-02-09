@@ -13,7 +13,7 @@ class Workflow:
 
     def process(self,request):
         question = request['question']
-        print("Making question:",question,"..")
+        print("Making question:",request,"..")
 
         entity_list = []
         if 'entities' in request:
@@ -29,9 +29,10 @@ class Workflow:
         # Compose Summary
         question = self.decapitalize(question)
         summary = ""
-        for summarizer in self.summary_components:
-            partial_summary = summarizer.get_summary(question, entity_list)
-            summary += partial_summary + ". "
+        if (len(entity_list) > 0):
+            for summarizer in self.summary_components:
+                partial_summary = summarizer.get_summary(question, entity_list)
+                summary += partial_summary + ". "
 
         result = {}
         result['question'] = question

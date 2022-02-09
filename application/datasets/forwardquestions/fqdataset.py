@@ -12,12 +12,10 @@ from multiprocessing import Pool, freeze_support
 
 class ForwardQuestionsDataset:
 
-    def __init__(self,use_entities=False,input_file="data/all_questions.json"):
+    def __init__(self,input_file="data/all_questions.json"):
         print("Input file:",input_file)
         with open(input_file,'r') as json_file:
          data = json.load(json_file)
-        self.use_entities = use_entities
-        print("manual entities:", use_entities)
         self.questions=data['questions']
         print("number of questions:", len(self.questions))
         self.site = pywikibot.Site("wikidata", "wikidata")
@@ -37,7 +35,7 @@ class ForwardQuestionsDataset:
             print("Entity:",subject_code,"is missing")
             return False
 
-    def do_question(self,question_info,workflow):
+    def do_question(self,question_info,use_entities,workflow):
       start = timer()
       ref_question = question_info['question']
       if (not ref_question.endswith("?")):
@@ -45,7 +43,8 @@ class ForwardQuestionsDataset:
       ref_answers = question_info['object']
       input_data = {'question':ref_question}
       entities=""
-      if (self.use_entities):
+      if (use_entities):
+          print("getting entities from the dataset...")
           entity_id = question_info['subjectCode']
           entity_name = question_info['subjet']
           input_data['entities']=entity_id+";"+entity_name
@@ -86,8 +85,9 @@ class ForwardQuestionsDataset:
           #responses = pool.starmap(self.do_question, zip(self.questions[min:max], repeat(workflow)))
           responses = []
           for question in self.questions[min:max]:
-              count += 1
-              responses.append(self.do_question(question,workflow))
+              if (self.is_valid(question)):
+                  count += 1
+                  responses.append(self.do_question(question,use_entities,workflow))
           print("[",datetime.now(),"]",min,":",max,"/",total)
           for response in responses:
            json_record = json.dumps(response, ensure_ascii=False)

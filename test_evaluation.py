@@ -2,8 +2,8 @@ from logging.handlers import RotatingFileHandler
 import unittest
 import inspect
 import json
-
 import application.evaluation as eval
+import os
 
 evaluation  = eval.Evaluation()
 
@@ -18,7 +18,7 @@ class EvalTest(unittest.TestCase):
         print("Evaluation done!")
 
     def evaluate(self,input_file):
-        print("###############  Evaluation of",input_file)
+        print("###############  Evaluation of",input_file,"...")
         output_file = input_file.split(".json")[0]+"_evaluation.json"
         count = 0
         with open(output_file, 'w') as json_writer:
@@ -33,83 +33,11 @@ class EvalTest(unittest.TestCase):
                 count += 1
         self.assertEqual(count, len(self.query_types)+1)
 
-    ############################################################################
-    ###     Wikidata
-    ############################################################################
+    def test_all(self):
+        for filename in os.scandir(self.input_folder):
+            if filename.is_file():
+        	    self.evaluate(filename.path)
 
-    def test_fq_000(self):
-        test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
-        self.evaluate(self.input_folder+test_name)
-
-
-    def test_fq_001(self):
-        test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
-        self.evaluate(self.input_folder+test_name)
-
-    def test_fq_002(self):
-        test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
-        self.evaluate(self.input_folder+test_name)
-
-    def test_fq_003(self):
-        test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
-        self.evaluate(self.input_folder+test_name)
-
-    def test_fq_004(self):
-        test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
-        self.evaluate(self.input_folder+test_name)
-
-    def test_fq_005(self):
-        test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
-        self.evaluate(self.input_folder+test_name)
-
-    def test_fq_006(self):
-        test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
-        self.evaluate(self.input_folder+test_name)
-
-    def test_fq_007(self):
-        test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
-        self.evaluate(self.input_folder+test_name)
-
-
-    ############################################################################
-    ###     DBpedia
-    ############################################################################
-
-    def test_fq_008(self):
-        test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
-        self.evaluate(self.input_folder+test_name)
-
-    def test_fq_009(self):
-        test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
-        self.evaluate(self.input_folder+test_name)
-
-    def test_fq_010(self):
-        test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
-        self.evaluate(self.input_folder+test_name)
-
-    def test_fq_011(self):
-        test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
-        self.evaluate(self.input_folder+test_name)
-
-    ############################################################################
-    ###     Wikidata+DBpedia
-    ############################################################################
-
-    def test_fq_012(self):
-        test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
-        self.evaluate(self.input_folder+test_name)
-
-    def test_fq_013(self):
-        test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
-        self.evaluate(self.input_folder+test_name)
-
-    def test_fq_014(self):
-        test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
-        self.evaluate(self.input_folder+test_name)
-
-    def test_fq_015(self):
-        test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
-        self.evaluate(self.input_folder+test_name)
 
 if __name__ == '__main__':
     import xmlrunner
