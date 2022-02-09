@@ -13,7 +13,7 @@ class DBpedia(kg_summarizer.KGSummarizer):
         print("Linked to DBpedia("+lang+"):",self.dbpedia_url)
         #nlp = spacy.load("en_core_web_lg")
         self.nlp = spacy.blank(lang)
-        self.nlp.add_pipe('dbpedia_spotlight', config={'confidence': 0.4, 'overwrite_ents':False})
+        self.nlp.add_pipe('dbpedia_spotlight', config={'confidence': 0.4, 'overwrite_ents':False, 'language_code': lang})
 
 
     def get_summary(self,question,entities):
@@ -32,7 +32,7 @@ class DBpedia(kg_summarizer.KGSummarizer):
                 for result in fromRelations["results"]["bindings"]:
                     properties[result["propertyLabel"]["value"]]= result["valueLabel"]["value"]
 
-            ## getting entities related to this one    
+            ## getting entities related to this one
             #toRelations = self.get_to_properties(entity['id'])
 
             #if toRelations != None:
