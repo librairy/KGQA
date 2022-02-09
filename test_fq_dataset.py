@@ -10,16 +10,21 @@ import application.extraction.RobertaCovidEQA as roberta_covid_en
 import application.extraction.RobertaEQA as roberta_en
 import application.response.BertAnswererEN as response_en
 import application.workflow as wf
-import application.datasets.forwardquestions.fqdataset as fqd
+import application.datasets.forwardquestions.fqdataset as dataset
 
+#Summary
 dbpediaEN = dbpedia_en.DBpediaEN()
 dbpedia_lm_EN = dbpedia_en.DBpediaEN(rules=False)
 wikidataEN = wikidata_en.WikidataEN()
 wikidata_lm_EN = wikidata_en.WikidataEN(rules=False)
 cord19EN = cord19_en.Cord19EN()
+
+# Extraction
 bertEQA = bert_en.BertEQA()
 robertaCovidEQA = roberta_covid_en.RobertaCovidEQA()
 robertaEQA = roberta_en.RobertaEQA()
+
+# Response
 bertRsp = response_en.BertAnswererEN()
 
 class FQTest(unittest.TestCase):
@@ -27,7 +32,7 @@ class FQTest(unittest.TestCase):
     def setUp(self):
         print("###############  Test:")
         self.input_data = "application/datasets/forwardquestions/data/all_questions.json"
-        self.dataset    = fqd.ForwardQuestionsDataset(input_file=self.input_data)
+        self.dataset    = dataset.ForwardQuestionsDataset(input_file=self.input_data)
         self.size       = 1000
         self.out_folder = "results/"
 
@@ -212,7 +217,7 @@ class FQTest(unittest.TestCase):
         count       = self.dataset.test(workflow,file_name=self.out_folder+test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
         self.assertEqual(count, self.size)
 
-    #@unittest.skip        
+    #@unittest.skip
     def test_fq_015(self):
         test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
         entities    = False
