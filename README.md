@@ -40,6 +40,10 @@ The MuHeQA (Multiple and Heterogeneous Question-Answering) system creates natura
     wget -O resources.zip https://delicias.dia.fi.upm.es/nextcloud/index.php/s/Jp5FeoBn57c8k4M/download
     unzip resources.zip
     ```
+1. Install Wikidata DB for Entity Linking:    
+    ```
+    python -m spacy_entity_linker "download_knowledge_base"
+    ```
 1. Install dependencies (in case you have a device based on Apple's M1 chip skip to the [M1 Environment](#m1-environment) step):    
 		```
 		pip install -r requirements.txt
