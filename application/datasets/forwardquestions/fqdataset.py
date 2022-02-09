@@ -34,7 +34,10 @@ class ForwardQuestionsDataset:
         except pywikibot.exceptions.NoPageError as e:
             print("Entity:",subject_code,"is missing")
             return False
-
+        except Exception as e:
+            print("Validation error:",e)
+            return False
+            
     def do_question(self,question_info,use_entities,workflow):
       start = timer()
       ref_question = question_info['question']
