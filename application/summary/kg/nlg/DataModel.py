@@ -17,7 +17,7 @@ class DataModel:
         print("model ready")
 
     def verbalize(self,subject,predicate,object):
-        text = " | ".join([object,predicate,subject])
+        text = " | ".join([subject,predicate,object])
         input_ids = self.tokenizer.encode("WebNLG:{} </s>".format(text),return_tensors="pt")
         outputs = self.model.generate(input_ids)
         output_text = self.tokenizer.decode(outputs[0])
