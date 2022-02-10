@@ -34,6 +34,7 @@ class FQTest(unittest.TestCase):
         self.input_data = "application/datasets/forwardquestions/data/all_questions.json"
         self.dataset    = dataset.ForwardQuestionsDataset(input_file=self.input_data)
         self.size       = 1000
+        #self.size       = 38479
         self.out_folder = "results/"
 
     def tearDown(self):
