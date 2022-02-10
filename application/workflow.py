@@ -29,9 +29,10 @@ class Workflow:
         # Compose Summary
         question = self.decapitalize(question)
         summary = ""
-        if (len(entity_list) > 0):
-            for summarizer in self.summary_components:
-                partial_summary = summarizer.get_summary(question, entity_list)
+
+        for summarizer in self.summary_components:
+            partial_summary = summarizer.get_summary(question, entity_list)
+            if (len(partial_summary) > 0):
                 summary += partial_summary + ". "
 
         result = {}
