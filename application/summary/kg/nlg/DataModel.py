@@ -12,6 +12,7 @@ class DataModel:
         model_path = os.path.join(current_path, 'model')
         print("Loading RDF2nlg model:",model_path,"..")
         self.tokenizer = T5Tokenizer.from_pretrained('t5-base')
+        #self.tokenizer = T5Tokenizer.from_pretrained('t5-base',local_files_only=True)
         self.model =T5ForConditionalGeneration.from_pretrained(model_path,return_dict=True)
         self.model.eval()
         print("model ready")
