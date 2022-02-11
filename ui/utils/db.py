@@ -1,9 +1,5 @@
 import os
-import re
-import json
 import certifi
-import pandas as pd
-from pprint import pprint
 from pymongo import MongoClient
 
 #Cambiamos directorio de trabajo al directorio del script para poder abrir archivos en la misma carpeta
@@ -42,10 +38,26 @@ def getRandomDocument(number, database, dataset):
     aleatorios de la base de datos como lista de diccionarios
     """
     documentList = []
-    randomCursor = newCol.aggregate([{ "$sample": { "size": number } }])
+    randomCursor = database[dataset].aggregate([{ "$sample": { "size": number } }])
     for document in randomCursor:
         documentList.append(document)
     return documentList
+
+def getCollections(database):
+    """
+    Funcion auxiliar que muestra las colecciones en nuestra base de datos
+    """
+    collectionNames = database.list_collection_names()
+    print(collectionNames)
+    return collectionNames
+
+def dropCollection(database, collectionName):
+    """
+    Funcion auxiliar que muestra las colecciones en nuestra base de datos
+    """
+    if collectionName in getCollections(database):
+        col = database[collectionName]
+        col.drop()
 
 def getStatus(database):
     """

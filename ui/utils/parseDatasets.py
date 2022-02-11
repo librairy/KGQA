@@ -14,7 +14,7 @@ os.chdir(fileDir)
 Variables globales:
 - keysToKeep: Campos de nuestro diccionario que querremos conservar
 """
-keysToKeep = ["_id","question","answer"]
+keysToKeep = ["question","answer"]
 
 def jsonToDict(route):
     '''
@@ -61,11 +61,6 @@ def parseDataset(route, isCsv = False, toDf = False):
             if answer:
                 i["verbalized_answer"] = answer.group(1)
             i["answer"] = i.pop("verbalized_answer")    
-        if "_id" not in i.keys():
-            for j in i.keys(): 
-                if "id" in j:
-                    i["_id"] = i.pop(j) 
-                    break
         keysToDelete = set(i.keys()).difference(keysToKeep)
         for k in keysToDelete:
             del i[k]
@@ -77,13 +72,15 @@ def parseDataset(route, isCsv = False, toDf = False):
 #Creamos la conexion a la base de datos
 database = db.createConnection()
 
+#db.getCollections(database)
+
+#db.dropCollection(database,"vanilla")
+
 #Ejecutamos parseDataset para nuestros datasets
 jsonFiles = glob.glob("*.json")
 for i in jsonFiles:
-    parseDataset(i)
-    pprint(parseDataset(i))
-    print((i.split("."))[0].lower())
+    db.importDataset(database, parseDataset(i), i.split(".")[0].lower())
 
-csvFiles = glob.glob("*.json")
-for i in jsonFiles:
-    parseDataset(i)
+csvFiles = glob.glob("*.csv")
+for i in csvFiles:
+    db.importDataset(database, parseDataset(i, isCsv=True), i.split(".")[0].lower())
