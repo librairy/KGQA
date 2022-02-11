@@ -12,12 +12,13 @@ class DataModel:
         model_path = os.path.join(current_path, 'model')
         print("Loading RDF2nlg model:",model_path,"..")
         self.tokenizer = T5Tokenizer.from_pretrained('t5-base')
+        #self.tokenizer = T5Tokenizer.from_pretrained('t5-base',local_files_only=True)
         self.model =T5ForConditionalGeneration.from_pretrained(model_path,return_dict=True)
         self.model.eval()
         print("model ready")
 
     def verbalize(self,subject,predicate,object):
-        text = " | ".join([object,predicate,subject])
+        text = " | ".join([subject,predicate,object])
         input_ids = self.tokenizer.encode("WebNLG:{} </s>".format(text),return_tensors="pt")
         outputs = self.model.generate(input_ids)
         output_text = self.tokenizer.decode(outputs[0])

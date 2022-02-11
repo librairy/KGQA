@@ -23,19 +23,17 @@ class Wikidata(kg_summarizer.KGSummarizer):
 
 
     def get_summary(self,question,entities):
-        print("get summary from question:",question,"with entities:",entities)
+        print("get summary from question:",question,"with previously identified entities:",entities)
         candidate_entities = entities
         if (len(candidate_entities) == 0):
             doc = self.nlp(question)
-            print("doc:",doc)
             for entity in doc._.linkedEntities:
                 # filter by entity facts
                 if (len(entity.get_sub_entities(limit=1))==0):
                     candidate_entities.append({ 'id': "Q"+str(entity.get_id()), 'name': entity.get_label()})
+            print("Entities identified in Wikidata:",candidate_entities)
             #candidate_entities = [{ 'id':"Q"+str(e.get_id()), 'name':e.get_label() } for e in doc._.linkedEntities]
-
         text = ""
-        print("Wikidata Entities:",candidate_entities)
         for entity in candidate_entities:
             properties = {}
 
@@ -43,7 +41,9 @@ class Wikidata(kg_summarizer.KGSummarizer):
 
             if fromRelations != None and 'results' in fromRelations :
                 for result in fromRelations["results"]["bindings"]:
-                    properties[result["propertyLabel"]["value"]]= result["value"]["value"]
+                    property    = result["propertyLabel"]["value"]
+                    value       = result["value"]["value"]
+                    properties[property]= value
 
             ## getting entitites related to this one
             #toRelations = self.get_to_properties(entity['id'])

@@ -34,6 +34,7 @@ class FQTest(unittest.TestCase):
         self.input_data = "application/datasets/forwardquestions/data/all_questions.json"
         self.dataset    = dataset.ForwardQuestionsDataset(input_file=self.input_data)
         self.size       = 1000
+        #self.size       = 38479
         self.out_folder = "results/"
 
     def tearDown(self):
@@ -43,7 +44,7 @@ class FQTest(unittest.TestCase):
     ###     Wikidata
     ############################################################################
 
-    @unittest.skip
+    #@unittest.skip
     def test_fq_000(self):
         test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
         entities    = False
@@ -54,7 +55,7 @@ class FQTest(unittest.TestCase):
         count       = self.dataset.test(workflow,file_name=self.out_folder+test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
         self.assertEqual(count, self.size)
 
-    @unittest.skip
+    #@unittest.skip
     def test_fq_001(self):
         test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
         entities    = False
@@ -87,7 +88,7 @@ class FQTest(unittest.TestCase):
         count       = self.dataset.test(workflow,file_name=self.out_folder+test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
         self.assertEqual(count, self.size)
 
-    @unittest.skip
+    #@unittest.skip
     def test_fq_004(self):
         test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
         entities    = False
@@ -98,7 +99,7 @@ class FQTest(unittest.TestCase):
         count       = self.dataset.test(workflow,file_name=self.out_folder+test_name,limit=self.size,use_entities=entities,get_evidence=True,pool_size=1)
         self.assertEqual(count, self.size)
 
-    @unittest.skip
+    #@unittest.skip
     def test_fq_005(self):
         test_name   = inspect.stack()[0][3]+"_"+str(self.size)+".json"
         entities    = False
