@@ -1,10 +1,8 @@
 import re
 import os
-import glob
 import json
 import pandas as pd
 from pprint import pprint
-import db
 
 #Cambiamos directorio de trabajo al directorio del script para poder abrir archivos en la misma carpeta
 fileDir = os.path.dirname(os.path.realpath(__file__))
@@ -68,19 +66,3 @@ def parseDataset(route, isCsv = False, toDf = False):
     if toDf:
         return pd.DataFrame(dictList)   
     return dictList
-
-#Creamos la conexion a la base de datos
-database = db.createConnection()
-
-#db.getCollections(database)
-
-#db.dropCollection(database,"vanilla")
-
-#Ejecutamos parseDataset para nuestros datasets
-jsonFiles = glob.glob("*.json")
-for i in jsonFiles:
-    db.importDataset(database, parseDataset(i), i.split(".")[0].lower())
-
-csvFiles = glob.glob("*.csv")
-for i in csvFiles:
-    db.importDataset(database, parseDataset(i, isCsv=True), i.split(".")[0].lower())

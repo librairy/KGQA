@@ -1,4 +1,5 @@
 import os
+import random
 import certifi
 from pymongo import MongoClient
 
@@ -15,7 +16,7 @@ Variables globales:
 
 clusterName = "josemvg-muheqa.awuxe.mongodb.net/JosemVG-MuHeQa"
 userName = "admin"
-userPassword = ""
+userPassword = "lsNDVOLrv8WgNhyV"
 
 def createConnection():
     """
@@ -37,8 +38,12 @@ def getRandomDocument(number, database, dataset):
     Funcion auxiliar que devuelve un cierto numero de documentos
     aleatorios de la base de datos como lista de diccionarios
     """
+    if dataset == "All":
+        dataset = random.choice(getCollections(database))
+
     documentList = []
     randomCursor = database[dataset].aggregate([{ "$sample": { "size": number } }])
+
     for document in randomCursor:
         documentList.append(document)
     return documentList
@@ -47,9 +52,7 @@ def getCollections(database):
     """
     Funcion auxiliar que muestra las colecciones en nuestra base de datos
     """
-    collectionNames = database.list_collection_names()
-    print(collectionNames)
-    return collectionNames
+    return database.list_collection_names()
 
 def dropCollection(database, collectionName):
     """

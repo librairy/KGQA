@@ -1,7 +1,4 @@
 import os
-import gspread
-import pandas as pd
-from pprint import pprint
 from googleapiclient.discovery import build
 from oauth2client.service_account import ServiceAccountCredentials
 
@@ -32,32 +29,20 @@ def connectToSheet():
     """
     Funcion auxiliar que abre la Hoja de Validacion de nuestro Libro 
     """
-    service = build("sheets","v4",credentials=creds)
+    service = build("sheets","v4",credentials=creds, cache_discovery=False)
     return service.spreadsheets()
 
-def insertRow():
+def insertRow(spreadConnection, row):
     """
     Funcion auxiliar que inserta una nueva fila en la Hoja de Validacion
     """
-    pass
-
-def getRecordsInSheet(sheet):
-    """
-    Funcion auxiliar que obtiene todas las preguntas en una determinada hoja
-    Sea esta hoja un dataset de EQA que sigue nuestro formato
-    """
-    client = gspread.authorize(creds)
-    sheetClient = client.open(spreadsheet).worksheet(sheet)
-    records = sheetClient.get_all_records()
-    return records
-
-def getDatasetsInSheet(sheet):
-    """
-    Funcion auxiliar que devuelve una lista con  
-    el nombre de las hojas que contienen un Dataset
-    """
-    sheetMetadata = sheet.get(spreadsheetId=spreadsheetId).execute()
-    properties = sheetMetadata.get('sheets')
-    datasetList = []
-    [datasetList.append(i.get("properties").get('title')) for i in properties if "Dataset" in i.get("properties").get('title')]
-    return datasetList
+    values = (
+        spreadConnection.values()
+        .append(
+            spreadsheetId=spreadsheetId,
+            range=f"{validationSheet}!A:D",
+            body=dict(values=row),
+            valueInputOption="USER_ENTERED",
+        )
+        .execute()
+    )

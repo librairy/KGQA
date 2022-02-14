@@ -1,9 +1,10 @@
-import streamlit as st
-import requests
-from annotated_text import annotated_text
-import operator
-from utils import db
 import random
+import requests
+import operator
+import streamlit as st
+from utils import db
+from utils import spreadDb
+from annotated_text import annotated_text
 
 def queryJSON(queryURL, question):
     """
@@ -59,9 +60,10 @@ def main():
         #Marcamos en el texto de evidencia la respuesta
         annotated_text(context[:answerStart],(answerInText,tag,color),context[answerEnd:],)
 
-    #Creamos la conexion para la base de datos de validacion
-    worksheet = db.connectToSheet()
-    
+    #Creamos la conexion para la base de datos (datasets) y el Libro de Calculo (validacion)
+    worksheet = spreadDb.connectToSheet()
+    database = db.createConnection()
+
     #Subtitulo de la seccion de pregunta y respuesta
     st.subheader('MuHeQa UI - Question Answering over Multiple and Heterogeneous Knowledge Bases')
     
@@ -70,22 +72,12 @@ def main():
     Write any question below or use a random one from a pre-loaded datasets!
     """, unsafe_allow_html=True)
 
-    #Lista de Hojas de Calculo con Datasets en nuestro Libro 
-    datasetList = db.getDatasetsInSheet(worksheet)
-
-    #Obtenemos el contenido de cada una de estas hojas
-    recordList = []
-    #Creamos una lista de listas para dicho contenido, donde cada lista sera un dataset (hoja)
-    for i in datasetList:
-        recordList.append(db.getRecordsInSheet(i))    
-
+    #Lista de Hojas de Calculo con Datasets en nuestra base de datos
+    selectorList = ["All"] 
+    selectorList.extend(db.getCollections(database))
+    
     #Buscador para realizar preguntas
     question = st.text_input("")
-    
-    #Creamos la lista para el selector
-    selectorList = ["All"]
-    #Quitamos "_Validation" del nombre de las hojas del Libro de Calculo
-    selectorList.extend([i.split("_")[0] for i in datasetList])
 
     #Selector para el Dataset del que provendran las preguntas aleatorias
     dataset = st.selectbox("Select a DataSet", selectorList)
@@ -96,8 +88,7 @@ def main():
     modelAnswer = None
 
     if randomQuestion:
-        randomDict = random.choice(random.choices(recordList, weights=map(len, recordList))[0])
-        print(randomDict)
+        randomDict = db.getRandomDocument(1,database,dataset)[0]
         question = randomDict["question"]
         modelAnswer = randomDict["answer"]
 
@@ -151,7 +142,7 @@ def main():
                         #Mensaje de que el input del usuario ha sido registrado
                         st.success("✨ Thanks for your input!")
                         #Insertamos en la Spreadsheet de Google
-                        #db.insert(conn, [[question,source,answer,isRight]])
+                        #spreadDb.insertRow(worksheet, [[question,source,answer,isRight]])
                         #Reseteamos los valores de los botones
                         isRight = False
                         isWrong = False
