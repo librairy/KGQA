@@ -40,7 +40,7 @@ def insertRow(spreadConnection, row):
         spreadConnection.values()
         .append(
             spreadsheetId=spreadsheetId,
-            range=f"{validationSheet}!A:D",
+            range=f"{validationSheet}!A:B",
             body=dict(values=row),
             valueInputOption="USER_ENTERED",
         )

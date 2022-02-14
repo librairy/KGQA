@@ -21,8 +21,8 @@ st.title('Web Interface for Question-Answering and Dataset Validation')
 
 #Texto del cuerpo de la pagina, con Markdown (convierte de texto a HTML)
 st.markdown("""
-    Streamlit Web Interface based on MuHeQa - Web Service that creates Natural Language answers from Natural Language questions using as Knowledge Base a combination of both Structured (Knowledge Graphs) and Unstructured (documents) Data.
-    It allows users to make questions onto this Service (as well as give input on its performance) and Upload their own Question-Answering Datasets.
+    Streamlit Web Interface based on MuHeQa - Web Service that creates Natural Language answers from Natural Language questions using as Knowledge Base a combination of both Structured and Unstructured Data. \n
+    It allows users to make questions onto this Service, giving input on its performance, and Upload their own Question-Answering Datasets.
     """, unsafe_allow_html=True)
 
 #Agregamos las distintas paginas

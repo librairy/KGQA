@@ -1,9 +1,9 @@
-import random
 import requests
 import operator
 import streamlit as st
 from utils import db
 from utils import spreadDb
+import multiprocessing as mp
 from annotated_text import annotated_text
 
 def queryJSON(queryURL, question):
@@ -26,7 +26,6 @@ def main():
         Funcion auxiliar que obtiene una lista con todas las respuestas sobre las distintas bases de conocimiento
         """
         answerList = [
-
         ]
 
         for i in knowledgeBases:
@@ -39,25 +38,21 @@ def main():
 
         return answerList
     
-    def annotateContext(response):
+    def annotateContext(response, answer, context, answerStart, answerEnd):
         '''
         Funcion auxiliar que anota la respuesta sobre el texto de evidencia
         '''
         #Por defecto la etiqueta del texto anotado sera "ANSWER" y el color verde
         tag = "ANSWER"
         color = "#adff2f"
-        #Guardamos la respuesta, el contexto, y su principio y final en el texto
-        answer = response["answer"]
-        context = response["evidence"]["summary"]
-        answerStart = response["evidence"]["start"]
-        answerEnd = response["evidence"]["end"]
+        #Buscamos la respuesta en el texto
         answerInText = (response["evidence"]["summary"])[answerStart:answerEnd]
         #Si la respuesta en el texto es distinta de la respuesta en el json:
         if answer != answerInText:
             #Cambiamos la etiqueta a "EVIDENCE" y el color a a azul
             tag = "EVIDENCE"
             color = "#8ef"
-        #Marcamos en el texto de evidencia la respuesta
+        #Marcamos en el texto de evidencia la respuesta y lo mostramos en la interfaz
         annotated_text(context[:answerStart],(answerInText,tag,color),context[answerEnd:],)
 
     #Creamos la conexion para la base de datos (datasets) y el Libro de Calculo (validacion)
@@ -116,7 +111,6 @@ def main():
         #Mensaje de carga para las preguntas. Se muestra mientras que estas se obtienen.
         with st.spinner(text=':hourglass: Looking for answers...'):
             counter = 0
-            buttonKey = 1
             results = getAnswers(data)
             results.sort(key = operator.itemgetter('confidence'), reverse = True)
             for response in results:
@@ -128,25 +122,27 @@ def main():
                     context = "..." + response["evidence"]["summary"] + "..."
                     source = response["source"]
                     relevance = response["confidence"]
-                    annotateContext(response)
+                    annotateContext(response, answer, context, response["evidence"]["start"], response["evidence"]["end"])
                     st.write("**Answer: **", answer)
                     st.write('**Relevance:** ', relevance , '**Source:** ' , source)
-                    col1, col2 = st.columns([1,1])
-                    with col1:
-                        isRight = st.button("👍", buttonKey)
-                    with col2:
-                        isWrong = st.button("👎", buttonKey + 1)
-                    buttonKey += 2
-                    #Si se pulsa el boton de correcto/incorrecto:
-                    if isRight or isWrong:
-                        #Mensaje de que el input del usuario ha sido registrado
-                        st.success("✨ Thanks for your input!")
-                        #Insertamos en la Spreadsheet de Google
-                        #spreadDb.insertRow(worksheet, [[question,source,answer,isRight]])
-                        #Reseteamos los valores de los botones
-                        isRight = False
-                        isWrong = False
+                    
+        st.write("Please rate if our answer has been helpful to you so we can further improve our system!")
+        #Botones para validar la respuesta por parte del usuario en columnas separadas          
+        col1, col2 = st.columns([1,1])
+        with col1:
+            isRight = st.button("👍")
+        with col2:
+            isWrong = st.button("👎")
 
+        #Si se pulsa el boton de correcto/incorrecto:
+        if isRight or isWrong:
+            #Insertamos en la Spreadsheet de Google
+            spreadDb.insertRow(worksheet, [[question,isRight]])
+            #Reseteamos los valores de los botones
+            isRight = False
+            isWrong = False
+            #Mensaje de que el input del usuario ha sido registrado
+            st.success("✨ Thanks for your input!")
 
     #Checkbox. Si tenemos respuesta y la caja es marcada, imprimimos las respuestas JSON obtenidas.
     if question and st.sidebar.checkbox('Show JSON Response', key = 0):
