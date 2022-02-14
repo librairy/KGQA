@@ -1,9 +1,20 @@
-import csv
+import re
+import os
+import glob
 import json
 import pandas as pd
-import google_auth_oauthlib
 from pprint import pprint
-import re
+import db
+
+#Cambiamos directorio de trabajo al directorio del script para poder abrir archivos en la misma carpeta
+fileDir = os.path.dirname(os.path.realpath(__file__))
+os.chdir(fileDir)
+
+"""
+Variables globales:
+- keysToKeep: Campos de nuestro diccionario que querremos conservar
+"""
+keysToKeep = ["question","answer"]
 
 def jsonToDict(route):
     '''
@@ -12,7 +23,7 @@ def jsonToDict(route):
     with open(route, encoding="utf-8") as f:
         return json.load(f)
 
-def JSONLineToDict(JSONRoute):
+def jsonLineToDict(JSONRoute):
     '''
     Funcion auxiliar que dado un archivo json con JSONObjects en cada linea,
     lo abre y lo convierte a lista de diccionarios
@@ -27,46 +38,49 @@ def csvToDict(route):
     Funcion auxiliar que dada la ruta de un csv, lo abre y lo convierte a lista de diccionarios
     '''
     df = pd.read_csv(route, sep=";")
+    #Convertimos los valores corruptos por cadenas vacias
+    df = df.fillna("")
     return df.to_dict('records')
 
-def parseDataset(dataset):
+def parseDataset(route, isCsv = False, toDf = False):
     """
-    Funcion que abre datasets, los limpia y guarda como CSV
+    Funcion que abre datasets, los formatea a nuestro gusto 
+    y los devuelve como CSV o diccionario
     """
-    datasetRoute = "test/datasets/" + dataset + "/data/"
-    if dataset == "VQuAnDa":
-        #Cargamos dataset como dataframe
-        dataset = jsonToDict(datasetRoute + "test.json")
-        df = pd.DataFrame(dataset)
-
-        df.drop(columns=["query"],inplace=True)
-        s = pd.Series(df["verbalized_answer"])
-        s = s.apply(lambda st: st[st.find("[")+1:st.find("]")])
-        df["verbalized_answer"] = s.to_frame()
-        df.rename(columns={"verbalized_answer":"answer", "uid":"question_id"},inplace=True)
-
-    elif dataset == "VANiLLA":
-        #Cargamos dataset como dataframe
-        dataset = JSONLineToDict(datasetRoute + "Vanilla_Dataset_Test.json")
-        df = pd.DataFrame(dataset)
-
-        df.drop(columns=["answer_sentence","question_entity_label","question_relation"],inplace=True)
-
-    elif dataset == "LC-QuAD_2.0":
-        #Cargamos dataset como dataframe
-        df = pd.read_csv(datasetRoute + "LC-Quad_Dataset.csv", sep=";")
-        df = df.fillna("")
-
-        df.drop(columns=["Query","QIDs"],inplace=True)
-        df.rename(columns={"Entities/Answer":"answer", "Question":"question"},inplace=True)
-        df['question_id'] = range(0, len(df))
+    if isCsv:
+        dictList = csvToDict(route)
+    else:
+        try:
+            dictList = jsonToDict(route)
+        except:
+            dictList = jsonLineToDict(route)
     
-    df.drop_duplicates(subset=["question"],keep="first",inplace=True)
-    df = df[["question_id","question","answer"]]
-    df.to_csv(datasetRoute + "parsedDataset.csv", sep = ";", quoting=csv.QUOTE_ALL, index=False)
+    for i in dictList:
+        if "verbalized_answer" in i.keys():
+            answer = re.search(r"\[([^\)]+)\]", i["verbalized_answer"])
+            if answer:
+                i["verbalized_answer"] = answer.group(1)
+            i["answer"] = i.pop("verbalized_answer")    
+        keysToDelete = set(i.keys()).difference(keysToKeep)
+        for k in keysToDelete:
+            del i[k]
+    
+    if toDf:
+        return pd.DataFrame(dictList)   
+    return dictList
 
+#Creamos la conexion a la base de datos
+database = db.createConnection()
+
+#db.getCollections(database)
+
+#db.dropCollection(database,"vanilla")
 
 #Ejecutamos parseDataset para nuestros datasets
-datasets = ["VANiLLA","VQuAnDa","LC-QuAD_2.0"]
-for i in datasets:
-    parseDataset(i)
+jsonFiles = glob.glob("*.json")
+for i in jsonFiles:
+    db.importDataset(database, parseDataset(i), i.split(".")[0].lower())
+
+csvFiles = glob.glob("*.csv")
+for i in csvFiles:
+    db.importDataset(database, parseDataset(i, isCsv=True), i.split(".")[0].lower())

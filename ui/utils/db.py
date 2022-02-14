@@ -1,63 +1,66 @@
 import os
-import gspread
-import pandas as pd
-from pprint import pprint
-from googleapiclient.discovery import build
-from oauth2client.service_account import ServiceAccountCredentials
+import certifi
+from pymongo import MongoClient
 
-#Cambiamos directorio de trabajo al directorio del archivo para poder abrir el .json de credenciales
+#Cambiamos directorio de trabajo al directorio del script para poder abrir archivos en la misma carpeta
 fileDir = os.path.dirname(os.path.realpath(__file__))
 os.chdir(fileDir)
 
 """
 Variables globales:
-- scope: Alcance de nuestra aplicacion, APIs a usar (Google SpreadSheets y Drive)
-- spreadsheet: Nombre del Libro de Calculo 
-- spreadsheet_id: Identificador de nuestro Libro de Calculo
-- sheet: Nombre de la Hoja a modificar (hoja de validacion)
-- creds: Credenciales de la cuenta
+- clusterName: Nombre del cluster (base de datos) en Mongo-Atlas
+- userName: Nombre de usuario
+- userPassword: Password del usuario
 """
-scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
-spreadsheet = "MuHeQa_Validation"
-spreadsheetId = "1TY6Tj1OwITOW3o1nYRFFRY1bunvHNImUj-J0omRq4-I"
-validationSheet = "Validation"
 
-if os.path.exists('credentials.json'):
-    creds = ServiceAccountCredentials.from_json_keyfile_name('credentials.json', scope)
-else:
-    print("DB ERROR > Missing Credentials for accessing")
-    exit()
+clusterName = "josemvg-muheqa.awuxe.mongodb.net/JosemVG-MuHeQa"
+userName = "admin"
+userPassword = ""
 
-def connectToSheet():
+def createConnection():
     """
-    Funcion auxiliar que abre la Hoja de Validacion de nuestro Libro 
+    Funcion auxiliar que crea la conexion con la base de datos
     """
-    service = build("sheets","v4",credentials=creds)
-    return service.spreadsheets()
+    ca = certifi.where()
+    client = MongoClient("mongodb+srv://" + userName + ":" + userPassword + "@" + clusterName + "?retryWrites=true&w=majority", tlsCAFile = ca)
+    return client.test
 
-def insertRow():
+def importDataset(database, dataset, datasetName):
     """
-    Funcion auxiliar que inserta una nueva fila en la Hoja de Validacion
+    Funcion auxiliar que inserta un dataset a la base de datos
     """
-    pass
+    newCol = database[datasetName]
+    newCol.insert_many(dataset)
 
-def getRecordsInSheet(sheet):
+def getRandomDocument(number, database, dataset):
     """
-    Funcion auxiliar que obtiene todas las preguntas en una determinada hoja
-    Sea esta hoja un dataset de EQA que sigue nuestro formato
+    Funcion auxiliar que devuelve un cierto numero de documentos
+    aleatorios de la base de datos como lista de diccionarios
     """
-    client = gspread.authorize(creds)
-    sheetClient = client.open(spreadsheet).worksheet(sheet)
-    records = sheetClient.get_all_records()
-    return records
+    documentList = []
+    randomCursor = database[dataset].aggregate([{ "$sample": { "size": number } }])
+    for document in randomCursor:
+        documentList.append(document)
+    return documentList
 
-def getDatasetsInSheet(sheet):
+def getCollections(database):
     """
-    Funcion auxiliar que devuelve una lista con  
-    el nombre de las hojas que contienen un Dataset
+    Funcion auxiliar que muestra las colecciones en nuestra base de datos
     """
-    sheetMetadata = sheet.get(spreadsheetId=spreadsheetId).execute()
-    properties = sheetMetadata.get('sheets')
-    datasetList = []
-    [datasetList.append(i.get("properties").get('title')) for i in properties if "Dataset" in i.get("properties").get('title')]
-    return datasetList
+    collectionNames = database.list_collection_names()
+    print(collectionNames)
+    return collectionNames
+
+def dropCollection(database, collectionName):
+    """
+    Funcion auxiliar que muestra las colecciones en nuestra base de datos
+    """
+    if collectionName in getCollections(database):
+        col = database[collectionName]
+        col.drop()
+
+def getStatus(database):
+    """
+    Funcion auxiliar que devuelve el estado del servidor de la base de datos
+    """
+    return database.command("serverStatus")
