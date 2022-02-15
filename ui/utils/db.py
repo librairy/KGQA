@@ -54,6 +54,13 @@ def getCollections(database):
     """
     return database.list_collection_names()
 
+
+def getDocumentCount(database,dataset):
+    """
+    Funcion auxiliar que muestra el numero de entradas en un dataset
+    """
+    return database[dataset].count_documents({})
+
 def dropCollection(database, collectionName):
     """
     Funcion auxiliar que muestra las colecciones en nuestra base de datos

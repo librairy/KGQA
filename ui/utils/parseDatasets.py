@@ -1,6 +1,7 @@
 import re
 import os
 import json
+from tokenize import String
 import pandas as pd
 from pprint import pprint
 
@@ -14,45 +15,40 @@ Variables globales:
 """
 keysToKeep = ["question","answer"]
 
-def jsonToDict(route):
+def jsonToDict(file):
     '''
-    Funcion auxiliar que dada la ruta de un json, lo abre y lo convierte a lista de diccionarios
+    Funcion auxiliar que dado un archivo json, lo abre y lo convierte a lista de diccionarios
     '''
-    with open(route, encoding="utf-8") as f:
-        return json.load(f)
+    return json.loads((file.read()).decode('utf-8'))
 
-def jsonLineToDict(JSONRoute):
+def jsonLineToDict(file):
     '''
     Funcion auxiliar que dado un archivo json con JSONObjects en cada linea,
-    lo abre y lo convierte a lista de diccionarios
-    '''  
-    with open(JSONRoute) as f:
-        jsonList = list(f)
-    
-    return json.loads(json.dumps([json.loads(jsonLine) for jsonLine in jsonList]))
+    lo convierte a lista de diccionarios
+    '''
+    return json.loads(json.dumps([json.loads(jsonLine) for jsonLine in (file.read()).decode('utf-8').splitlines()]))
 
-def csvToDict(route):
+def csvToDict(file):
     '''
     Funcion auxiliar que dada la ruta de un csv, lo abre y lo convierte a lista de diccionarios
     '''
-    df = pd.read_csv(route, sep=";")
+    df = pd.read_csv(file, sep=";")
     #Convertimos los valores corruptos por cadenas vacias
     df = df.fillna("")
     return df.to_dict('records')
 
-def parseDataset(route, isCsv = False, toDf = False):
+def parseDataset(file, isCsv = False, toDf = False):
     """
     Funcion que abre datasets, los formatea a nuestro gusto 
     y los devuelve como CSV o diccionario
     """
     if isCsv:
-        dictList = csvToDict(route)
+        dictList = csvToDict(file)
     else:
         try:
-            dictList = jsonToDict(route)
+            dictList = jsonToDict(file)
         except:
-            dictList = jsonLineToDict(route)
-    
+            dictList = jsonLineToDict(file)
     for i in dictList:
         if "verbalized_answer" in i.keys():
             answer = re.search(r"\[([^\)]+)\]", i["verbalized_answer"])
@@ -63,6 +59,9 @@ def parseDataset(route, isCsv = False, toDf = False):
         for k in keysToDelete:
             del i[k]
     
+    #Eliminamos las entradas repetidas del diccionario convirtiendo a set
+    res = {frozenset(item.items()) : item for item in dictList}.values()
+
     if toDf:
-        return pd.DataFrame(dictList)   
-    return dictList
+        return pd.DataFrame(res)   
+    return res
