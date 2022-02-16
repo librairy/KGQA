@@ -1,10 +1,18 @@
+import pytz
 import requests
 import operator
-import streamlit as st
 from utils import db
+import streamlit as st
 from utils import spreadDb
 import multiprocessing as mp
+from datetime import datetime
 from annotated_text import annotated_text
+
+"""
+Variables globales:
+- timezone: Huso horario cuyas horas vamos a coger
+"""
+timezone = pytz.timezone("Europe/Kiev")
 
 def queryJSON(queryURL, question):
     """
@@ -118,7 +126,7 @@ def main():
                     break
                 counter += 1
                 answer = response['answer']
-                if answer:
+                if answer and answer != "-":
                     context = "..." + response["evidence"]["summary"] + "..."
                     source = response["source"]
                     relevance = response["confidence"]
@@ -137,7 +145,7 @@ def main():
         #Si se pulsa el boton de correcto/incorrecto:
         if isRight or isWrong:
             #Insertamos en la Spreadsheet de Google
-            spreadDb.insertRow(worksheet, [[question,isRight]])
+            spreadDb.insertRow(worksheet, [[question,isRight, str(datetime.now(tz=timezone))]])
             #Reseteamos los valores de los botones
             isRight = False
             isWrong = False
