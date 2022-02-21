@@ -11,8 +11,14 @@ from annotated_text import annotated_text
 """
 Variables globales:
 - timezone: Huso horario cuyas horas vamos a coger
+- knowledgeBases: Lista de bases de conocimiento para nuestra consulta
+- EQAService: Url del servicio de Extractive Question-Answering
+- threadNumber: Numero de hilos a usar en el multiprocesado
 """
 timezone = pytz.timezone("Europe/Kiev")
+knowledgeBases = ["wikidata","dbpedia","cord19"]
+EQAService = "http://127.0.0.1:5000/muheqa/"
+threadNumber = 3
 
 def queryJSON(queryURL, question):
     """
@@ -29,7 +35,7 @@ def queryJSON(queryURL, question):
 def main():
 
     @st.cache(show_spinner=False, allow_output_mutation=True)
-    def getAnswers(data):
+    def getAnswers(question):
         """
         Funcion auxiliar que obtiene una lista con todas las respuestas sobre las distintas bases de conocimiento
         """
@@ -37,8 +43,8 @@ def main():
         ]
 
         for i in knowledgeBases:
-            queryURL = "http://127.0.0.1:5000/muheqa/" + i + "/en?evidence=true"
-            answer = queryJSON(queryURL,data["question"])
+            queryURL = EQAService + i + "/en?evidence=true"
+            answer = queryJSON(queryURL,question)
             #Si la respuesta es distinta de None, guardamos la fuente y agregamos la respuesta a la lista de contestaciones
             if answer:
                 answer["source"] = i
@@ -50,7 +56,6 @@ def main():
         '''
         Funcion auxiliar que anota la respuesta sobre el texto de evidencia
         '''
-        #Por defecto la etiqueta del texto anotado sera "ANSWER" y el color verde
         tag = "ANSWER"
         color = "#adff2f"
         #Buscamos la respuesta en el texto
@@ -95,18 +100,10 @@ def main():
         question = randomDict["question"]
         modelAnswer = randomDict["answer"]
 
-    data = {
-        'question': question,
-        'answerNumber': 10
-    }
-
     #Establecemos el titulo de la barra lateral
     st.sidebar.subheader('Options')
     #Control deslizante para el numero de respuestas a mostrar
     answerNumber = st.sidebar.slider('How many relevant answers do you want?', 1, 10, 5)
-
-    #Lista de bases de conocimiento sobre las que haremos nuestra consulta
-    knowledgeBases = ["wikidata","dbpedia","cord19"]
 
     if question:
         st.write("**Question: **", question)
@@ -119,7 +116,7 @@ def main():
         #Mensaje de carga para las preguntas. Se muestra mientras que estas se obtienen.
         with st.spinner(text=':hourglass: Looking for answers...'):
             counter = 0
-            results = getAnswers(data)
+            results = getAnswers(question)
             results.sort(key = operator.itemgetter('confidence'), reverse = True)
             for response in results:
                 if counter >= answerNumber:
