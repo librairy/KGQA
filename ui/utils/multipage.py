@@ -9,8 +9,8 @@ class MultiPage:
         """
         Constructor de la clase MultiPage
         """
-        #Atributo pages, lista de diccionarios con las subpaginas de nuestra interfaz
-        self.pages = []
+        #Atributo pages, diccionario con las subpaginas de nuestra interfaz
+        self.pages = {}
     
     def add_page(self, title, func) -> None: 
         """
@@ -18,23 +18,17 @@ class MultiPage:
         - title: Titulo de la pagina, sera el que aparezca en el selector
         - func: Funcion de Python que ejecutara nuestra interfaz para correr la pagina en cuestion
         """
-        self.pages.append(
-            {
-                "title": title, 
-                "function": func
-            }
-        )
+        self.pages.update({title: func})
 
     def run(self):
         """
         Funcion que ejecuta el codigo de la aplicacion
         """
         #Selector   
-        page = st.sidebar.selectbox(
-            'App Navigation', 
-            self.pages, 
-            format_func=lambda page: page['title']
+        page = st.sidebar.radio(
+            "App Navigation", 
+            self.pages.keys()
         )
 
         # run the app function 
-        page['function']()
+        self.pages[page]()

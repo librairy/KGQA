@@ -11,7 +11,8 @@ def main():
 
     col1, col2 = st.columns([1,1])
     with col1:
-        run = st.button("Run")
-    with col2:
         selectorList = ["All"] 
         selectorList.extend(db.getCollections(database))
+        dataset = st.selectbox("Select a DataSet", selectorList)
+    with col2:
+        run = st.button("Run")
