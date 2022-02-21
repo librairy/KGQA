@@ -6,6 +6,8 @@ import time
 import multiprocessing as mp
 import pandas as pd
 
+datasetUrl = "data/VANiLLA_Test.json"
+
 def JSONLineToDict(JSONRoute):
     '''
     Funcion auxiliar que dado un archivo json con JSONObjects en cada linea,
@@ -116,4 +118,4 @@ if __name__ == '__main__':
         queryUrl = "http://localhost:5000/eqakg/dbpedia/en?evidence=true"
         #queryUrl = "https://librairy.linkeddata.es/eqakg/dbpedia/en?text=false" 
 
-        retriever(pool,rows,counter,"data/Vanilla_Dataset_Test.json",queryUrl,"results/VANiLLA.csv", writeHeader=True)
+        retriever(pool,rows,counter,datasetUrl,queryUrl,"results/VANiLLA.csv", writeHeader=True)
