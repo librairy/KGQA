@@ -15,7 +15,7 @@ Variables globales:
 - knowledgeBases: Lista de bases de conocimiento para nuestra consulta
 - EQAService: Url del servicio de Extractive Question-Answering
 """
-timezone = pytz.timezone("Europe/Kiev")
+timezone = pytz.timezone("Europe/Madrid")
 knowledgeBases = ["wikidata","dbpedia","cord19"]
 EQAService = "http://127.0.0.1:5000/muheqa/"
 
@@ -148,7 +148,7 @@ def main():
         if isRight or isWrong:
             stringResults = ",".join(json.dumps(i) for i in resultsDictList)
             #Insertamos en la Spreadsheet de Google
-            spreadDb.insertRow(worksheet, [[question, isRight, stringResults, str(datetime.now(tz=timezone))]])
+            spreadDb.insertRow(worksheet, [[question, isRight, "[" + stringResults + "]", str(datetime.now(tz=timezone))]])
             #Reseteamos los valores de los botones
             isRight = False
             isWrong = False
