@@ -7,18 +7,17 @@ from utils import spreadDb
 import multiprocessing as mp
 from datetime import datetime
 from annotated_text import annotated_text
+import json
 
 """
 Variables globales:
 - timezone: Huso horario cuyas horas vamos a coger
 - knowledgeBases: Lista de bases de conocimiento para nuestra consulta
 - EQAService: Url del servicio de Extractive Question-Answering
-- threadNumber: Numero de hilos a usar en el multiprocesado
 """
 timezone = pytz.timezone("Europe/Kiev")
 knowledgeBases = ["wikidata","dbpedia","cord19"]
 EQAService = "http://127.0.0.1:5000/muheqa/"
-threadNumber = 3
 
 def queryJSON(queryURL, question):
     """
@@ -117,6 +116,7 @@ def main():
         with st.spinner(text=':hourglass: Looking for answers...'):
             counter = 0
             results = getAnswers(question)
+            resultsDictList = []
             results.sort(key = operator.itemgetter('confidence'), reverse = True)
             for response in results:
                 if counter >= answerNumber:
@@ -126,11 +126,16 @@ def main():
                 if answer and answer != "-":
                     context = "..." + response["evidence"]["summary"] + "..."
                     source = response["source"]
-                    relevance = response["confidence"]
+                    confidence = response["confidence"]
                     annotateContext(response, answer, context, response["evidence"]["start"], response["evidence"]["end"])
                     st.write("**Answer: **", answer)
-                    st.write('**Relevance:** ', relevance , '**Source:** ' , source)
-                    
+                    st.write('**Relevance:** ', confidence , '**Source:** ' , source)
+                    resultsDictList.append(
+                    {
+                        "answer": answer,
+                        "confidence": confidence,
+                        "source": source,
+                    })
         st.write("Please rate if our answer has been helpful to you so we can further improve our system!")
         #Botones para validar la respuesta por parte del usuario en columnas separadas          
         col1, col2 = st.columns([1,1])
@@ -141,8 +146,9 @@ def main():
 
         #Si se pulsa el boton de correcto/incorrecto:
         if isRight or isWrong:
+            stringResults = ",".join(json.dumps(i) for i in resultsDictList)
             #Insertamos en la Spreadsheet de Google
-            spreadDb.insertRow(worksheet, [[question,isRight, str(datetime.now(tz=timezone))]])
+            spreadDb.insertRow(worksheet, [[question, isRight, stringResults, str(datetime.now(tz=timezone))]])
             #Reseteamos los valores de los botones
             isRight = False
             isWrong = False
