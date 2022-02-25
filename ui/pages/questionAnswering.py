@@ -102,8 +102,7 @@ def main():
     #Establecemos el titulo de la barra lateral
     st.sidebar.subheader('Options')
     #Control deslizante para el numero de respuestas a mostrar
-    answerNumber = st.sidebar.slider('How many relevant answers do you want?', 1, 10, 5)
-
+    answerNumber = st.sidebar.slider('How many relevant answers do you want?', 1, 10, 1)
     if question:
         st.write("**Question: **", question)
         if modelAnswer:
@@ -115,10 +114,10 @@ def main():
         #Mensaje de carga para las preguntas. Se muestra mientras que estas se obtienen.
         with st.spinner(text=':hourglass: Looking for answers...'):
             counter = 0
+            highestScoreAnswer = {}
             results = getAnswers(question)
-            resultsDictList = []
             results.sort(key = operator.itemgetter('confidence'), reverse = True)
-            for response in results:
+            for idx,response in enumerate(results):
                 if counter >= answerNumber:
                     break
                 counter += 1
@@ -130,12 +129,11 @@ def main():
                     annotateContext(response, answer, context, response["evidence"]["start"], response["evidence"]["end"])
                     st.write("**Answer: **", answer)
                     st.write('**Relevance:** ', confidence , '**Source:** ' , source)
-                    resultsDictList.append(
-                    {
-                        "answer": answer,
-                        "confidence": confidence,
-                        "source": source,
-                    })
+                    if idx == 0:
+                        highestScoreAnswer = {
+                            "answer": answer,
+                            "confidence": confidence
+                        }
         st.write("Please rate if our answer has been helpful to you so we can further improve our system!")
         #Botones para validar la respuesta por parte del usuario en columnas separadas          
         col1, col2 = st.columns([1,1])
@@ -146,9 +144,8 @@ def main():
 
         #Si se pulsa el boton de correcto/incorrecto:
         if isRight or isWrong:
-            stringResults = ",".join(json.dumps(i) for i in resultsDictList)
             #Insertamos en la Spreadsheet de Google
-            spreadDb.insertRow(worksheet, [[question, isRight, "[" + stringResults + "]", str(datetime.now(tz=timezone))]])
+            spreadDb.insertRow(worksheet, [[question, isRight, json.dumps(highestScoreAnswer), str(datetime.now(tz=timezone))]])
             #Reseteamos los valores de los botones
             isRight = False
             isWrong = False
