@@ -24,14 +24,15 @@ def main():
             filename = inputBuffer.name
             splitFilename = filename.split(".")
             datasetDict = parseDatasets.parseDataset(inputBuffer, isCsv=(splitFilename[1] == "csv"))
+            datasetName = splitFilename[0].lower()
             if datasetDict:
-                dbManager.importDataset(database, datasetDict, splitFilename[0].lower())
-                if splitFilename[0].lower() in dbManager.getCollections(database):
+                dbManager.importDataset(database, datasetDict, datasetName)
+                if datasetName in dbManager.getCollections(database):
                     st.success("✨ Your dataset has been registered on our database!")
+                    st.write("A dataset with name ", datasetName, "and length ", len(datasetDict), " questions has been registered on MongoDB")
                 else:
                     st.error("We could not upload your dataset on our database. Please contact the administrator.")
             else:
                 st.error("Your dataset could not be processed correctly. Please revise the format or contact the administrator")
-                print(datasetDict)
         except Exception as e:
             st.exception(e)    

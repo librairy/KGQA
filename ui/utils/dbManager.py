@@ -30,7 +30,7 @@ def createConnection(cloud = False):
     if cloud:
         client = MongoClient("mongodb+srv://" + userName + ":" + userPassword + "@" + clusterName + "?retryWrites=true&w=majority", tlsCAFile = ca)
     else:
-        client = MongoClient(host = serverDir)
+        client = MongoClient(serverDir)
     return client.test
 
 def importDataset(database, dataset, datasetName):
