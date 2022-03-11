@@ -12,18 +12,25 @@ Variables globales:
 - clusterName: Nombre del cluster (base de datos) en Mongo-Atlas
 - userName: Nombre de usuario
 - userPassword: Password del usuario
+- mongoServer: Dirección del servidor
 """
 
 clusterName = "josemvg-muheqa.awuxe.mongodb.net/JosemVG-MuHeQa"
 userName = "admin"
-userPassword = "lsNDVOLrv8WgNhyV"
+userPassword = ""
+serverDir = "mongodb://localhost:27017"
 
-def createConnection():
+def createConnection(cloud = False):
     """
     Funcion auxiliar que crea la conexion con la base de datos
+    Si la base de datos esta en la nube (MongoDB Atlas), llamar con cloud = True
+    Por defecto, el metodo se ejecuta con parametro cloud = False
     """
     ca = certifi.where()
-    client = MongoClient("mongodb+srv://" + userName + ":" + userPassword + "@" + clusterName + "?retryWrites=true&w=majority", tlsCAFile = ca)
+    if cloud:
+        client = MongoClient("mongodb+srv://" + userName + ":" + userPassword + "@" + clusterName + "?retryWrites=true&w=majority", tlsCAFile = ca)
+    else:
+        client = MongoClient(host = serverDir)
     return client.test
 
 def importDataset(database, dataset, datasetName):
@@ -31,7 +38,10 @@ def importDataset(database, dataset, datasetName):
     Funcion auxiliar que inserta un dataset a la base de datos
     """
     newCol = database[datasetName]
-    newCol.insert_many(dataset)
+    if len(dataset) > 1:
+        newCol.insert_many(dataset)
+    else:
+        newCol.inser_one(dataset)
 
 def getRandomDocument(number, database, dataset):
     """
@@ -66,6 +76,14 @@ def dropCollection(database, collectionName):
     Funcion auxiliar que muestra las colecciones en nuestra base de datos
     """
     if collectionName in getCollections(database):
+        col = database[collectionName]
+        col.drop()
+
+def clearDatabase(database):
+    """
+    Funcion auxiliar que vacia las colecciones de nuestra base de datos
+    """
+    for collectionName in getCollections(database):
         col = database[collectionName]
         col.drop()
 

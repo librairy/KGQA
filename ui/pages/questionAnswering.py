@@ -1,10 +1,9 @@
 import pytz
 import requests
 import operator
-from utils import db
+from utils import dbManager
 import streamlit as st
-from utils import spreadDb
-import multiprocessing as mp
+from utils import spreadDbManager
 from datetime import datetime
 from annotated_text import annotated_text
 import json
@@ -13,11 +12,11 @@ import json
 Variables globales:
 - timezone: Huso horario cuyas horas vamos a coger
 - knowledgeBases: Lista de bases de conocimiento para nuestra consulta
-- EQAService: Url del servicio de Extractive Question-Answering
+- QAService: Url del servicio de Question-Answering
 """
 timezone = pytz.timezone("Europe/Madrid")
 knowledgeBases = ["wikidata","dbpedia","cord19"]
-EQAService = "http://127.0.0.1:5000/muheqa/"
+QAService = "http://127.0.0.1:5000/muheqa/"
 
 def queryJSON(queryURL, question):
     """
@@ -42,7 +41,7 @@ def main():
         ]
 
         for i in knowledgeBases:
-            queryURL = EQAService + i + "/en?evidence=true"
+            queryURL = QAService + i + "/en?evidence=true"
             answer = queryJSON(queryURL,question)
             #Si la respuesta es distinta de None, guardamos la fuente y agregamos la respuesta a la lista de contestaciones
             if answer:
@@ -68,8 +67,8 @@ def main():
         annotated_text(context[:answerStart],(answerInText,tag,color),context[answerEnd:],)
 
     #Creamos la conexion para la base de datos (datasets) y el Libro de Calculo (validacion)
-    worksheet = spreadDb.connectToSheet()
-    database = db.createConnection()
+    worksheet = spreadDbManager.connectToSheet()
+    database = dbManager.createConnection()
 
     #Subtitulo de la seccion de pregunta y respuesta
     st.subheader('MuHeQa UI - Question Answering over Multiple and Heterogeneous Knowledge Bases')
@@ -81,7 +80,7 @@ def main():
 
     #Lista de Hojas de Calculo con Datasets en nuestra base de datos
     selectorList = ["All"] 
-    selectorList.extend(db.getCollections(database))
+    selectorList.extend(dbManager.getCollections(database))
     
     #Buscador para realizar preguntas
     question = st.text_input("")
@@ -95,7 +94,7 @@ def main():
     modelAnswer = None
 
     if randomQuestion:
-        randomDict = db.getRandomDocument(1,database,dataset)[0]
+        randomDict = dbManager.getRandomDocument(1,database,dataset)[0]
         question = randomDict["question"]
         modelAnswer = randomDict["answer"]
 
@@ -145,7 +144,7 @@ def main():
         #Si se pulsa el boton de correcto/incorrecto:
         if isRight or isWrong:
             #Insertamos en la Spreadsheet de Google
-            spreadDb.insertRow(worksheet, [[question, isRight, json.dumps(highestScoreAnswer), str(datetime.now(tz=timezone))]])
+            spreadDbManager.insertRow(worksheet, [[question, isRight, json.dumps(highestScoreAnswer), str(datetime.now(tz=timezone))]])
             #Reseteamos los valores de los botones
             isRight = False
             isWrong = False

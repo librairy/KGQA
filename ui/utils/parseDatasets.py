@@ -60,8 +60,7 @@ def parseDataset(file, isCsv = False, toDf = False):
             del i[k]
     
     #Eliminamos las entradas repetidas del diccionario convirtiendo a set
-    res = {frozenset(item.items()) : item for item in dictList}.values()
-
+    res = list({frozenset(item.items()) : item for item in dictList}.values())
     if toDf:
-        return pd.DataFrame(res)   
+        return pd.DataFrame(res)
     return res

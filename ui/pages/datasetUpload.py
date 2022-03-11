@@ -1,5 +1,5 @@
 import streamlit as st
-from utils import db
+from utils import dbManager
 from utils import parseDatasets
 
 def main():
@@ -20,13 +20,18 @@ def main():
 
     if inputBuffer:
         try:
-            database = db.createConnection()
+            database = dbManager.createConnection()
             filename = inputBuffer.name
             splitFilename = filename.split(".")
-            db.importDataset(database, parseDatasets.parseDataset(inputBuffer, isCsv=(splitFilename[1] == "csv")), splitFilename[0].lower())
-            if splitFilename[0].lower() in db.getCollections(database):
-                st.success("✨ Your dataset has been registered on our database!")
+            datasetDict = parseDatasets.parseDataset(inputBuffer, isCsv=(splitFilename[1] == "csv"))
+            if datasetDict:
+                dbManager.importDataset(database, datasetDict, splitFilename[0].lower())
+                if splitFilename[0].lower() in dbManager.getCollections(database):
+                    st.success("✨ Your dataset has been registered on our database!")
+                else:
+                    st.error("We could not upload your dataset on our database. Please contact the administrator.")
             else:
-                st.error("We could not upload your dataset on our database. Please contact the administrator.")
+                st.error("Your dataset could not be processed correctly. Please revise the format or contact the administrator")
+                print(datasetDict)
         except Exception as e:
             st.exception(e)    

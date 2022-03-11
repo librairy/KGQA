@@ -4,6 +4,8 @@ import requests
 import subprocess
 from multiprocessing import Process
 
+QAService = "http://127.0.0.1:5000/muheqa/dbpedia/en?evidence=false"
+
 def runServer(dir):
     """
     Funcion auxiliar que ejecuta el servidor de EQA
@@ -22,7 +24,7 @@ def checkEQAServer():
 
     while True:
         try:
-            requests.get("http://127.0.0.1:5000/muheqa/dbpedia/en?evidence=false", files = files)
+            requests.get(QAService, files = files)
             break
         except requests.exceptions.ConnectionError:
             print("EQA SERVER CHECK > Failed to establish connection")
