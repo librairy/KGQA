@@ -4,7 +4,12 @@ import requests
 import subprocess
 from multiprocessing import Process
 
+"""
+Runner class for the web application. Runs EQA Service and Streamlit WebApp
+TO-DO: Substite this file for a Docker-compose
+"""
 QAService = "http://127.0.0.1:5000/muheqa/dbpedia/en?evidence=false"
+testQuestion = "Where was Fernando Alonso born?"
 
 def runServer(dir):
     """
@@ -19,7 +24,7 @@ def checkEQAServer():
     TO-DO: Usar HEAD Request para ahorrar recursos
     """
     files = {
-        'question': (None, "Where was Fernando Alonso born?"),
+        'question': (None, testQuestion),
     }
 
     while True:

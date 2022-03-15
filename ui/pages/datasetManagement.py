@@ -2,10 +2,12 @@ import streamlit as st
 from utils import dbManager
 from utils import parseDatasets
 
+dbDirection = "mongodb://localhost:27017"
+
 def main():
 
-    #Subtitulo de la seccion de subida de conjuntos de datos
-    st.subheader('Dataset Upload')
+    #Subtitulo de la seccion de gestion de conjuntos de datos
+    st.subheader('Dataset Management')
         
     #Texto del cuerpo de la pagina web
     st.markdown(""" 
@@ -20,14 +22,14 @@ def main():
 
     if inputBuffer:
         try:
-            database = dbManager.createConnection()
+            db = dbManager.DbManager(dbDirection)
             filename = inputBuffer.name
             splitFilename = filename.split(".")
             datasetDict = parseDatasets.parseDataset(inputBuffer, isCsv=(splitFilename[1] == "csv"))
             datasetName = splitFilename[0].lower()
             if datasetDict:
-                dbManager.importDataset(database, datasetDict, datasetName)
-                if datasetName in dbManager.getCollections(database):
+                db.importDataset(datasetDict, datasetName)
+                if datasetName in db.getCollections():
                     st.success("✨ Your dataset has been registered on our database!")
                     st.write("A dataset with name ", datasetName, "and length ", len(datasetDict), " questions has been registered on MongoDB")
                 else:

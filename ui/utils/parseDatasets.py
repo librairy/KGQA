@@ -1,9 +1,7 @@
 import re
 import os
 import json
-from tokenize import String
 import pandas as pd
-from pprint import pprint
 
 #Cambiamos directorio de trabajo al directorio del script para poder abrir archivos en la misma carpeta
 fileDir = os.path.dirname(os.path.realpath(__file__))
