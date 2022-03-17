@@ -1,13 +1,12 @@
 """
 Based on cbadenes' BertENClassifier.py
-
 """
-
-from transformers import BertTokenizer, BertForSequenceClassification
-import torch
-import numpy as np
 import csv
 import json
+import kenlm
+import torch
+import numpy as np
+from transformers import BertTokenizer, BertForSequenceClassification
 
 class QuestionClassifier:
     
@@ -39,6 +38,8 @@ class QuestionClassifier:
         self.hierarchy = {}
         with open(hierarchy_json) as json_file:
             self.hierarchy = json.load(json_file)
+
+        self.fluencyScoreModel = kenlm.Model(resources_dir+"/ZAMIA Fluency-Score-large-model/generic_de_lang_model_large-r20190501.arpa")
             
     def getAnswerCategory(self,question):
         res = self.classifyAnswerCategory(question)
@@ -78,4 +79,6 @@ class QuestionClassifier:
             categoryLabel = 'String'
         return categoryLabel
         
+    def getFluencyScore(self,question):
+        return self.fluencyScoreModel.score(question, bos = True, eos = True)
     

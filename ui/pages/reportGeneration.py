@@ -29,11 +29,19 @@ def main():
 
         with st.spinner(text=":hourglass: Generating report. This may take some minutes..."):
 
-            df = pd.DataFrame(db.getAllDocuments(dataset))
+            datasetName = dataset
+            df = pd.DataFrame(db.getAllDocuments(datasetName))
             df = df[["question", "answer"]]
 
             df["answerType"] = df["question"].apply(classifier.getAnswerCategory)
+            answerTypes = df.answerType.unique()
+            df["fluencyScore"] = df["question"].apply(classifier.getFluencyScore)
 
+            meanfluencyScore = df.fluencyScore.mean()
+            medianfluencyScore = df.fluencyScore.median()
+            stdfluencyScore = df.fluencyScore.std()
+            maxfluencyScore = df.fluencyScore.max()
+            minfluencyScore = df.fluencyScore.min()
 
             count = df["answerType"].value_counts()
             labels = count.index
@@ -45,6 +53,12 @@ def main():
             traces = go.Pie(labels = labels, values = values)
             fig = go.Figure(data = traces, layout = layout)
 
+            st.header("Quality report")
             st.write(df.head(10))
             st.write(df.tail(10))
+
+            st.write("The number of distinct questions in the dataset is ", len(df))
+            st.write("The average fluency score is ", meanfluencyScore, " and its median is ", medianfluencyScore)
+            st.write("Maximum and minimum fluency scores are ", maxfluencyScore, " and ", minfluencyScore, " respectively. Standard deviation is ", stdfluencyScore)
+            st.write("There are ", len(answerTypes), " different types of answer in this dataset, which are: ", answerTypes)
             st.plotly_chart(fig)
