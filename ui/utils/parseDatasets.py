@@ -30,7 +30,7 @@ def csvToDict(file):
     '''
     Funcion auxiliar que dada la ruta de un csv, lo abre y lo convierte a lista de diccionarios
     '''
-    df = pd.read_csv(file, sep=";")
+    df = pd.read_csv(file, sep=None, engine="python")
     #Convertimos los valores corruptos por cadenas vacias
     df = df.fillna("")
     return df.to_dict('records')
