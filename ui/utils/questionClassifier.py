@@ -39,7 +39,7 @@ class QuestionClassifier:
         with open(hierarchy_json) as json_file:
             self.hierarchy = json.load(json_file)
 
-        self.fluencyScoreModel = kenlm.Model(resources_dir+"/ZAMIA Fluency-Score-large-model/generic_de_lang_model_large-r20190501.arpa")
+        self.fluencyScoreModel = kenlm.Model(resources_dir+"/ZAMIA_Fluency_Score/en_large_model.binary")
             
     def getAnswerCategory(self,question):
         res = self.classifyAnswerCategory(question)
