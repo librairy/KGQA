@@ -5,8 +5,8 @@ import re
 import time
 import multiprocessing as mp
 import pandas as pd
-import traceback
-from pprint import pprint
+
+datasetUrl = "data/VQuAnDA_test.json"
 
 def jsonToDict(route):
     '''
@@ -120,4 +120,4 @@ if __name__ == '__main__':
         queryUrl = "http://localhost:5000/muheqa/dbpedia/en?evidence=true"
         #queryUrl = "https://librairy.linkeddata.es/muheqa/dbpedia/en?evidence=true" 
 
-        retriever(pool,rows,counter,"data/test.json",queryUrl,"results/VQuAnDa.csv", writeHeader=True)
+        retriever(pool,rows,counter,datasetUrl,queryUrl,"results/VQuAnDa.csv", writeHeader=True)
