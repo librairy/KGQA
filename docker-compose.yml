@@ -1,9 +1,9 @@
-version: '3.7'
+version: "3.3"
 
 services:
- eqakg:
-  container_name: eqakg
-  image: librairy/eqakg:latest
-  ports:
-   - "5000:5000"
-  restart: always
+
+  muheqa:
+    image: "librairy/muheqa:latest"
+    ports:
+      - "5000:5000"
+    restart: on-failure

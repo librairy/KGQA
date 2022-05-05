@@ -1,0 +1,32 @@
+version: "3.3"
+
+services:
+
+  web:
+    image: "qa-webapp/streamlit-ui:latest"
+    ports:
+      - "8501:8501"
+    restart: on-failure
+    depends_on:
+      - mongodb
+      - muheqa
+    links:
+      - "mongodb:db"
+      - "muheqa:eqa"
+    env_file:
+      - .env
+    command: ["./wait-for-it.sh", "muheqa:5000", "-t","0","--", "streamlit", "run", "webapp.py"]
+
+  muheqa:
+    image: "librairy/muheqa:latest"
+    ports:
+      - "5000:5000"
+    restart: on-failure
+
+  mongodb:
+    image: "mongo"
+    ports:
+      - "27017:27017"
+    restart: on-failure
+    volumes:
+      - ./ui/src/utils:/db

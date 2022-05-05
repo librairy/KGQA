@@ -1,0 +1,26 @@
+FROM python:3.9
+
+COPY ./manage.py /app/manage.py
+COPY ./application/ /app/application/
+
+#Download Answer Classifier and Create resources_dir
+RUN apt-get update && apt-get install -y \
+     curl \
+     unzip
+RUN curl https://delicias.dia.fi.upm.es/nextcloud/index.php/s/Jp5FeoBn57c8k4M/download --output /app/resources_dir.zip --create-dirs
+RUN unzip /app/resources_dir.zip -d /app/
+
+#Download RDF Verbalizer Model
+RUN curl https://delicias.dia.fi.upm.es/nextcloud/index.php/s/bRxnH93Df9Psaeo/download --output /app/application/summary/kg/nlg/model/pytorch_model.bin --create-dirs
+WORKDIR /app
+
+#Install requirements
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+
+#Install Wikidata DB
+RUN python3 -m spacy_entity_linker "download_knowledge_base"
+
+#Run Flask Server
+ENTRYPOINT ["python3"]
+CMD ["manage.py","runprodserver"]
