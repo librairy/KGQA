@@ -3,19 +3,16 @@ import os
 import json
 import pandas as pd
 
-#Cambiamos directorio de trabajo al directorio del script para poder abrir archivos en la misma carpeta
+#Change work directory
 fileDir = os.path.dirname(os.path.realpath(__file__))
 os.chdir(fileDir)
 
-"""
-Variables globales:
-- keysToKeep: Campos de nuestro diccionario que querremos conservar
-"""
+#Dataset fields we want to keep
 keysToKeep = ["question","answer"]
 
 def jsonToDict(file):
     '''
-    Funcion auxiliar que dado un archivo json, lo abre y lo convierte a lista de diccionarios
+    Auxiliary function 
     '''
     return json.loads((file.read()).decode('utf-8'))
 
@@ -35,11 +32,12 @@ def csvToDict(file):
     df = df.fillna("")
     return df.to_dict('records')
 
-def parseDataset(file, isCsv = False, toDf = False):
+def formatDataset(file, isCsv = False, toDf = False):
     """
     Funcion que abre datasets, los formatea a nuestro gusto 
     y los devuelve como CSV o diccionario
     """
+    #Convert csv or JSON to dictionary list
     if isCsv:
         dictList = csvToDict(file)
     else:
@@ -47,7 +45,10 @@ def parseDataset(file, isCsv = False, toDf = False):
             dictList = jsonToDict(file)
         except:
             dictList = jsonLineToDict(file)
+            
+    #Retrieve question and answer for each dictionary        
     for i in dictList:
+        #If answer is verbalized (between brackets), extract it with a regular expression
         if "verbalized_answer" in i.keys():
             answer = re.search(r"\[([^\)]+)\]", i["verbalized_answer"])
             if answer:
@@ -57,7 +58,7 @@ def parseDataset(file, isCsv = False, toDf = False):
         for k in keysToDelete:
             del i[k]
     
-    #Eliminamos las entradas repetidas del diccionario convirtiendo a set
+    #Delete repeated question and answers
     res = list({frozenset(item.items()) : item for item in dictList}.values())
     if toDf:
         return pd.DataFrame(res)

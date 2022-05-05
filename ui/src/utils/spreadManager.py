@@ -2,23 +2,16 @@ import os
 from googleapiclient.discovery import build
 from oauth2client.service_account import ServiceAccountCredentials
 
-#Cambiamos directorio de trabajo al directorio del archivo para poder abrir el .json de credenciales
+#Change work directory to current file location
 fileDir = os.path.dirname(os.path.realpath(__file__))
 os.chdir(fileDir)
 
-"""
-Atributos:
-- scope: APIs a usar (Google SpreadSheets y Drive)
-- spreadsheet: Nombre del Libro de Calculo 
-- spreadsheet_id: Identificador de nuestro Libro de Calculo
-- validationSheet: Nombre de la Hoja a modificar (hoja de validacion)
-- creds: Credenciales de la cuenta
-- client: Conexion a la Hoja de Calculo
-"""
 class SpreadManager:
 
     def __init__(self,spreadsheet, spreadsheetId, validationSheet):
-
+        """
+        Class constructor
+        """
         self.scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
         self.spreadsheet = spreadsheet
         self.spreadsheetId = spreadsheetId
@@ -34,7 +27,7 @@ class SpreadManager:
 
     def insertRow(self, row):
         """
-        Funcion auxiliar que inserta una nueva fila en la Hoja de Validacion
+        Method that inserts a row into the spreadsheet    
         """
         values = (
             self.connector.values().append(

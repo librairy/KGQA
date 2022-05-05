@@ -1,5 +1,5 @@
 """
-Based on cbadenes' BertENClassifier.py
+Based on @cbadenes' BertENClassifier.py
 """
 import csv
 import json
@@ -9,7 +9,9 @@ import numpy as np
 from transformers import BertTokenizer, BertForSequenceClassification
 
 class QuestionClassifier:
-    
+    """
+    Class Constructor: Initializes local files in resources_dir
+    """
     def __init__(self,resources_dir):
 
         category_model_dir = resources_dir+'/BERT Fine-Tuning category'
@@ -42,12 +44,19 @@ class QuestionClassifier:
         self.fluencyScoreModel = kenlm.Model(resources_dir+"/ZAMIA_Fluency_Score/en_large_model.binary")
             
     def getAnswerCategory(self,question):
+        """
+        Method that gets the answer category of a question.
+        """
         res = self.classifyAnswerCategory(question)
+        #If the question is a literal, it returns the literal category.
         if res == 'Literal':
             return self.classifyLiterals(question)
         return res
             
     def classifyAnswerCategory(self,q):
+        """
+        Auxiliary method that gets the answer category of a question.
+        """
         input_ids = torch.tensor(self.category_tokenizer.encode(q, add_special_tokens=True)).unsqueeze(0)  # Batch size 1
         labels = torch.tensor([1]).unsqueeze(0)  # Batch size 1
         
@@ -64,6 +73,9 @@ class QuestionClassifier:
         return categoryLabel
     
     def classifyLiterals(self,q):
+        """
+        Method that gets the literal category of a question.
+        """
         input_ids = torch.tensor(self.literal_tokenizer.encode(q, add_special_tokens=True)).unsqueeze(0)  # Batch size 1
         labels = torch.tensor([1]).unsqueeze(0)  # Batch size 1
         
@@ -80,5 +92,8 @@ class QuestionClassifier:
         return categoryLabel
         
     def getFluencyScore(self,question):
+        """
+        Method that gets the fluency score of a question.
+        """
         return self.fluencyScoreModel.score(question, bos = True, eos = True)
     

@@ -1,0 +1,22 @@
+version: "3.3"
+services:
+
+  web:
+    image: "qa-webapp/streamlit-ui"
+    ports:
+      - "8501:8501"
+    restart: on-failure
+    depends_on:
+      - mongodb
+    links:
+      - "mongodb:db"
+    env_file:
+      - .env
+
+  mongodb:
+    image: "mongo"
+    ports:
+      - "27017:27017"
+    restart: on-failure
+    volumes:
+      - ./src/utils:/db

@@ -1,0 +1,19 @@
+FROM python:3.9
+
+#Create resources_dir
+RUN apt-get update && apt-get install -y \
+     curl \
+     unzip
+RUN curl https://delicias.dia.fi.upm.es/nextcloud/index.php/s/Jp5FeoBn57c8k4M/download --output /src/utils/resources_dir.zip --create-dirs
+RUN unzip /src/utils/resources_dir.zip -d /src/utils/
+RUN curl https://delicias.dia.fi.upm.es/nextcloud/index.php/s/JCarxYnnReHPwbP/download --output /src/utils/resources_dir/ZAMIA_Fluency_Score/en_large_model.binary --create-dirs
+
+#Install requirements and run the webapp
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+
+COPY ./src /src
+COPY ./wait-for-it.sh /src/wait-for-it.sh
+
+WORKDIR /src
+EXPOSE 8501
