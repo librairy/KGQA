@@ -7,8 +7,9 @@ from utils import spreadManager
 from datetime import datetime
 from annotated_text import annotated_text
 
+"""
 #Read environment variables
-EQA_SERVICE_DIRECTION = os.getenv("EQA_SERVICE_DIRECTION")
+EQA_SERVICE_URL = os.getenv("EQA_SERVICE_URL")
 EQA_SERVICE_ROUTINGS = os.getenv("EQA_SERVICE_ROUTINGS","").split(",")
 
 WORKSHEET = os.getenv("WORKSHEET")
@@ -17,6 +18,24 @@ SPREADSHEET = os.getenv("SPREADSHEET")
 
 DEFAULT_NUMBER_OF_ANSWERS = int(os.getenv("DEFAULT_NUMBER_OF_ANSWERS"))
 MULTIPLE_ANSWERS_JSON = bool(os.getenv("MULTIPLE_ANSWERS"))
+"""
+SPREAD_TIMEZONE = pytz.timezone("Europe/Madrid")
+
+WORKSHEET="MuHeQa_Validation"
+WORKSHEET_ID="1TY6Tj1OwITOW3o1nYRFFRY1bunvHNImUj-J0omRq4-I"
+SPREADSHEET="Validation"
+DEFAULT_NUMBER_OF_ANSWERS=1
+MULTIPLE_ANSWERS_JSON = "False"
+
+EQA_SERVICE_URL = "http://127.0.0.1:5000/muheqa/"
+EQA_SERVICE_ROUTINGS = "wikidata/en?evidence=true,dbpedia/en?evidence=true,cord19/en?evidence=true".split(",")
+
+WORKSHEET = "MuHeQa_Validation"
+WORKSHEET_ID = "1TY6Tj1OwITOW3o1nYRFFRY1bunvHNImUj-J0omRq4-I"
+SPREADSHEET = "Validation"
+
+DEFAULT_NUMBER_OF_ANSWERS = int(1)
+MULTIPLE_ANSWERS_JSON = "False"
 
 def queryJSON(queryURL, question):
     """
@@ -41,18 +60,20 @@ def app(db):
         #We iterate over the routings defined in the environment variable EQA_SERVICE_ROUTINGS if it is not empty
         if EQA_SERVICE_ROUTINGS:
             for routing in EQA_SERVICE_ROUTINGS:
-                queryURL = EQA_SERVICE_DIRECTION + routing
+                queryURL = EQA_SERVICE_URL + routing
                 answer = queryJSON(queryURL,question)
                 #If the answer is not None, we add it to the answerList
                 if answer:
                     #If there are multiple answers in the returned JSON, we iterate over them
-                    if MULTIPLE_ANSWERS_JSON:
+                    if MULTIPLE_ANSWERS_JSON == "True":
                         for uniqueAnswer in answer["answers"]:
+                            answer["source"] = routing.split("/")[0]
                             answerList.append(uniqueAnswer)
                     else:
+                        answer["source"] = routing.split("/")[0]
                         answerList.append(answer)
         else:
-            queryURL = EQA_SERVICE_DIRECTION
+            queryURL = EQA_SERVICE_URL
             answer = queryJSON(queryURL,question)
             if answer:
                 if MULTIPLE_ANSWERS_JSON:
@@ -93,11 +114,14 @@ def app(db):
 
     #Dataset Selector for random questions.
     selectorList = ["All"] 
-    selectorList.extend(db.getCollections())  
-    dataset = st.selectbox("Select a DataSet", selectorList)
+    selectorList.extend(db.getCollections()) 
+    if selectorList == ["All"]:
+        st.markdown("No datasets available")
+    else: 
+        dataset = st.selectbox("Select a DataSet", selectorList)
     
     #Button to get a random question
-    randomQuestion = st.button("Random Question")
+    randomQuestion = st.button("Make a Random Question")
     
     #Sidebar title and slider
     st.sidebar.subheader('Options')
@@ -133,11 +157,10 @@ def app(db):
                 if answer and answer != "-":
                     context = "..." + response["evidence"]["summary"] + "..."
                     confidence = response["confidence"]
-                    annotateContext(response, answer, context, response["evidence"]["start"], response["evidence"]["end"])
+                    annotateContext(answer, context, response["evidence"]["start"] + 3, response["evidence"]["end"] + 3)
                     st.write("**Answer: **", answer)
                     source = response["source"]
                     st.write('**Relevance:** ', confidence , '**Source:** ' , source)
-                    st.write('**Relevance:** ')
                     #Save the answer with the highest score in a dictionary
                     if idx == 0:
                         highestScoreAnswer = {
@@ -154,7 +177,7 @@ def app(db):
 
         #If the correct/incorrect button is pressed, we save the answer in the spreadsheet
         if isRight or isWrong:
-            spread.insertRow([[question, highestScoreAnswer["answer"], str(highestScoreAnswer["confidence"]), isRight, str(datetime.now(tz="Europe/Madrid"))]])
+            spread.insertRow([[question, highestScoreAnswer["answer"], str(highestScoreAnswer["confidence"]), isRight, str(datetime.now(tz=SPREAD_TIMEZONE))]])
             #Reset buttons value and show a receipt message to the user
             isRight = False
             isWrong = False

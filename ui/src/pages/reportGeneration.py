@@ -125,6 +125,10 @@ def app(db):
 
     selectorList = [] 
     selectorList.extend(db.getCollections())
+
+    if selectorList == []:
+        st.markdown("No datasets available. Please upload one from the Upload Dataset Module.", unsafe_allow_html=True)
+        
     dataset = st.selectbox("Select a DataSet", selectorList)
     run = st.button("Run")
 

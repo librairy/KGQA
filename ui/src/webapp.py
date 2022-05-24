@@ -3,6 +3,8 @@ from utils.multipage import MultiPage
 from utils import dbManager 
 from pages import questionAnswering, datasetManagement, reportGeneration
 
+dbDirection = "mongodb://localhost:27017"
+
 #Set Page attributes
 st.set_page_config(
     page_title = "QA UI",
@@ -13,7 +15,7 @@ st.set_page_config(
 
 #Initialize Multipage and Database.
 app = MultiPage()
-db = dbManager.DbManager("mongodb:27017")
+db = dbManager.DbManager(dbDirection)
 
 #Set page title and body
 st.title("Web Interface for Question-Answering and Dataset Validation")

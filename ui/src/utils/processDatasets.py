@@ -12,20 +12,20 @@ keysToKeep = ["question","answer"]
 
 def jsonToDict(file):
     '''
-    Auxiliary function 
+    Auxiliary function that converts a given a JSON file to dictionary list.
     '''
     return json.loads((file.read()).decode('utf-8'))
 
 def jsonLineToDict(file):
     '''
-    Funcion auxiliar que dado un archivo json con JSONObjects en cada linea,
-    lo convierte a lista de diccionarios
+    Auxiliary function that converts a given a JSON-Line file 
+    (JSON Objects in each line) to dictionary list
     '''
     return json.loads(json.dumps([json.loads(jsonLine) for jsonLine in (file.read()).decode('utf-8').splitlines()]))
 
 def csvToDict(file):
     '''
-    Funcion auxiliar que dada la ruta de un csv, lo abre y lo convierte a lista de diccionarios
+    Auxiliary function that converts a given a CSV file to dictionary list.
     '''
     df = pd.read_csv(file, sep=None, engine="python")
     #Convertimos los valores corruptos por cadenas vacias
@@ -34,8 +34,8 @@ def csvToDict(file):
 
 def formatDataset(file, isCsv = False, toDf = False):
     """
-    Funcion que abre datasets, los formatea a nuestro gusto 
-    y los devuelve como CSV o diccionario
+    Auxiliary function that formats a dataset and 
+    returns it as CSV or Pandas Dataframe
     """
     #Convert csv or JSON to dictionary list
     if isCsv:

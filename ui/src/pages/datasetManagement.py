@@ -15,7 +15,7 @@ def app(db):
     """, unsafe_allow_html=True)
 
     #Buffer to store the uploaded file (dataset)
-    inputBuffer = st.file_uploader("Upload an Image", type=["csv","json"])
+    inputBuffer = st.file_uploader("Upload a Dataset", type=["csv","json"])
 
     #If a file is uploaded, we process it and upload it to the database
     if inputBuffer:
@@ -23,7 +23,7 @@ def app(db):
             filename = inputBuffer.name
             #Split name into file name and extension
             splitFilename = filename.split(".")
-            datasetDict = processDatasets.formatDatasets(inputBuffer, isCsv=(splitFilename[1] == "csv"))
+            datasetDict = processDatasets.formatDataset(inputBuffer, isCsv=(splitFilename[1] == "csv"))
             datasetName = splitFilename[0].lower()
             #If the dataset is correctly processed, we try to upload it to MongoDB
             if datasetDict:
