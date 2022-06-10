@@ -7,8 +7,7 @@ from fpdf import FPDF, HTMLMixin
 from utils import questionClassifier
 from tempfile import NamedTemporaryFile
 
-resourcesDir = os.path.join(os.path.dirname(os.path.realpath("__file__")),"resources_dir")
-
+resourcesDir = "./utils/resources_dir"
 classifier = questionClassifier.QuestionClassifier(resourcesDir)
 
 class MyFPDF(FPDF, HTMLMixin):
@@ -128,7 +127,6 @@ def app(db):
 
     if selectorList == []:
         st.markdown("No datasets available. Please upload one from the Upload Dataset Module.", unsafe_allow_html=True)
-        
     dataset = st.selectbox("Select a DataSet", selectorList)
     run = st.button("Run")
 

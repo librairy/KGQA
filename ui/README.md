@@ -165,11 +165,10 @@ When using this User Interface for your Extractive Question-Answering Service, y
         volumes:
         - ./src/utils:/db
 ```
-4. Set the Environment Variables up on the .env file. An example is provided below, and you can find a thorough explanation of these variables in the [Documentation](https://www.overleaf.com/read/ggqhsgrcjhgf), Chapter X Section Y:
+4. Set the Environment Variables up on the .env file. An example is provided below, and you can find a thorough explanation of these variables in the [Documentation](https://www.overleaf.com/read/ggqhsgrcjhgf), Chapter 3.6.4 (Chapter 3 Section 6 SubSection 4):
 ```
-    EQA_SERVICE_DIRECTION="http://localhost:8000"
+    EQA_SERVICE_URL="http://localhost:8000"
     EQA_SERVICE_ROUTINGS=""
-    SPREAD_TIMEZONE="Europe/Madrid"
     WORKSHEET=" "
     WORKSHEET_ID=" "
     SPREADSHEET="Validation"

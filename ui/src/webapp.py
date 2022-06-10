@@ -1,9 +1,7 @@
 import streamlit as st
 from utils.multipage import MultiPage
 from utils import dbManager 
-from pages import questionAnswering, datasetManagement, reportGeneration
-
-dbDirection = "mongodb://localhost:27017"
+import questionAnswering, datasetManagement, reportGeneration
 
 #Set Page attributes
 st.set_page_config(
@@ -15,7 +13,7 @@ st.set_page_config(
 
 #Initialize Multipage and Database.
 app = MultiPage()
-db = dbManager.DbManager(dbDirection)
+db = dbManager.DbManager("mongodb://localhost:27017")
 
 #Set page title and body
 st.title("Web Interface for Question-Answering and Dataset Validation")

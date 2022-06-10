@@ -3,10 +3,6 @@ import os
 import json
 import pandas as pd
 
-#Change work directory
-fileDir = os.path.dirname(os.path.realpath(__file__))
-os.chdir(fileDir)
-
 #Dataset fields we want to keep
 keysToKeep = ["question","answer"]
 

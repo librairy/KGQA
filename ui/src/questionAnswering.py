@@ -8,33 +8,27 @@ from datetime import datetime
 from annotated_text import annotated_text
 
 """
-#Read environment variables
+#Read environment variables and setup spreadsheet timezone
 EQA_SERVICE_URL = os.getenv("EQA_SERVICE_URL")
 EQA_SERVICE_ROUTINGS = os.getenv("EQA_SERVICE_ROUTINGS","").split(",")
 
 WORKSHEET = os.getenv("WORKSHEET")
 WORKSHEET_ID = os.getenv("WORKSHEET_ID")
 SPREADSHEET = os.getenv("SPREADSHEET")
-
-DEFAULT_NUMBER_OF_ANSWERS = int(os.getenv("DEFAULT_NUMBER_OF_ANSWERS"))
-MULTIPLE_ANSWERS_JSON = bool(os.getenv("MULTIPLE_ANSWERS"))
-"""
 SPREAD_TIMEZONE = pytz.timezone("Europe/Madrid")
 
-WORKSHEET="MuHeQa_Validation"
-WORKSHEET_ID="1TY6Tj1OwITOW3o1nYRFFRY1bunvHNImUj-J0omRq4-I"
-SPREADSHEET="Validation"
-DEFAULT_NUMBER_OF_ANSWERS=1
-MULTIPLE_ANSWERS_JSON = "False"
-
-EQA_SERVICE_URL = "http://127.0.0.1:5000/muheqa/"
-EQA_SERVICE_ROUTINGS = "wikidata/en?evidence=true,dbpedia/en?evidence=true,cord19/en?evidence=true".split(",")
+DEFAULT_NUMBER_OF_ANSWERS = int(os.getenv("DEFAULT_NUMBER_OF_ANSWERS"))
+MULTIPLE_ANSWERS_JSON = os.getenv("MULTIPLE_ANSWERS")
+"""
+EQA_SERVICE_URL = "http://localhost:5000/muheqa/"
+EQA_SERVICE_ROUTINGS = "dbpedia/en?evidence=true,wikidata/en?evidence=true,cord19/en?evidence=true".split(",")
 
 WORKSHEET = "MuHeQa_Validation"
 WORKSHEET_ID = "1TY6Tj1OwITOW3o1nYRFFRY1bunvHNImUj-J0omRq4-I"
 SPREADSHEET = "Validation"
+SPREAD_TIMEZONE = pytz.timezone("Europe/Madrid")
 
-DEFAULT_NUMBER_OF_ANSWERS = int(1)
+DEFAULT_NUMBER_OF_ANSWERS = 1
 MULTIPLE_ANSWERS_JSON = "False"
 
 def queryJSON(queryURL, question):
@@ -64,13 +58,12 @@ def app(db):
                 answer = queryJSON(queryURL,question)
                 #If the answer is not None, we add it to the answerList
                 if answer:
+                    answer["source"] = routing.partition("/")[0]
                     #If there are multiple answers in the returned JSON, we iterate over them
                     if MULTIPLE_ANSWERS_JSON == "True":
                         for uniqueAnswer in answer["answers"]:
-                            answer["source"] = routing.split("/")[0]
                             answerList.append(uniqueAnswer)
                     else:
-                        answer["source"] = routing.split("/")[0]
                         answerList.append(answer)
         else:
             queryURL = EQA_SERVICE_URL
@@ -114,18 +107,18 @@ def app(db):
 
     #Dataset Selector for random questions.
     selectorList = ["All"] 
-    selectorList.extend(db.getCollections()) 
+    selectorList.extend(db.getCollections())
     if selectorList == ["All"]:
         st.markdown("No datasets available")
     else: 
-        dataset = st.selectbox("Select a DataSet", selectorList)
+        dataset = st.selectbox("Select a DataSet", selectorList)  
     
     #Button to get a random question
     randomQuestion = st.button("Make a Random Question")
     
     #Sidebar title and slider
-    st.sidebar.subheader('Options')
-    answerNumber = st.sidebar.slider('How many relevant answers do you want?', 1, 10, DEFAULT_NUMBER_OF_ANSWERS)
+    st.sidebar.subheader("Options")
+    answerNumber = st.sidebar.slider("How many relevant answers do you want?", 1, 10, DEFAULT_NUMBER_OF_ANSWERS)
     
     modelAnswer = None
 
