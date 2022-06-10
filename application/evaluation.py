@@ -87,19 +87,39 @@ class Evaluation:
                  continue
              q = json_line['ref_question']
              s1 = json_line['ref_answers']
-             s2 = json_line['answer']
-             if (s1 == None) or (s2 == None):
+             if (s1 == None) or (q == None):
                  continue
+             if (len(s1[0]) == 1):
+                 s1 = [json_line['ref_answers']]
+             s2 = json_line['answer']
              if (filter != None):
                  q_type = q.lower().split(" ")[0]
                  q_types.append(q_type)
                  if (q_type != filter.lower()):
                      continue
              print("Line{}: {} <-> {}".format(count, s1, s2))
-             em_results.append(self.get_exactMatch_score(s1,s2))
-             pm_results.append(self.get_partialMatch_score(s1,s2))
-             fmeasure_results.append(self.get_fMeasure_score(s1,s2))
-             ts_results.append(self.get_text_similarity(s1,s2))
+             best_em = 0.0
+             best_pm = 0.0
+             best_f1 = {'f1':0.0}
+             best_ts = 0.0
+             for s1_candidate in s1:
+                 p_score = self.get_exactMatch_score(s1_candidate,s2)
+                 if (p_score >= best_em):
+                     best_em = p_score
+                 p_score = self.get_partialMatch_score(s1_candidate,s2)
+                 if (p_score >= best_pm):
+                     best_pm = p_score
+                 p_score = self.get_fMeasure_score(s1_candidate,s2)
+                 if (p_score['f1'] >= best_f1['f1']):
+                     best_f1 = p_score
+                 p_score = self.get_text_similarity(s1_candidate,s2)
+                 if (p_score >= best_ts):
+                     best_ts = p_score
+
+             em_results.append(best_em)
+             pm_results.append(best_pm)
+             fmeasure_results.append(best_f1)
+             ts_results.append(best_ts)
 
          result = {}
          result['total']= len(em_results)
