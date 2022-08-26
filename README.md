@@ -1,24 +1,5 @@
-# Question Answering over Multiple and Heterogeneous Knowledge Bases
+# Question-Answering over Knowledge Graphs
 
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-![Docker](https://img.shields.io/badge/docker-v20.10.2+-blue.svg)
-![Python](https://img.shields.io/badge/python-v3.9+-blue.svg)
-![Task](https://img.shields.io/badge/task-EQAKG-green.svg)
-[![License](https://img.shields.io/badge/license-Apache2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
-
-The MuHeQA (Multiple and Heterogeneous Question-Answering) system creates natural language answers from natural language questions using knowledge base from both structured (KG) and unstructured (documents) data sources.
-
-
-```bibtex
-@inproceedings{paper2022,
-  title={MuHeQA: Question Answering over Multiple and Heterogeneous Knowledge Bases},
-  author={xxx},
-  booktitle={xxx},
-  url={https://xxx},
-  year={2022}
-}
-```
 
 ## Preparation
 
